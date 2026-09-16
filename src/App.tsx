@@ -68,7 +68,7 @@ function Shell() {
       />
       <div
         className={`pointer-events-auto absolute right-3 bottom-16 left-3 z-20 md:top-24 md:right-4 md:bottom-auto md:left-auto md:w-[24rem] chrome-fade ${
-          selectedId && !hideChrome ? "block" : "hidden xl:block"
+          selectedId && !hideChrome ? "block" : "hidden"
         } ${hideChrome ? "chrome-fade-hidden" : ""}`}
       >
         <DetailPanel />

@@ -121,7 +121,7 @@ export function createStairGeometry(steps = 20, width = 5.1, rise = 0.038, run =
 }
 
 export function createDaySkyTexture() {
-  const w = 8;
+  const w = 512;
   const h = 512;
   const canvas = document.createElement("canvas");
   canvas.width = w;
@@ -129,24 +129,87 @@ export function createDaySkyTexture() {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   const grd = ctx.createLinearGradient(0, 0, 0, h);
-  grd.addColorStop(0, "#4f86c6");
-  grd.addColorStop(0.38, "#7eadd8");
-  grd.addColorStop(0.72, "#c5def0");
-  grd.addColorStop(0.9, "#e7f1f8");
-  grd.addColorStop(1, "#f3f6f4");
+  grd.addColorStop(0, "#3d7ec8");
+  grd.addColorStop(0.28, "#5ea0dc");
+  grd.addColorStop(0.55, "#8ec4ea");
+  grd.addColorStop(0.78, "#d5e8f6");
+  grd.addColorStop(0.92, "#f3e6c8");
+  grd.addColorStop(1, "#f7efe0");
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, w, h);
-  ctx.globalAlpha = 0.16;
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, h * 0.2, w, 22);
-  ctx.globalAlpha = 0.1;
-  ctx.fillRect(0, h * 0.32, w, 12);
-  ctx.globalAlpha = 1;
+  const clouds: Array<[number, number, number, number, number]> = [
+    [40, 70, 90, 28, 0.22],
+    [180, 110, 140, 36, 0.18],
+    [320, 55, 110, 24, 0.2],
+    [80, 160, 70, 20, 0.14],
+    [260, 150, 120, 30, 0.16],
+    [400, 130, 80, 22, 0.15],
+    [140, 40, 60, 16, 0.12],
+  ];
+  for (const [x, y, rw, rh, a] of clouds) {
+    ctx.fillStyle = `rgba(255,255,255,${a})`;
+    ctx.beginPath();
+    ctx.ellipse(x, y, rw, rh, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(x + rw * 0.35, y + 6, rw * 0.55, rh * 0.7, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.magFilter = THREE.LinearFilter;
   tex.minFilter = THREE.LinearFilter;
   tex.needsUpdate = true;
+  return tex;
+}
+
+export function createDominicanFlagTexture() {
+  const w = 256;
+  const h = 160;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#002d62";
+  ctx.fillRect(0, 0, 108, 64);
+  ctx.fillStyle = "#ce1126";
+  ctx.fillRect(148, 0, 108, 64);
+  ctx.fillStyle = "#ce1126";
+  ctx.fillRect(0, 96, 108, 64);
+  ctx.fillStyle = "#002d62";
+  ctx.fillRect(148, 96, 108, 64);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(108, 0, 40, h);
+  ctx.fillRect(0, 64, w, 32);
+  ctx.fillStyle = "#c9a227";
+  ctx.beginPath();
+  ctx.arc(w / 2, h / 2, 14, 0, Math.PI * 2);
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+export function createSideFlagTexture(field: string) {
+  const w = 256;
+  const h = 160;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = field;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.fillRect(0, 0, 18, h);
+  ctx.fillStyle = "#ce1126";
+  ctx.fillRect(w * 0.42, 0, 18, h);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
 

@@ -35,7 +35,7 @@ const createWebGLRenderer: GLProps = (defaultProps) => {
   });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.16;
+  renderer.toneMappingExposure = 1.22;
   return renderer;
 };
 
@@ -63,9 +63,9 @@ function WebGLReporter() {
   return null;
 }
 
-const CAMERA_POS: [number, number, number] = [25.5, 12.8, 36.5];
-const CAMERA_POS_NARROW: [number, number, number] = [22, 15.5, 38];
-const TARGET: [number, number, number] = [0, 6.4, 0];
+const CAMERA_POS: [number, number, number] = [0.18, 2.18, 16.7];
+const CAMERA_POS_NARROW: [number, number, number] = [0.22, 2.55, 19.4];
+const TARGET: [number, number, number] = [0, 8.05, 2.35];
 const EXPLODE_CAM: [number, number, number] = [1.6, 15, 44];
 const EXPLODE_CAM_NARROW: [number, number, number] = [1.4, 18, 58];
 const EXPLODE_TARGET: [number, number, number] = [1.4, 5.2, 3.4];
@@ -77,7 +77,7 @@ function StudioEnvironment() {
     const envScene = new RoomEnvironment();
     const env = pmrem.fromScene(envScene, 0.04).texture;
     scene.environment = env;
-    scene.environmentIntensity = 0.72;
+    scene.environmentIntensity = 0.88;
     return () => {
       scene.environment = null;
       env.dispose();
@@ -103,7 +103,7 @@ function applyFrame(
   exploded: boolean,
 ) {
   const cam = camera as THREE.PerspectiveCamera;
-  cam.fov = exploded ? (narrow ? 66 : 42) : narrow ? 44 : 38;
+  cam.fov = exploded ? (narrow ? 66 : 42) : narrow ? 48 : 38;
   cam.updateProjectionMatrix();
   const pos = exploded ? explodedPos(narrow) : assembledPos(narrow);
   const target = exploded ? EXPLODE_TARGET : TARGET;
@@ -127,8 +127,8 @@ function CameraRig() {
     const node = controls.current;
     if (!node) return;
     const exploded = explode > 0.28;
-    node.minDistance = exploded ? 18 : 14;
-    node.maxDistance = exploded ? 130 : 78;
+    node.minDistance = exploded ? 18 : 8;
+    node.maxDistance = exploded ? 130 : 52;
   }, [explode]);
 
   useEffect(() => {
@@ -144,10 +144,10 @@ function CameraRig() {
       makeDefault
       enableDamping
       dampingFactor={0.065}
-      minPolarAngle={0.12}
-      maxPolarAngle={Math.PI * 0.495}
-      minDistance={14}
-      maxDistance={78}
+      minPolarAngle={0.22}
+      maxPolarAngle={Math.PI * 0.72}
+      minDistance={8}
+      maxDistance={52}
       target={TARGET}
     />
   );
@@ -171,27 +171,27 @@ function SceneContents() {
 
   return (
     <>
-      <color attach="background" args={["#8eb8dc"]} />
-      <fog attach="fog" args={["#c5d8ea", 62, 130]} />
-      <hemisphereLight args={["#e7f1fb", "#8a9a70", 0.92]} />
-      <ambientLight intensity={0.46} color="#f4f1ea" />
+      <color attach="background" args={["#6aa6dc"]} />
+      <fog attach="fog" args={["#c8dced", 70, 150]} />
+      <hemisphereLight args={["#f3e7c8", "#6d8a52", 0.78]} />
+      <ambientLight intensity={0.4} color="#f7efe2" />
       <directionalLight
-        position={[18, 28, 14]}
-        intensity={2.05}
-        color="#fff6e8"
+        position={[-20, 15, 9]}
+        intensity={2.45}
+        color="#ffe4b0"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-far={90}
-        shadow-camera-left={-28}
-        shadow-camera-right={28}
-        shadow-camera-top={34}
-        shadow-camera-bottom={-16}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={36}
+        shadow-camera-bottom={-18}
         shadow-bias={-0.00018}
-        shadow-radius={2.4}
+        shadow-radius={2.2}
       />
-      <directionalLight position={[-14, 10, -10]} intensity={0.38} color="#a8c4e0" />
-      <directionalLight position={[0, 8, 22]} intensity={0.32} color="#fffdf8" />
+      <directionalLight position={[12, 8, 16]} intensity={0.42} color="#a8c8e8" />
+      <directionalLight position={[0, 6, 22]} intensity={0.28} color="#fff8ea" />
       <StudioEnvironment />
       <SoftShadows size={18} samples={10} focus={0.5} />
       <ContactShadows position={[0, 0.02, 0]} opacity={0.22} scale={36} blur={2.6} far={16} />
