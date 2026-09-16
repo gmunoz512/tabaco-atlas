@@ -50,13 +50,13 @@ function SceneContents() {
 
   return (
     <>
-      <color attach="background" args={["#4a3a32"]} />
-      <fog attach="fog" args={["#c9a888", 95, 210]} />
+      <color attach="background" args={["#6a7a92"]} />
+      <fog attach="fog" args={["#cbb39a", 88, 195]} />
       <hemisphereLight args={["#ffd2a8", "#2a3228", 0.42]} />
       <ambientLight intensity={0.08} />
       <directionalLight
         position={[24, 9, 14]}
-        intensity={2.1}
+        intensity={1.45}
         color="#ffb070"
         castShadow
         shadow-mapSize-width={2048}
@@ -72,10 +72,8 @@ function SceneContents() {
       <directionalLight position={[-16, 7, -8]} intensity={0.35} color="#6a7fa0" />
       <Environment
         files={HDRI_PATH}
-        background
-        backgroundIntensity={1.15}
-        environmentIntensity={0.7}
-        backgroundRotation={[0, Math.PI * 0.42, 0]}
+        background={false}
+        environmentIntensity={0.78}
         environmentRotation={[0, Math.PI * 0.42, 0]}
       />
       <SoftShadows size={18} samples={12} focus={0.4} />

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { createFacadeEmissive, createFacadeTexture } from "@/components/monument/geometries";
+import { createDuskSkyTexture, createFacadeEmissive, createFacadeTexture } from "@/components/monument/geometries";
 import { useSceneTextures } from "@/components/monument/pbr";
 
 function mulberry(seed: number) {
@@ -42,6 +42,23 @@ function createTerrain() {
   geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   geo.computeVertexNormals();
   return geo;
+}
+
+function DuskDome() {
+  const tex = useMemo(() => (typeof document === "undefined" ? null : createDuskSkyTexture()), []);
+  return (
+    <mesh>
+      <sphereGeometry args={[170, 64, 40]} />
+      <meshBasicMaterial
+        map={tex ?? undefined}
+        color={tex ? "#ffffff" : "#5a7394"}
+        side={THREE.BackSide}
+        fog={false}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+  );
 }
 
 function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
@@ -377,7 +394,7 @@ function DistantHills() {
       {hills.map((hill, i) => (
         <mesh key={i} position={[hill.x, hill.h * 0.12 - 2.4, hill.z]} scale={[hill.w, hill.h, hill.w * 0.65]}>
           <sphereGeometry args={[1, 20, 12]} />
-          <meshStandardMaterial map={tex.grassMap} color={i % 2 ? "#5a6e48" : "#4a5c3e"} roughness={0.95} />
+          <meshStandardMaterial map={tex.grassMap} color={i % 2 ? "#7a8e5c" : "#6c804e"} roughness={0.95} />
         </mesh>
       ))}
     </group>
@@ -434,6 +451,7 @@ export function Surroundings() {
 
   return (
     <group>
+      <DuskDome />
       <mesh geometry={terrain} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <meshStandardMaterial
           map={tex.grassMap}
