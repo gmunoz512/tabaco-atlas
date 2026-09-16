@@ -96,8 +96,8 @@ function buildPoses(): Record<string, PartPose> {
   p["plaza-walk"] = pose([0, 0.012, 0], [CLUSTER.plaza[0], 0.4, CLUSTER.plaza[2] + 2.2], "box", {
     size: [14.2, 0.04, 14.2],
   });
-  p["equestrian-luperon"] = pose([0, 1.22, 11.65], [CLUSTER.plaza[0] + 2.4, 1.8, CLUSTER.plaza[2] + 3.4], "statue", {
-    scale: [1.62, 1.62, 1.62],
+  p["equestrian-luperon"] = pose([0, 1.28, 13.15], [CLUSTER.plaza[0] + 2.4, 1.8, CLUSTER.plaza[2] + 3.4], "statue", {
+    scale: [1.85, 1.85, 1.85],
   });
 
   for (const side of SIDES) {

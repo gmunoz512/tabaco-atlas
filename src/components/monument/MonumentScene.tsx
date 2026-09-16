@@ -63,9 +63,9 @@ function WebGLReporter() {
   return null;
 }
 
-const CAMERA_POS: [number, number, number] = [0.18, 2.18, 16.7];
-const CAMERA_POS_NARROW: [number, number, number] = [0.22, 2.55, 19.4];
-const TARGET: [number, number, number] = [0, 8.05, 2.35];
+const CAMERA_POS: [number, number, number] = [0.08, 3.2, 26.8];
+const CAMERA_POS_NARROW: [number, number, number] = [0.12, 4.0, 31];
+const TARGET: [number, number, number] = [0, 8.7, 2.2];
 const EXPLODE_CAM: [number, number, number] = [1.6, 15, 44];
 const EXPLODE_CAM_NARROW: [number, number, number] = [1.4, 18, 58];
 const EXPLODE_TARGET: [number, number, number] = [1.4, 5.2, 3.4];
@@ -103,7 +103,7 @@ function applyFrame(
   exploded: boolean,
 ) {
   const cam = camera as THREE.PerspectiveCamera;
-  cam.fov = exploded ? (narrow ? 66 : 42) : narrow ? 48 : 38;
+  cam.fov = exploded ? (narrow ? 66 : 42) : narrow ? 54 : 50;
   cam.updateProjectionMatrix();
   const pos = exploded ? explodedPos(narrow) : assembledPos(narrow);
   const target = exploded ? EXPLODE_TARGET : TARGET;
@@ -127,8 +127,8 @@ function CameraRig() {
     const node = controls.current;
     if (!node) return;
     const exploded = explode > 0.28;
-    node.minDistance = exploded ? 18 : 8;
-    node.maxDistance = exploded ? 130 : 52;
+    node.minDistance = exploded ? 18 : 11;
+    node.maxDistance = exploded ? 130 : 56;
   }, [explode]);
 
   useEffect(() => {
@@ -146,8 +146,8 @@ function CameraRig() {
       dampingFactor={0.065}
       minPolarAngle={0.22}
       maxPolarAngle={Math.PI * 0.72}
-      minDistance={8}
-      maxDistance={52}
+      minDistance={11}
+      maxDistance={56}
       target={TARGET}
     />
   );
@@ -216,7 +216,7 @@ export function MonumentScene() {
       legacy={false}
       linear={false}
       flat={false}
-      camera={{ position: CAMERA_POS, fov: 38, near: 0.1, far: 280 }}
+      camera={{ position: CAMERA_POS, fov: 50, near: 0.1, far: 320 }}
       dpr={[1, 2]}
       gl={createWebGLRenderer}
       onCreated={assertWebGLRenderer}

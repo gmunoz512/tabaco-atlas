@@ -83,8 +83,8 @@ function Flag({
         <sphereGeometry args={[0.05, 10, 8]} />
         <meshStandardMaterial color="#c9a227" metalness={0.6} roughness={0.3} />
       </mesh>
-      <mesh position={[0.78, height - 0.62, 0]} rotation={[0, yaw, 0.08]} castShadow>
-        <planeGeometry args={[1.55, 0.95]} />
+      <mesh position={[0.62, height - 0.48, 0]} rotation={[0, yaw, 0.08]} castShadow>
+        <planeGeometry args={[1.18, 0.72]} />
         <meshStandardMaterial
           map={texture ?? undefined}
           color={texture ? "#ffffff" : "#ce1126"}
@@ -96,11 +96,11 @@ function Flag({
   );
 }
 
-function HedgeRing({ radius, y = 0.28 }: { radius: number; y?: number }) {
+function HedgeRing({ radius, y = 0.38 }: { radius: number; y?: number }) {
   const bushes = useMemo(
     () =>
-      Array.from({ length: 22 }, (_, i) => {
-        const a = (i / 22) * Math.PI * 2;
+      Array.from({ length: 20 }, (_, i) => {
+        const a = (i / 20) * Math.PI * 2;
         return [Math.cos(a) * radius, Math.sin(a) * radius] as const;
       }),
     [radius],
@@ -109,7 +109,7 @@ function HedgeRing({ radius, y = 0.28 }: { radius: number; y?: number }) {
     <group>
       {bushes.map(([x, z], i) => (
         <mesh key={i} position={[x, y, z]} castShadow>
-          <boxGeometry args={[0.55, 0.52, 0.4]} />
+          <boxGeometry args={[0.62, 0.72, 0.42]} />
           <meshStandardMaterial color={i % 3 === 0 ? "#5d8a3e" : "#4e7a36"} roughness={0.82} />
         </mesh>
       ))}
@@ -145,11 +145,11 @@ export function Surroundings() {
         <meshStandardMaterial color="#5f8044" roughness={0.86} />
       </mesh>
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 12.4]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 13.8]} receiveShadow>
         <ringGeometry args={[3.6, 7.6, 64, 1, Math.PI * 0.18, Math.PI * 0.64]} />
         <meshStandardMaterial color="#cfc6b6" roughness={0.7} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 12.4]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 13.8]}>
         <ringGeometry args={[7.55, 7.78, 64, 1, Math.PI * 0.18, Math.PI * 0.64]} />
         <meshBasicMaterial color="#e2c14a" toneMapped={false} />
       </mesh>
@@ -162,7 +162,7 @@ export function Surroundings() {
         <meshBasicMaterial color="#e2c14a" toneMapped={false} />
       </mesh>
 
-      <group position={[0, 0, 11.65]}>
+      <group position={[0, 0, 13.15]}>
         <HedgeRing radius={2.15} />
         <HedgeRing radius={2.85} y={0.22} />
       </group>
@@ -176,9 +176,9 @@ export function Surroundings() {
       <Palm position={[-6.4, 0, 4.2]} scale={0.82} tilt={0.1} />
       <Palm position={[6.8, 0, 3.8]} scale={0.78} tilt={1.8} />
 
-      <Flag position={[-1.92, 0, 3.55]} texture={whiteFlag} height={7.05} yaw={0.18} />
-      <Flag position={[0, 0, 3.72]} texture={drFlag} height={7.55} yaw={0.08} />
-      <Flag position={[1.92, 0, 3.55]} texture={crestFlag} height={7.05} yaw={-0.12} />
+      <Flag position={[-1.92, 0, 4.55]} texture={whiteFlag} height={5.85} yaw={0.18} />
+      <Flag position={[0, 0, 4.75]} texture={drFlag} height={6.25} yaw={0.08} />
+      <Flag position={[1.92, 0, 4.55]} texture={crestFlag} height={5.85} yaw={-0.12} />
 
       {[-4.8, 4.8].map((x) => (
         <group key={x} position={[x, 1.35, 8.4]}>

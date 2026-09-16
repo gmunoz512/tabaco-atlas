@@ -360,47 +360,47 @@ function BalustradeBody({ id }: { id: string }) {
 function StatueBody({ id }: { id: string }) {
   return (
     <group>
-      <mesh position={[0, -0.55, 0]} castShadow receiveShadow>
-        <boxGeometry args={[0.72, 0.95, 0.52]} />
-        <meshPhysicalMaterial color="#e8e0d4" roughness={0.5} />
+      <mesh position={[0, -0.62, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.78, 1.05, 0.56]} />
+        <meshPhysicalMaterial color="#ebe3d6" roughness={0.48} />
       </mesh>
       <mesh position={[0, -0.08, 0]} castShadow>
-        <boxGeometry args={[0.62, 0.08, 0.44]} />
-        <meshPhysicalMaterial color="#ddd4c6" roughness={0.46} />
+        <boxGeometry args={[0.68, 0.08, 0.48]} />
+        <meshPhysicalMaterial color="#ddd4c6" roughness={0.44} />
       </mesh>
-      <mesh position={[0, 0.28, 0.04]} castShadow>
-        <boxGeometry args={[0.22, 0.28, 0.55]} />
+      <mesh position={[0, 0.32, 0.02]} rotation={[0.08, 0, 0]} castShadow>
+        <boxGeometry args={[0.4, 0.3, 0.52]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
       {[
-        [-0.1, 0.02, 0.18],
-        [0.1, 0.02, 0.18],
-        [-0.1, 0.02, -0.2],
-        [0.1, 0.02, -0.2],
+        [-0.14, 0.04, 0.18],
+        [0.14, 0.04, 0.18],
+        [-0.14, 0.04, -0.2],
+        [0.14, 0.04, -0.2],
       ].map(([x, y, z], i) => (
         <mesh key={i} position={[x, y, z]} castShadow>
-          <boxGeometry args={[0.07, 0.32, 0.07]} />
+          <boxGeometry args={[0.07, 0.34, 0.07]} />
           <ExhibitMaterial id={id} finish="metal" />
         </mesh>
       ))}
-      <mesh position={[0, 0.4, 0.38]} rotation={[0.35, 0, 0]} castShadow>
-        <boxGeometry args={[0.14, 0.14, 0.28]} />
+      <mesh position={[0, 0.42, 0.4]} rotation={[0.55, 0, 0]} castShadow>
+        <boxGeometry args={[0.12, 0.12, 0.32]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh position={[0, 0.46, 0.55]} castShadow>
-        <boxGeometry args={[0.12, 0.1, 0.14]} />
+      <mesh position={[0, 0.5, 0.58]} castShadow>
+        <boxGeometry args={[0.11, 0.1, 0.16]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh position={[0, 0.58, 0.02]} castShadow>
-        <cylinderGeometry args={[0.07, 0.09, 0.38, 12]} />
+      <mesh position={[0.0, 0.62, 0.0]} castShadow>
+        <cylinderGeometry args={[0.065, 0.085, 0.4, 12]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh position={[0, 0.82, 0.02]} castShadow>
-        <sphereGeometry args={[0.07, 12, 10]} />
+      <mesh position={[0, 0.88, 0.02]} castShadow>
+        <sphereGeometry args={[0.072, 12, 10]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh position={[0.16, 0.62, 0.08]} rotation={[0, 0, -0.5]} castShadow>
-        <boxGeometry args={[0.22, 0.08, 0.08]} />
+      <mesh position={[-0.14, 0.7, 0.06]} rotation={[0.2, 0, 0.55]} castShadow>
+        <boxGeometry args={[0.28, 0.07, 0.07]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
     </group>
