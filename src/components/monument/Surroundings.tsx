@@ -1,7 +1,12 @@
-import { Cloud, Clouds } from "@react-three/drei";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { createDuskSkyTexture } from "@/components/monument/geometries";
+import {
+  createAsphaltTexture,
+  createCloudSpriteTexture,
+  createDuskSkyTexture,
+  createFacadeTexture,
+  createGrassTexture,
+} from "@/components/monument/geometries";
 
 function mulberry(seed: number) {
   let t = seed + 0x6d2b79f5;
@@ -10,26 +15,37 @@ function mulberry(seed: number) {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
 
+export function terrainHeight(x: number, z: number) {
+  const r = Math.hypot(x, z);
+  const n = Math.sin(x * 0.19) * 0.16 + Math.cos(z * 0.14) * 0.14 + Math.sin((x + z) * 0.08) * 0.22;
+  if (r < 5.8) return 0.05;
+  if (r < 7.2) return 0.02 - (r - 5.8) * 0.04 + n * 0.04;
+  if (r < 10.2) return -0.08 - (r - 7.2) * 0.05 + n * 0.06;
+  if (r < 16) return -0.28 - (r - 10.2) * 0.12 + n * 0.28;
+  if (r < 28) return -1.0 - (r - 16) * 0.07 + n * 0.4;
+  return -1.85 - (r - 28) * 0.035 + n * 0.5;
+}
+
 function createTerrain() {
-  const geo = new THREE.CircleGeometry(56, 120);
+  const geo = new THREE.CircleGeometry(62, 140);
   const pos = geo.attributes.position;
   const colors = new Float32Array(pos.count * 3);
-  const light = new THREE.Color("#7f9a55");
-  const dark = new THREE.Color("#4e6a38");
-  const lawn = new THREE.Color("#8fb35c");
+  const lawn = new THREE.Color("#8fb85a");
+  const mid = new THREE.Color("#6d9248");
+  const far = new THREE.Color("#4e6c36");
+  const dirt = new THREE.Color("#6a6840");
   for (let i = 0; i < pos.count; i += 1) {
     const x = pos.getX(i);
     const y = pos.getY(i);
     const r = Math.hypot(x, y);
-    const n = Math.sin(x * 0.21) * 0.14 + Math.cos(y * 0.16) * 0.12 + Math.sin((x + y) * 0.09) * 0.2;
-    let h = 0;
-    if (r < 6.2) h = 0.04;
-    else if (r < 11) h = -0.05 - (r - 6.2) * 0.14 + n * 0.18;
-    else if (r < 22) h = -0.72 - (r - 11) * 0.08 + n * 0.4;
-    else h = -1.6 - (r - 22) * 0.04 + n * 0.55;
-    pos.setZ(i, h);
-    const mix = r < 8 ? lawn : r < 18 ? light : dark;
-    const jitter = 0.92 + mulberry(i * 13) * 0.16;
+    pos.setZ(i, terrainHeight(x, y));
+    let mix = far;
+    if (r < 6.4) mix = lawn;
+    else if (r < 11) mix = lawn.clone().lerp(mid, 0.35);
+    else if (r < 20) mix = mid;
+    else if (r < 36) mix = far;
+    else mix = dirt.clone().lerp(far, 0.55);
+    const jitter = 0.88 + mulberry(i * 17) * 0.22;
     colors[i * 3] = mix.r * jitter;
     colors[i * 3 + 1] = mix.g * jitter;
     colors[i * 3 + 2] = mix.b * jitter;
@@ -43,137 +59,334 @@ function DuskDome() {
   const tex = useMemo(() => (typeof document === "undefined" ? null : createDuskSkyTexture()), []);
   return (
     <mesh>
-      <sphereGeometry args={[110, 48, 32]} />
-      <meshBasicMaterial map={tex ?? undefined} color={tex ? "#ffffff" : "#6a86a8"} side={THREE.BackSide} fog={false} />
+      <sphereGeometry args={[160, 64, 40]} />
+      <meshBasicMaterial
+        map={tex ?? undefined}
+        color={tex ? "#ffffff" : "#5a7394"}
+        side={THREE.BackSide}
+        fog={false}
+        depthWrite={false}
+      />
     </mesh>
   );
 }
 
-function Palm({ x, z, y = 0, scale = 1 }: { x: number; z: number; y?: number; scale?: number }) {
+function CloudBillboards() {
+  const storm = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("storm")), []);
+  const sunset = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("sunset")), []);
+  const soft = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("soft")), []);
+  const cards = useMemo(
+    () =>
+      [
+        { tex: storm, p: [-38, 28, 18] as const, s: [62, 22] as const, r: 0.4 },
+        { tex: storm, p: [-22, 34, 42] as const, s: [48, 16] as const, r: -0.2 },
+        { tex: storm, p: [-50, 22, -8] as const, s: [54, 18] as const, r: 0.7 },
+        { tex: sunset, p: [42, 20, 8] as const, s: [58, 18] as const, r: -0.5 },
+        { tex: sunset, p: [28, 26, -24] as const, s: [50, 16] as const, r: 0.25 },
+        { tex: sunset, p: [18, 18, 36] as const, s: [36, 12] as const, r: -0.15 },
+        { tex: soft, p: [6, 32, -40] as const, s: [44, 14] as const, r: 0.1 },
+        { tex: soft, p: [-8, 30, 8] as const, s: [40, 13] as const, r: 0.05 },
+        { tex: soft, p: [10, 36, 20] as const, s: [34, 11] as const, r: -0.3 },
+      ] as const,
+    [storm, sunset, soft],
+  );
+  return (
+    <group>
+      {cards.map((c, i) => (
+        <mesh key={i} position={c.p} rotation={[0, c.r, 0]} renderOrder={-1}>
+          <planeGeometry args={[c.s[0], c.s[1]]} />
+          <meshBasicMaterial
+            map={c.tex ?? undefined}
+            transparent
+            opacity={0.92}
+            depthWrite={false}
+            fog={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
+  const y = terrainHeight(x, z);
   return (
     <group position={[x, y, z]} scale={scale}>
-      <mesh position={[0, 0.85, 0]} castShadow>
-        <cylinderGeometry args={[0.04, 0.07, 1.7, 8]} />
-        <meshStandardMaterial color="#6b5136" roughness={0.96} />
+      <mesh position={[0, 1.15, 0]} castShadow>
+        <cylinderGeometry args={[0.045, 0.09, 2.3, 8]} />
+        <meshStandardMaterial color="#6a4e32" roughness={0.96} />
       </mesh>
-      {[0, 1, 2, 3, 4, 5].map((i) => (
-        <mesh key={i} position={[0, 1.72, 0]} rotation={[1.05, (i / 6) * Math.PI * 2, 0]}>
-          <coneGeometry args={[0.18, 0.85, 7]} />
-          <meshStandardMaterial color="#3a5c32" roughness={1} />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <mesh key={i} position={[0, 2.28, 0]} rotation={[1.12, (i / 8) * Math.PI * 2, 0.08]}>
+          <boxGeometry args={[0.08, 0.02, 1.15]} />
+          <meshStandardMaterial color="#3d6a38" roughness={1} />
         </mesh>
       ))}
     </group>
   );
 }
 
-function HedgeRing() {
-  const hedges = useMemo(
+function HedgeBeds() {
+  const beds = useMemo(
     () =>
-      Array.from({ length: 18 }, (_, i) => {
-        const a = (i / 18) * Math.PI * 2;
-        return { x: Math.cos(a) * 6.05, z: Math.sin(a) * 6.05, rot: a };
+      Array.from({ length: 12 }, (_, i) => {
+        const a = (i / 12) * Math.PI * 2 + 0.1;
+        return { x: Math.cos(a) * 6.15, z: Math.sin(a) * 6.15, rot: a, w: 1.55 + (i % 3) * 0.2 };
       }),
     [],
   );
   return (
     <group>
-      {hedges.map((h) => (
-        <mesh key={`${h.x}-${h.z}`} position={[h.x, 0.18, h.z]} rotation={[0, h.rot, 0]} receiveShadow>
-          <boxGeometry args={[1.8, 0.36, 0.28]} />
-          <meshStandardMaterial color="#4a6b38" roughness={1} />
+      {beds.map((h) => (
+        <mesh key={`${h.x}-${h.z}`} position={[h.x, 0.22, h.z]} rotation={[0, h.rot, 0]} receiveShadow>
+          <boxGeometry args={[h.w, 0.42, 0.32]} />
+          <meshStandardMaterial color="#3f6232" roughness={1} />
         </mesh>
       ))}
     </group>
   );
 }
 
-function Road() {
-  const dashes = useMemo(
+function RoadSystem() {
+  const asphalt = useMemo(() => (typeof document === "undefined" ? null : createAsphaltTexture()), []);
+  const curve = useMemo(() => {
+    const pts = [
+      new THREE.Vector3(-20, 0.05, 16),
+      new THREE.Vector3(-12, 0.05, 12.2),
+      new THREE.Vector3(-3, 0.04, 11.4),
+      new THREE.Vector3(5, 0.04, 12.6),
+      new THREE.Vector3(13, 0.05, 11.2),
+      new THREE.Vector3(18, 0.04, 4.5),
+      new THREE.Vector3(16, 0.02, -6),
+      new THREE.Vector3(8, 0.0, -14),
+      new THREE.Vector3(-4, -0.02, -16),
+      new THREE.Vector3(-16, 0.0, -8),
+      new THREE.Vector3(-20, 0.03, 4),
+    ];
+    return new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.35);
+  }, []);
+  const ribbon = useMemo(() => new THREE.TubeGeometry(curve, 180, 1.35, 6, false), [curve]);
+  const edge = useMemo(
     () =>
-      Array.from({ length: 48 }, (_, i) => {
-        const a = (i / 48) * Math.PI * 2;
-        return { x: Math.cos(a) * 8.35, z: Math.sin(a) * 8.35, rot: a };
+      Array.from({ length: 36 }, (_, i) => {
+        const a = (i / 36) * Math.PI * 2;
+        return { x: Math.cos(a) * 8.4, z: Math.sin(a) * 7.15, rot: a };
       }),
     [],
   );
+
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]} receiveShadow>
-        <ringGeometry args={[7.15, 9.55, 96]} />
-        <meshStandardMaterial color="#3a3938" roughness={0.88} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0.4]} scale={[1.22, 1, 0.92]} receiveShadow>
+        <ringGeometry args={[7.05, 9.45, 96]} />
+        <meshStandardMaterial map={asphalt ?? undefined} color="#3c3b3a" roughness={0.92} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.038, 0]}>
-        <ringGeometry args={[7.22, 7.34, 96]} />
-        <meshStandardMaterial color="#e8e4d8" roughness={0.7} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0.4]} scale={[1.22, 1, 0.92]}>
+        <ringGeometry args={[7.12, 7.24, 96]} />
+        <meshStandardMaterial color="#d8d2c6" roughness={0.74} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.038, 0]}>
-        <ringGeometry args={[9.36, 9.48, 96]} />
-        <meshStandardMaterial color="#e8e4d8" roughness={0.7} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0.4]} scale={[1.22, 1, 0.92]}>
+        <ringGeometry args={[9.28, 9.4, 96]} />
+        <meshStandardMaterial color="#d8d2c6" roughness={0.74} />
       </mesh>
-      {dashes.map((d) => (
-        <mesh key={`${d.x}-${d.z}`} position={[d.x, 0.042, d.z]} rotation={[0, d.rot, 0]}>
-          <boxGeometry args={[0.55, 0.01, 0.07]} />
-          <meshStandardMaterial color="#d9d4c6" roughness={0.65} />
-        </mesh>
-      ))}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0]} receiveShadow>
-        <ringGeometry args={[9.55, 10.4, 96]} />
-        <meshStandardMaterial color="#6f8c4e" roughness={1} />
+      {edge.map((d, i) =>
+        i % 3 === 0 ? null : (
+          <mesh key={`${d.x}-${d.z}`} position={[d.x * 1.22, 0.034, d.z * 0.92 + 0.4]} rotation={[0, d.rot, 0]}>
+            <boxGeometry args={[0.42, 0.008, 0.055]} />
+            <meshStandardMaterial color="#cfc8ba" roughness={0.7} />
+          </mesh>
+        ),
+      )}
+      <mesh geometry={ribbon} scale={[1, 0.06, 1]} receiveShadow>
+        <meshStandardMaterial map={asphalt ?? undefined} color="#3a3938" roughness={0.9} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.018, 0.4]} scale={[1.22, 1, 0.92]} receiveShadow>
+        <ringGeometry args={[9.45, 10.5, 96]} />
+        <meshStandardMaterial color="#73944c" roughness={1} />
       </mesh>
     </group>
   );
+}
+
+type BuildingSpec = {
+  x: number;
+  z: number;
+  y: number;
+  sx: number;
+  h: number;
+  sz: number;
+  rot: number;
+  color: THREE.Color;
+  roof: THREE.Color;
+  tall: boolean;
+};
+
+function buildCity(): BuildingSpec[] {
+  const palette = ["#efe6d4", "#e8c9a0", "#f0d8b4", "#d9c4a0", "#cfd5d8", "#e8b8a4", "#dcc8b0", "#f2e4cc", "#c8b89a", "#e4d0b8"].map(
+    (hex) => new THREE.Color(hex),
+  );
+  const roofs = ["#8a4a32", "#6e5340", "#9a6a48", "#5c5854", "#a07050"].map((hex) => new THREE.Color(hex));
+  const out: BuildingSpec[] = [];
+  for (let gx = -46; gx <= 46; gx += 1.85) {
+    for (let gz = -46; gz <= 46; gz += 1.85) {
+      const streetX = Math.abs((gx + 200) % 9.2) < 1.55;
+      const streetZ = Math.abs((gz + 200) % 9.2) < 1.55;
+      if (streetX || streetZ) continue;
+      const jx = gx + (mulberry(gx * 13 + gz * 7) - 0.5) * 0.5;
+      const jz = gz + (mulberry(gx * 19 + gz * 11) - 0.5) * 0.5;
+      const r = Math.hypot(jx, jz);
+      if (r < 14.5 || r > 50) continue;
+      if (mulberry(gx * 3 + gz * 5) < 0.12) continue;
+      const tall = r > 26 && mulberry(gx * 9 + gz) > 0.86;
+      const h = tall
+        ? 2.4 + mulberry(gx * 17 + gz) * 4.2
+        : 0.28 + mulberry(gx * 11 + gz * 3) * 0.72 + (r > 32 ? mulberry(gx + gz) * 0.5 : 0);
+      const yBase = terrainHeight(jx, jz);
+      out.push({
+        x: jx,
+        z: jz,
+        y: yBase + h / 2,
+        sx: tall ? 0.85 + mulberry(gx) * 0.7 : 0.55 + mulberry(gx * 23) * 0.7,
+        h,
+        sz: tall ? 0.7 + mulberry(gz) * 0.65 : 0.5 + mulberry(gz * 29) * 0.65,
+        rot: (mulberry(gx * 31 + gz) - 0.5) * 0.2,
+        color: palette[Math.floor(mulberry(gx * 41 + gz) * palette.length)],
+        roof: roofs[Math.floor(mulberry(gx * 43 + gz * 3) * roofs.length)],
+        tall,
+      });
+    }
+  }
+  return out;
 }
 
 function CityField() {
-  const mesh = useRef<THREE.InstancedMesh>(null);
-  const count = 320;
+  const buildings = useMemo(() => buildCity(), []);
+  const houses = useMemo(() => buildings.filter((b) => !b.tall), [buildings]);
+  const towers = useMemo(() => buildings.filter((b) => b.tall), [buildings]);
+  const houseMesh = useRef<THREE.InstancedMesh>(null);
+  const roofMesh = useRef<THREE.InstancedMesh>(null);
+  const towerMesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const palette = useMemo(
+  const facade = useMemo(() => (typeof document === "undefined" ? null : createFacadeTexture()), []);
+
+  useLayoutEffect(() => {
+    const body = houseMesh.current;
+    const roof = roofMesh.current;
+    if (!body || !roof) return;
+    houses.forEach((b, i) => {
+      dummy.position.set(b.x, b.y, b.z);
+      dummy.scale.set(b.sx, b.h, b.sz);
+      dummy.rotation.set(0, b.rot, 0);
+      dummy.updateMatrix();
+      body.setMatrixAt(i, dummy.matrix);
+      body.setColorAt(i, b.color);
+      dummy.position.set(b.x, b.y + b.h / 2 + 0.1, b.z);
+      dummy.scale.set(b.sx * 0.72, 0.22, b.sz * 0.72);
+      dummy.updateMatrix();
+      roof.setMatrixAt(i, dummy.matrix);
+      roof.setColorAt(i, b.roof);
+    });
+    body.instanceMatrix.needsUpdate = true;
+    roof.instanceMatrix.needsUpdate = true;
+    if (body.instanceColor) body.instanceColor.needsUpdate = true;
+    if (roof.instanceColor) roof.instanceColor.needsUpdate = true;
+  }, [dummy, houses]);
+
+  useLayoutEffect(() => {
+    const node = towerMesh.current;
+    if (!node) return;
+    towers.forEach((b, i) => {
+      dummy.position.set(b.x, b.y, b.z);
+      dummy.scale.set(b.sx, b.h, b.sz);
+      dummy.rotation.set(0, b.rot, 0);
+      dummy.updateMatrix();
+      node.setMatrixAt(i, dummy.matrix);
+      node.setColorAt(i, b.color);
+    });
+    node.instanceMatrix.needsUpdate = true;
+    if (node.instanceColor) node.instanceColor.needsUpdate = true;
+  }, [dummy, towers]);
+
+  return (
+    <group>
+      <instancedMesh ref={houseMesh} args={[undefined, undefined, Math.max(houses.length, 1)]} frustumCulled={false}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial map={facade ?? undefined} roughness={0.88} metalness={0.03} />
+      </instancedMesh>
+      <instancedMesh ref={roofMesh} args={[undefined, undefined, Math.max(houses.length, 1)]} frustumCulled={false}>
+        <coneGeometry args={[0.85, 0.55, 4]} />
+        <meshStandardMaterial roughness={0.9} />
+      </instancedMesh>
+      <instancedMesh ref={towerMesh} args={[undefined, undefined, Math.max(towers.length, 1)]} frustumCulled={false}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial map={facade ?? undefined} roughness={0.82} metalness={0.08} />
+      </instancedMesh>
+    </group>
+  );
+}
+
+function TreeField() {
+  const mesh = useRef<THREE.InstancedMesh>(null);
+  const trunks = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const count = 160;
+  const spots = useMemo(
     () =>
-      ["#efe6d4", "#e2c9a4", "#d7b48a", "#c9cfd4", "#f0d0b0", "#b8c3b0", "#e8b8a0", "#dcd6c8"].map(
-        (hex) => new THREE.Color(hex),
-      ),
+      Array.from({ length: count }, (_, i) => {
+        const a = mulberry(i * 3) * Math.PI * 2;
+        const r = 10.5 + mulberry(i * 7) * 28;
+        const x = Math.cos(a) * r;
+        const z = Math.sin(a) * r;
+        return { x, z, y: terrainHeight(x, z), s: 0.7 + mulberry(i * 11) * 1.1 };
+      }).filter((s) => Math.hypot(s.x, s.z) > 10.2),
     [],
   );
 
   useLayoutEffect(() => {
-    const node = mesh.current;
-    if (!node) return;
-    for (let i = 0; i < count; i += 1) {
-      const a = mulberry(i * 3) * Math.PI * 2;
-      const r = 13 + mulberry(i * 7) * 28;
-      const h = 0.45 + mulberry(i * 11) * 1.8 + (r > 28 ? mulberry(i * 17) * 2.2 : 0);
-      const yBase = r < 18 ? -0.85 : r < 28 ? -1.15 : -1.45;
-      dummy.position.set(Math.cos(a) * r, yBase + h / 2, Math.sin(a) * r);
-      dummy.scale.set(0.45 + mulberry(i * 19) * 0.7, h, 0.45 + mulberry(i * 23) * 0.7);
-      dummy.rotation.set(0, mulberry(i * 29) * 0.4, 0);
+    const canopy = mesh.current;
+    const trunk = trunks.current;
+    if (!canopy || !trunk) return;
+    spots.forEach((s, i) => {
+      dummy.position.set(s.x, s.y + 0.35 * s.s, s.z);
+      dummy.scale.set(0.07 * s.s, 0.7 * s.s, 0.07 * s.s);
+      dummy.rotation.set(0, 0, 0);
       dummy.updateMatrix();
-      node.setMatrixAt(i, dummy.matrix);
-      node.setColorAt(i, palette[i % palette.length]);
-    }
-    node.instanceMatrix.needsUpdate = true;
-    if (node.instanceColor) node.instanceColor.needsUpdate = true;
-  }, [count, dummy, palette]);
+      trunk.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(s.x, s.y + 0.95 * s.s, s.z);
+      dummy.scale.set(0.55 * s.s, 0.7 * s.s, 0.55 * s.s);
+      dummy.updateMatrix();
+      canopy.setMatrixAt(i, dummy.matrix);
+    });
+    canopy.instanceMatrix.needsUpdate = true;
+    trunk.instanceMatrix.needsUpdate = true;
+  }, [dummy, spots]);
 
   return (
-    <instancedMesh ref={mesh} args={[undefined, undefined, count]} frustumCulled={false} castShadow={false}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial roughness={0.86} metalness={0.04} />
-    </instancedMesh>
+    <group>
+      <instancedMesh ref={trunks} args={[undefined, undefined, spots.length]} frustumCulled={false}>
+        <cylinderGeometry args={[1, 1.4, 1, 5]} />
+        <meshStandardMaterial color="#5a4030" roughness={1} />
+      </instancedMesh>
+      <instancedMesh ref={mesh} args={[undefined, undefined, spots.length]} frustumCulled={false} castShadow>
+        <sphereGeometry args={[1, 8, 6]} />
+        <meshStandardMaterial color="#3d5e32" roughness={1} />
+      </instancedMesh>
+    </group>
   );
 }
 
 function DistantHills() {
   const hills = useMemo(
     () =>
-      Array.from({ length: 10 }, (_, i) => {
-        const a = (i / 10) * Math.PI * 2;
-        const r = 46 + mulberry(i * 5) * 8;
+      Array.from({ length: 14 }, (_, i) => {
+        const a = (i / 14) * Math.PI * 2 + 0.2;
+        const r = 54 + mulberry(i * 5) * 10;
         return {
           x: Math.cos(a) * r,
           z: Math.sin(a) * r,
-          w: 10 + mulberry(i * 9) * 8,
-          h: 1.8 + mulberry(i * 13) * 2,
+          w: 14 + mulberry(i * 9) * 12,
+          h: 2.4 + mulberry(i * 13) * 3.2,
         };
       }),
     [],
@@ -181,10 +394,34 @@ function DistantHills() {
   return (
     <group>
       {hills.map((hill, i) => (
-        <mesh key={i} position={[hill.x, hill.h * 0.1 - 2.1, hill.z]} scale={[hill.w, hill.h, hill.w * 0.7]}>
-          <sphereGeometry args={[1, 14, 8]} />
-          <meshStandardMaterial color={i % 2 ? "#5d6e58" : "#4f614c"} roughness={1} />
+        <mesh key={i} position={[hill.x, hill.h * 0.12 - 2.4, hill.z]} scale={[hill.w, hill.h, hill.w * 0.65]}>
+          <sphereGeometry args={[1, 16, 10]} />
+          <meshStandardMaterial color={i % 2 ? "#4f6148" : "#44563f"} roughness={1} />
         </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Flagpoles() {
+  const poles = [
+    [4.9, 3.35],
+    [5.25, 2.55],
+    [5.5, 1.7],
+  ] as const;
+  return (
+    <group>
+      {poles.map(([x, z], i) => (
+        <group key={i} position={[x, terrainHeight(x, z), z]}>
+          <mesh position={[0, 1.15, 0]}>
+            <cylinderGeometry args={[0.025, 0.03, 2.3, 8]} />
+            <meshStandardMaterial color="#cfc8bc" metalness={0.35} roughness={0.4} />
+          </mesh>
+          <mesh position={[0.22, 1.95, 0]}>
+            <planeGeometry args={[0.42, 0.26]} />
+            <meshStandardMaterial color={i === 1 ? "#ffffff" : i === 0 ? "#0c2d8a" : "#c8102e"} side={THREE.DoubleSide} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
@@ -192,17 +429,20 @@ function DistantHills() {
 
 export function Surroundings() {
   const terrain = useMemo(() => createTerrain(), []);
+  const grass = useMemo(() => (typeof document === "undefined" ? null : createGrassTexture()), []);
   const palms = useMemo(
     () => [
-      { x: 8.8, z: 6.4, y: -0.15, s: 1.15 },
-      { x: 10.2, z: 3.1, y: -0.22, s: 0.95 },
-      { x: 7.6, z: 9.0, y: -0.28, s: 1.05 },
-      { x: -7.4, z: 7.8, y: -0.18, s: 1.2 },
-      { x: -9.5, z: 4.2, y: -0.25, s: 0.9 },
-      { x: -8.2, z: -6.6, y: -0.2, s: 1.1 },
-      { x: 4.1, z: 10.4, y: -0.3, s: 0.8 },
-      { x: 11.0, z: -2.4, y: -0.35, s: 1 },
-      { x: -3.2, z: 9.6, y: -0.22, s: 0.85 },
+      { x: 9.4, z: 7.2, s: 1.25 },
+      { x: 11.2, z: 3.6, s: 1.05 },
+      { x: 8.2, z: 10.2, s: 1.15 },
+      { x: -8.0, z: 8.6, s: 1.3 },
+      { x: -10.4, z: 4.6, s: 0.95 },
+      { x: -9.0, z: -7.2, s: 1.2 },
+      { x: 4.6, z: 11.4, s: 0.9 },
+      { x: 12.2, z: -2.8, s: 1.1 },
+      { x: -3.6, z: 10.6, s: 0.92 },
+      { x: 10.6, z: 8.8, s: 0.8 },
+      { x: 7.4, z: -9.2, s: 1.05 },
     ],
     [],
   );
@@ -210,55 +450,27 @@ export function Surroundings() {
   return (
     <group>
       <DuskDome />
-      <Clouds frustumCulled={false}>
-        <Cloud
-          seed={1}
-          position={[-22, 16, -6]}
-          segments={28}
-          bounds={[18, 4, 10]}
-          volume={22}
-          color="#2f3d52"
-          fade={80}
-          speed={0.04}
-          opacity={0.55}
-        />
-        <Cloud
-          seed={2}
-          position={[20, 14, 4]}
-          segments={24}
-          bounds={[14, 3, 9]}
-          volume={16}
-          color="#f0c39a"
-          fade={80}
-          speed={0.03}
-          opacity={0.4}
-        />
-        <Cloud
-          seed={3}
-          position={[2, 18, -24]}
-          segments={22}
-          bounds={[20, 3, 8]}
-          volume={14}
-          color="#d5deea"
-          fade={90}
-          speed={0.02}
-          opacity={0.35}
-        />
-      </Clouds>
+      <CloudBillboards />
       <mesh geometry={terrain} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <meshStandardMaterial vertexColors roughness={0.98} />
+        <meshStandardMaterial map={grass ?? undefined} vertexColors roughness={0.98} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.045, 0]} receiveShadow>
-        <circleGeometry args={[6.15, 64]} />
-        <meshStandardMaterial color="#8fb35c" roughness={1} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.055, 0]} receiveShadow>
+        <circleGeometry args={[5.9, 72]} />
+        <meshStandardMaterial color="#8fba5e" roughness={1} />
       </mesh>
-      <HedgeRing />
-      <Road />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.048, 0]} receiveShadow>
+        <ringGeometry args={[5.9, 7.05, 72]} />
+        <meshStandardMaterial color="#7fa34f" roughness={1} />
+      </mesh>
+      <HedgeBeds />
+      <RoadSystem />
       {palms.map((p) => (
-        <Palm key={`${p.x}-${p.z}`} x={p.x} z={p.z} y={p.y} scale={p.s} />
+        <Palm key={`${p.x}-${p.z}`} x={p.x} z={p.z} scale={p.s} />
       ))}
+      <TreeField />
       <CityField />
       <DistantHills />
+      <Flagpoles />
     </group>
   );
 }

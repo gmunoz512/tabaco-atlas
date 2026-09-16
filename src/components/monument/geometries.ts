@@ -20,7 +20,7 @@ export function createArchGeometry(width: number, height: number, depth: number)
   });
 }
 
-export function createHelixCurve(radius: number, height: number, turns: number, points = 240) {
+export function createHelixCurve(radius: number, height: number, turns: number, points = 260) {
   const pts: THREE.Vector3[] = [];
   for (let i = 0; i <= points; i += 1) {
     const t = i / points;
@@ -31,7 +31,7 @@ export function createHelixCurve(radius: number, height: number, turns: number, 
 }
 
 export function createHelixGeometry(radius: number, height: number, turns: number, tube = 0.018) {
-  return new THREE.TubeGeometry(createHelixCurve(radius, height, turns), 280, tube, 7, false);
+  return new THREE.TubeGeometry(createHelixCurve(radius, height, turns), 320, tube, 8, false);
 }
 
 export function createShieldGeometry() {
@@ -54,62 +54,226 @@ export function createShieldGeometry() {
 export function createWingGeometry() {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
-  shape.bezierCurveTo(0.08, 0.1, 0.16, 0.28, 0.06, 0.5);
-  shape.bezierCurveTo(0.0, 0.46, -0.12, 0.24, -0.08, 0.04);
+  shape.bezierCurveTo(0.12, 0.16, 0.28, 0.42, 0.1, 0.78);
+  shape.bezierCurveTo(0.02, 0.7, -0.2, 0.36, -0.12, 0.06);
   shape.lineTo(0, 0);
   return new THREE.ExtrudeGeometry(shape, {
-    depth: 0.022,
+    depth: 0.028,
     bevelEnabled: true,
-    bevelThickness: 0.008,
-    bevelSize: 0.01,
+    bevelThickness: 0.01,
+    bevelSize: 0.012,
     bevelSegments: 2,
-    curveSegments: 14,
+    curveSegments: 16,
   });
 }
 
+function hash2(ix: number, iy: number) {
+  let n = Math.imul(ix, 374761393) + Math.imul(iy, 668265263);
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+}
+
+function valueNoise(x: number, y: number) {
+  const x0 = Math.floor(x);
+  const y0 = Math.floor(y);
+  const fx = x - x0;
+  const fy = y - y0;
+  const sx = fx * fx * (3 - 2 * fx);
+  const sy = fy * fy * (3 - 2 * fy);
+  const n00 = hash2(x0, y0);
+  const n10 = hash2(x0 + 1, y0);
+  const n01 = hash2(x0, y0 + 1);
+  const n11 = hash2(x0 + 1, y0 + 1);
+  return n00 * (1 - sx) * (1 - sy) + n10 * sx * (1 - sy) + n01 * (1 - sx) * sy + n11 * sx * sy;
+}
+
+function fbm(x: number, y: number, octaves = 5) {
+  let v = 0;
+  let a = 0.5;
+  let f = 1;
+  for (let i = 0; i < octaves; i += 1) {
+    v += a * valueNoise(x * f, y * f);
+    a *= 0.5;
+    f *= 2.05;
+  }
+  return v;
+}
+
+function lerpColor(a: [number, number, number], b: [number, number, number], t: number): [number, number, number] {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+}
+
+function mix3(a: [number, number, number], b: [number, number, number], t: number) {
+  const k = Math.min(1, Math.max(0, t));
+  return lerpColor(a, b, k);
+}
+
+/** Equirectangular dusk sky: storm left, peach horizon, layered clouds. */
 export function createDuskSkyTexture() {
-  const w = 2048;
-  const h = 1024;
+  const w = 1536;
+  const h = 768;
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
-  const g = ctx.createLinearGradient(0, h, 0, 0);
-  g.addColorStop(0, "#c47a3a");
-  g.addColorStop(0.12, "#e8a15a");
-  g.addColorStop(0.22, "#f3c48a");
-  g.addColorStop(0.34, "#d7c3b0");
-  g.addColorStop(0.5, "#8aa3c0");
-  g.addColorStop(0.7, "#4d6488");
-  g.addColorStop(1, "#24344f");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, w, h);
+  const img = ctx.createImageData(w, h);
+  const data = img.data;
 
-  const blob = (x: number, y: number, rw: number, rh: number, color: string) => {
-    const grd = ctx.createRadialGradient(x, y, 4, x, y, Math.max(rw, rh));
-    grd.addColorStop(0, color);
-    grd.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = grd;
-    ctx.beginPath();
-    ctx.ellipse(x, y, rw, rh, 0, 0, Math.PI * 2);
-    ctx.fill();
-  };
+  const zenith: [number, number, number] = [28, 42, 72];
+  const high: [number, number, number] = [72, 96, 132];
+  const mid: [number, number, number] = [186, 168, 168];
+  const peach: [number, number, number] = [255, 176, 110];
+  const gold: [number, number, number] = [255, 140, 68];
+  const nadir: [number, number, number] = [92, 70, 52];
 
-  for (let i = 0; i < 18; i += 1) {
-    blob(80 + i * 55, 220 + (i % 5) * 28, 140, 42, "rgba(38,48,68,0.55)");
-  }
-  for (let i = 0; i < 14; i += 1) {
-    blob(980 + i * 70, 280 + (i % 4) * 36, 160, 36, "rgba(255,210,160,0.28)");
-  }
-  for (let i = 0; i < 10; i += 1) {
-    blob(400 + i * 90, 160, 180, 30, "rgba(230,236,245,0.22)");
-  }
-  blob(w * 0.78, h * 0.72, 220, 90, "rgba(255,170,80,0.35)");
+  for (let y = 0; y < h; y += 1) {
+    const v = y / (h - 1);
+    const elev = 1 - v;
+    for (let x = 0; x < w; x += 1) {
+      const u = x / (w - 1);
+      const sunset = Math.min(1, Math.max(0, (u - 0.42) / 0.5));
+      let col: [number, number, number];
+      if (elev > 0.62) col = mix3(high, zenith, (elev - 0.62) / 0.38);
+      else if (elev > 0.38) col = mix3(mid, high, (elev - 0.38) / 0.24);
+      else if (elev > 0.18) col = mix3(peach, mid, (elev - 0.18) / 0.2);
+      else col = mix3(nadir, gold, elev / 0.18);
 
+      col = mix3(col, mix3(col, peach, 0.55), sunset * Math.max(0, 1.05 - elev * 1.4));
+
+      const n1 = fbm(u * 7.2 + 2.1, elev * 11.4, 5);
+      const n2 = fbm(u * 3.4 - 4, elev * 5.5 + 8, 4);
+      const n3 = fbm(u * 14 + 9, elev * 18, 3);
+      const band = Math.sin(elev * Math.PI * 1.6) * 0.5 + 0.5;
+      let cloud = Math.min(1, Math.max(0, (n1 * 0.72 + n2 * 0.28 - 0.38) / 0.42));
+      cloud *= 0.35 + band * 0.75;
+      if (elev < 0.08 || elev > 0.92) cloud *= 0.15;
+
+      const storm = Math.min(1, Math.max(0, 1 - u * 1.7));
+      const duskCloud: [number, number, number] = mix3([255, 214, 186], [255, 150, 88], sunset);
+      const stormCloud: [number, number, number] = mix3([48, 58, 78], [22, 28, 42], n3);
+      const cloudCol = mix3(duskCloud, stormCloud, storm * 0.85);
+      col = mix3(col, cloudCol, cloud * (0.55 + storm * 0.35));
+
+      const sunU = 0.78;
+      const sunV = 0.62;
+      const sunD = Math.hypot((u - sunU) * 1.6, (v - sunV) * 2.2);
+      const glow = Math.min(1, Math.max(0, 1 - sunD * 2.4));
+      col = mix3(col, [255, 196, 120], glow * 0.55);
+
+      const i = (y * w + x) * 4;
+      data[i] = col[0];
+      data[i + 1] = col[1];
+      data[i + 2] = col[2];
+      data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+export function createCloudSpriteTexture(kind: "storm" | "sunset" | "soft") {
+  const s = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const img = ctx.createImageData(s, s);
+  const data = img.data;
+  const tint: [number, number, number] =
+    kind === "storm" ? [42, 50, 68] : kind === "sunset" ? [255, 176, 128] : [236, 228, 220];
+  for (let y = 0; y < s; y += 1) {
+    for (let x = 0; x < s; x += 1) {
+      const u = (x / (s - 1) - 0.5) * 2;
+      const v = (y / (s - 1) - 0.5) * 2;
+      const lobe =
+        Math.exp(-((u + 0.15) ** 2) / 0.55 - (v + 0.05) ** 2 / 0.22) +
+        Math.exp(-((u - 0.35) ** 2) / 0.32 - (v - 0.08) ** 2 / 0.16) * 0.85 +
+        Math.exp(-((u + 0.45) ** 2) / 0.28 - (v - 0.12) ** 2 / 0.14) * 0.7 +
+        Math.exp(-(u ** 2) / 0.9 - (v + 0.18) ** 2 / 0.28) * 0.6;
+      const n = fbm(x * 0.02, y * 0.025 + (kind === "storm" ? 4 : 1), 4);
+      const a = Math.min(1, Math.max(0, lobe * (0.55 + n * 0.7) - 0.12));
+      const i = (y * s + x) * 4;
+      data[i] = tint[0];
+      data[i + 1] = tint[1];
+      data[i + 2] = tint[2];
+      data[i + 3] = Math.floor(a * (kind === "storm" ? 210 : 190));
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+export function createGrassTexture() {
+  const s = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#6f9248";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 9000; i += 1) {
+    const g = 70 + Math.random() * 90;
+    ctx.fillStyle = `rgba(${40 + Math.random() * 40},${g},${30 + Math.random() * 30},${0.18 + Math.random() * 0.35})`;
+    ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 2, 2 + Math.random() * 4);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(18, 18);
+  tex.anisotropy = 8;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+export function createAsphaltTexture() {
+  const s = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#3a3938";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 12000; i += 1) {
+    const n = 40 + Math.random() * 50;
+    ctx.fillStyle = `rgba(${n},${n - 2},${n - 4},${0.12 + Math.random() * 0.28})`;
+    ctx.fillRect(Math.random() * s, Math.random() * s, 1, 1);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(6, 6);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+export function createFacadeTexture() {
+  const s = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, s, s);
+  ctx.fillStyle = "#1c1820";
+  for (let y = 6; y < 58; y += 14) {
+    for (let x = 7; x < 58; x += 13) {
+      ctx.fillRect(x, y, 5, 7);
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
   return tex;
 }
 
@@ -121,13 +285,13 @@ function noiseCanvas(size: number, contrast: number) {
   canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
-  ctx.fillStyle = "#e6dfd4";
+  ctx.fillStyle = "#e8e1d4";
   ctx.fillRect(0, 0, size, size);
-  for (let i = 0; i < 16000; i += 1) {
-    const n = 140 + Math.random() * 100;
-    const a = (0.035 + Math.random() * 0.16) * contrast;
-    ctx.fillStyle = `rgba(${n},${n - 6},${n - 14},${a})`;
-    ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.4, 1 + Math.random() * 2.4);
+  for (let i = 0; i < 18000; i += 1) {
+    const n = 150 + Math.random() * 90;
+    const a = (0.03 + Math.random() * 0.14) * contrast;
+    ctx.fillStyle = `rgba(${n},${n - 5},${n - 12},${a})`;
+    ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.2, 1 + Math.random() * 2.2);
   }
   return canvas;
 }
@@ -137,12 +301,12 @@ export function getStoneMaps() {
   if (typeof document === "undefined") return null;
   const albedo = new THREE.CanvasTexture(noiseCanvas(256, 1));
   albedo.wrapS = albedo.wrapT = THREE.RepeatWrapping;
-  albedo.repeat.set(2.2, 2.2);
+  albedo.repeat.set(2.4, 2.4);
   albedo.anisotropy = 8;
   albedo.colorSpace = THREE.SRGBColorSpace;
   const bump = new THREE.CanvasTexture(noiseCanvas(256, 1.8));
   bump.wrapS = bump.wrapT = THREE.RepeatWrapping;
-  bump.repeat.set(2.2, 2.2);
+  bump.repeat.set(2.4, 2.4);
   bump.colorSpace = THREE.NoColorSpace;
   stoneMaps = { albedo, bump };
   return stoneMaps;

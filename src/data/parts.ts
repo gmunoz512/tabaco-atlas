@@ -72,15 +72,15 @@ export const LAYERS: Record<
   },
 };
 
-export const CREAM = "#f0e6d2";
-export const CREAM_HI = "#f7f1e4";
-export const CREAM_DEEP = "#c6b394";
-export const STONE_PLAZA = "#ebe4d8";
-export const GREY_PODIUM = "#e4ddd0";
-export const GREY_DEEP = "#d2cbbd";
-export const BRONZE = "#a14b2c";
+export const CREAM = "#f3ece0";
+export const CREAM_HI = "#f8f3ea";
+export const CREAM_DEEP = "#e4d8c4";
+export const STONE_PLAZA = "#eee8de";
+export const GREY_PODIUM = "#d8d3ca";
+export const GREY_DEEP = "#c6c0b6";
+export const BRONZE = "#b54a28";
 export const BRONZE_DARK = "#7c341c";
-export const ARCH_VOID = "#5a221c";
+export const ARCH_VOID = "#4a1c18";
 export const GATE_METAL = "#2a2622";
 export const RAIL = "#c9c2b4";
 
@@ -176,7 +176,7 @@ function generated(): AtlasPart[] {
     descriptionEs: `Paño crema detrás de las columnas, cara ${side.es}. Da cuerpo al prisma cuadrado.`,
     descriptionEn: `Cream wall behind the columns on the ${side.en} face. It gives the square prism its body.`,
     aliases: ["wall", "muro", "colonnade", side.en, side.es],
-    color: CREAM_DEEP,
+    color: CREAM,
   }));
 
   const entablature: AtlasPart[] = SIDES.map((side) => ({
@@ -399,7 +399,7 @@ const CORE: AtlasPart[] = [
     descriptionEs: "Prisma menor, retranqueado, entre la terraza y el fuste cilíndrico. Lleva arcos rojizos.",
     descriptionEn: "A smaller, set-back prism between the terrace and the cylindrical shaft. It carries the red arches.",
     aliases: ["attic", "ático", "setback"],
-    color: CREAM_DEEP,
+    color: CREAM,
   },
   {
     id: "shaft-lower",

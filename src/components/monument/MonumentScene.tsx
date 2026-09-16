@@ -1,4 +1,4 @@
-import { ContactShadows, Environment, OrbitControls, Sky } from "@react-three/drei";
+import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -7,8 +7,8 @@ import { useAtlas } from "@/state/atlas-store";
 import { Monument } from "@/components/monument/Monument";
 import { Surroundings } from "@/components/monument/Surroundings";
 
-const CAMERA_POS: [number, number, number] = [14.2, 10.2, 19.6];
-const TARGET: [number, number, number] = [0, 6.0, 0];
+const CAMERA_POS: [number, number, number] = [16.8, 7.6, 24.4];
+const TARGET: [number, number, number] = [0, 6.8, 0];
 
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
@@ -24,8 +24,8 @@ function CameraRig() {
   useEffect(() => {
     const node = controls.current;
     if (!node) return;
-    node.minDistance = exploded ? 10 : 9;
-    node.maxDistance = exploded ? 52 : 40;
+    node.minDistance = exploded ? 12 : 11;
+    node.maxDistance = exploded ? 58 : 46;
   }, [exploded]);
 
   return (
@@ -34,10 +34,10 @@ function CameraRig() {
       makeDefault
       enableDamping
       dampingFactor={0.07}
-      minPolarAngle={0.2}
+      minPolarAngle={0.22}
       maxPolarAngle={Math.PI * 0.48}
-      minDistance={9}
-      maxDistance={40}
+      minDistance={11}
+      maxDistance={46}
       target={TARGET}
     />
   );
@@ -48,33 +48,26 @@ function SceneContents() {
 
   return (
     <>
-      <color attach="background" args={["#4a5e7a"]} />
-      <fog attach="fog" args={["#c9b49a", 38, 95]} />
-      <Sky
-        sunPosition={[12, 1.15, 8]}
-        turbidity={14}
-        rayleigh={0.55}
-        mieCoefficient={0.006}
-        mieDirectionalG={0.88}
-      />
-      <hemisphereLight args={["#f3d2a8", "#3f4a3c", 0.75]} />
-      <ambientLight intensity={0.22} />
+      <color attach="background" args={["#4a6280"]} />
+      <fog attach="fog" args={["#c4b09a", 62, 155]} />
+      <hemisphereLight args={["#f4d2a4", "#3c4a36", 0.7]} />
+      <ambientLight intensity={0.2} />
       <directionalLight
-        position={[18, 8, 10]}
-        intensity={1.35}
-        color="#ffd0a0"
+        position={[22, 7.5, 12]}
+        intensity={1.45}
+        color="#ffc48a"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-far={70}
-        shadow-camera-left={-22}
-        shadow-camera-right={22}
-        shadow-camera-top={24}
-        shadow-camera-bottom={-12}
+        shadow-camera-far={80}
+        shadow-camera-left={-26}
+        shadow-camera-right={26}
+        shadow-camera-top={28}
+        shadow-camera-bottom={-14}
         shadow-bias={-0.00022}
       />
-      <directionalLight position={[-10, 4, -8]} intensity={0.22} color="#8aa0c0" />
-      <Environment preset="sunset" environmentIntensity={0.42} />
+      <directionalLight position={[-14, 6, -6]} intensity={0.28} color="#7a90b0" />
+      <Environment preset="sunset" environmentIntensity={0.32} />
       <CameraRig />
       <group
         onPointerMissed={() => {
@@ -84,7 +77,7 @@ function SceneContents() {
         <Monument />
         <Surroundings />
       </group>
-      <ContactShadows position={[0, 0.03, 0]} opacity={0.32} scale={30} blur={4.4} far={12} />
+      <ContactShadows position={[0, 0.02, 0]} opacity={0.22} scale={34} blur={4.8} far={14} />
     </>
   );
 }
@@ -93,12 +86,12 @@ export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 44, near: 0.1, far: 220 }}
+      camera={{ position: CAMERA_POS, fov: 40, near: 0.1, far: 360 }}
       dpr={[1, 1.75]}
       gl={{
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.12,
+        toneMappingExposure: 1.08,
       }}
       className="absolute inset-0 z-0 h-full w-full touch-none"
     >
