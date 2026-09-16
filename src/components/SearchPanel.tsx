@@ -19,6 +19,7 @@ export function SearchPanel() {
           placeholder={copy.searchPlaceholder}
           className="pl-9"
           aria-label={copy.searchPlaceholder}
+          id="atlas-search"
         />
       </label>
       {showResults ? (

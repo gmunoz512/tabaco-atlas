@@ -34,8 +34,9 @@ export const COPY = {
     subjectOfficial: "Monumento a los Héroes de la Restauración",
     architect: "Henry Gazón Bona",
     region: "Santiago de los Caballeros, República Dominicana",
+    explodeAmount: "Separación",
     intro:
-      "Modelo de la torre sobre la colina de Santiago. Gira, oculta capas y separa plaza, podio, columnata, ático, fuste y mirador.",
+      "Modelo de la torre cívica de Santiago. Gira, oculta capas y separa plaza, podio, columnata, ático, fuste y mirador.",
     historyNote:
       "Se inauguró en 1953 como monumento a la «paz» de Trujillo. Tras 1961 la ciudad lo dedicó a quienes pelearon la Guerra de la Restauración (1863–1865) contra la anexión española. En la cima está el Ángel de la Paz.",
   },
@@ -72,8 +73,9 @@ export const COPY = {
     subjectOfficial: "Monument to the Heroes of the Restoration",
     architect: "Henry Gazón Bona",
     region: "Santiago de los Caballeros, Dominican Republic",
+    explodeAmount: "Separation",
     intro:
-      "A model of the tower on Santiago’s hill. Orbit, hide layers, and space plaza, podium, colonnade, attic, shaft, and lookout.",
+      "A model of Santiago’s civic tower. Orbit, hide layers, and space plaza, podium, colonnade, attic, shaft, and lookout.",
     historyNote:
       "It opened in 1953 as a monument to Trujillo’s “peace.” After 1961 the city dedicated it to those who fought the Restoration War (1863–1865) against Spanish reannexation. The bronze Angel of Peace stands at the crown.",
   },

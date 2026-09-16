@@ -19,8 +19,9 @@ interface AtlasContextValue {
   layers: LayerVisibility;
   toggleLayer: (id: LayerId) => void;
   setLayer: (id: LayerId, visible: boolean) => void;
+  explode: number;
+  setExplode: (value: number) => void;
   exploded: boolean;
-  setExploded: (value: boolean) => void;
   isolated: boolean;
   setIsolated: (value: boolean) => void;
   query: string;
@@ -40,7 +41,7 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");
   const [selectedId, setSelectedIdState] = useState<string | null>(null);
   const [layers, setLayers] = useState<LayerVisibility>(ALL_VISIBLE);
-  const [exploded, setExploded] = useState(false);
+  const [explode, setExplode] = useState(0);
   const [isolated, setIsolated] = useState(false);
   const [query, setQuery] = useState("");
   const [resetViewToken, setResetViewToken] = useState(0);
@@ -86,6 +87,7 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
   );
 
   const searchResults = useMemo(() => rankSearchResults(PARTS, query), [query]);
+  const exploded = explode > 0.12;
 
   const value = useMemo(
     () => ({
@@ -96,8 +98,9 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
       layers,
       toggleLayer,
       setLayer,
+      explode,
+      setExplode,
       exploded,
-      setExploded,
       isolated,
       setIsolated,
       query,
@@ -109,6 +112,7 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
       searchResults,
     }),
     [
+      explode,
       exploded,
       isPartVisible,
       isolated,
@@ -135,4 +139,3 @@ export function useAtlas() {
   }
   return context;
 }
-

@@ -27,6 +27,11 @@ function Shell() {
       if (event.key === "Escape") {
         setDockOpen(false);
       }
+      if (event.key === "/" && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) {
+        event.preventDefault();
+        setDockOpen(true);
+        window.setTimeout(() => document.getElementById("atlas-search")?.focus(), 0);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

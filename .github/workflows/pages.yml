@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main, cursor/tabaco-atlas-explorer-6750]
+    branches: [main, cursor/tabaco-atlas-explorer-6750, cursor/monumento-futuristic-anatomy-5d26]
   workflow_dispatch:
 
 permissions:

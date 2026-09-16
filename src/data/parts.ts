@@ -31,58 +31,58 @@ export const LAYERS: Record<
   plaza: {
     nameEs: "Plaza y gradas",
     nameEn: "Plaza & stairs",
-    hintEs: "Explanada de piedra clara",
-    hintEn: "Light stone esplanade",
-    swatch: "#d8d0c4",
+    hintEs: "Explanada y accesos",
+    hintEn: "Esplanade and approaches",
+    swatch: "#ece8e1",
   },
   podium: {
     nameEs: "Podio",
     nameEn: "Podium",
-    hintEs: "Zócalo gris y portones",
-    hintEn: "Grey base and gates",
-    swatch: "#8a8580",
+    hintEs: "Zócalo y portones",
+    hintEn: "Plinth and gates",
+    swatch: "#c9c6c0",
   },
   colonnade: {
     nameEs: "Columnata",
     nameEn: "Colonnade",
-    hintEs: "Columnas crema y terraza",
-    hintEn: "Cream columns and terrace",
-    swatch: "#efe4cc",
+    hintEs: "Columnas y terraza",
+    hintEn: "Columns and terrace",
+    swatch: "#f4efe6",
   },
   attic: {
     nameEs: "Ático",
     nameEn: "Attic",
     hintEs: "Arcos y escudos",
     hintEn: "Arches and shields",
-    swatch: "#e4d7bc",
+    swatch: "#e8e2d8",
   },
   shaft: {
     nameEs: "Fuste",
     nameEn: "Shaft",
     hintEs: "Cilindro y espiral",
     hintEn: "Cylinder and spiral",
-    swatch: "#f0e6d2",
+    swatch: "#f7f3ec",
   },
   lookout: {
     nameEs: "Mirador",
     nameEn: "Lookout",
     hintEs: "Balcón y Ángel de la Paz",
     hintEn: "Balcony and Angel of Peace",
-    swatch: "#b4532a",
+    swatch: "#c17a4a",
   },
 };
 
-export const CREAM = "#f8f3ea";
-export const CREAM_HI = "#fcf8f2";
-export const CREAM_DEEP = "#efe6d6";
-export const STONE_PLAZA = "#f3eee6";
-export const GREY_PODIUM = "#e6e1d8";
-export const GREY_DEEP = "#d4cfc6";
-export const BRONZE = "#b54a28";
-export const BRONZE_DARK = "#7c341c";
-export const ARCH_VOID = "#4a1c18";
-export const GATE_METAL = "#2a2622";
-export const RAIL = "#c9c2b4";
+export const CREAM = "#f3eee6";
+export const CREAM_HI = "#faf7f2";
+export const CREAM_DEEP = "#e4ddd2";
+export const STONE_PLAZA = "#ece8e1";
+export const GREY_PODIUM = "#d5d1ca";
+export const GREY_DEEP = "#c4c0b8";
+export const BRONZE = "#c17a4a";
+export const BRONZE_DARK = "#9a5a32";
+export const ARCH_VOID = "#151c28";
+export const GATE_METAL = "#8a939e";
+export const RAIL = "#d4d8de";
 
 export const SIDES = [
   { id: "north", es: "norte", en: "north" },
@@ -244,8 +244,8 @@ function generated(): AtlasPart[] {
       nameEs: `Arco del ático ${side.es} ${n}`,
       nameEn: `Attic arch ${side.en} ${n}`,
       scientific: `Arcus ${side.es} ${n}`,
-      descriptionEs: `Vano arqueado en el ático, cara ${side.es}. El hueco se lee rojo oscuro, como en las fotos del edificio.`,
-      descriptionEn: `An arched opening in the attic, ${side.en} face. The void reads dark red, as in photographs of the building.`,
+      descriptionEs: `Vano arqueado en el ático, cara ${side.es}. Un hueco limpio que ritma el prisma superior.`,
+      descriptionEn: `An arched opening in the attic, ${side.en} face. A clean void that rhythms the upper prism.`,
       aliases: ["arch", "arco", "attic", "ático", "window", side.en, side.es],
       color: ARCH_VOID,
     })),
@@ -353,7 +353,7 @@ const CORE: AtlasPart[] = [
     descriptionEs: "Franja que rodea la explanada, un poco más baja y grisácea.",
     descriptionEn: "A slightly lower, greyer band around the esplanade.",
     aliases: ["walk", "paseo", "ring"],
-    color: "#c4bdb2",
+    color: "#d8d4cc",
   },
   {
     id: "podium-plinth",
@@ -469,7 +469,7 @@ const CORE: AtlasPart[] = [
     culturalEs: "El recorrido pedagógico del edificio no es solo la vista: es subir por dentro.",
     culturalEn: "The building’s teaching path is not only the view: it is the climb inside.",
     aliases: ["elevator", "ascensor", "interior", "vela zanetti"],
-    color: "#5a5550",
+    color: "#6a7380",
   },
   {
     id: "observation-deck",
