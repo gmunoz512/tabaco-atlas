@@ -1,0 +1,72 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main, cursor/tabaco-atlas-explorer-6750, cursor/monumento-futuristic-anatomy-5d26]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Prepare GitHub Pages files
+        run: |
+          touch dist/.nojekyll
+          cp -f dist/index.html dist/404.html
+      - name: Publish dist to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
+          enable_jekyll: false
+          full_commit_message: "Deploy Monumento's Anatomy to GitHub Pages"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    continue-on-error: true
+    steps:
+      - name: Enable GitHub Pages if needed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          gh api --method POST repos/${{ github.repository }}/pages \
+            -H "Accept: application/vnd.github+json" \
+            -f build_type=workflow \
+            || gh api --method POST repos/${{ github.repository }}/pages \
+            -H "Accept: application/vnd.github+json" \
+            -f build_type=legacy \
+            -f "source[branch]=gh-pages" \
+            -f "source[path]=/" \
+            || true
+          gh api repos/${{ github.repository }}/pages || true
+      - uses: actions/configure-pages@v5
+        continue-on-error: true
+        with:
+          enablement: true
+      - id: deployment
+        uses: actions/deploy-pages@v4
