@@ -41,7 +41,9 @@ La geometría se genera en Three.js (primitivas y curvas). No se incluyen mallas
 
 ## Despliegue
 
-Proyecto Vite. En Vercel, el `vercel.json` ya apunta a `npm ci`, `npm run build` y `dist/`.
+Sitio público: [https://elanatomy6750.tiiny.site](https://elanatomy6750.tiiny.site)
+
+Proyecto Vite. `vercel.json` configura `npm run build` y el directorio `dist/` para Vercel u otro host estático. `base: "./"` en Vite permite servir el sitio desde la raíz o una subruta.
 
 ## Licencia
 
