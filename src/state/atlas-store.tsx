@@ -28,6 +28,8 @@ interface AtlasContextValue {
   setQuery: (value: string) => void;
   resetViewToken: number;
   requestResetView: () => void;
+  webglStatus: string;
+  setWebglStatus: (value: string) => void;
   isPartVisible: (id: string) => boolean;
   visibleParts: typeof PARTS;
   searchResults: typeof PARTS;
@@ -45,6 +47,7 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
   const [isolated, setIsolated] = useState(false);
   const [query, setQuery] = useState("");
   const [resetViewToken, setResetViewToken] = useState(0);
+  const [webglStatus, setWebglStatus] = useState("");
 
   const setSelectedId = useCallback((id: string | null) => {
     setSelectedIdState(id);
@@ -107,6 +110,8 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
       setQuery,
       resetViewToken,
       requestResetView,
+      webglStatus,
+      setWebglStatus,
       isPartVisible,
       visibleParts,
       searchResults,
@@ -126,6 +131,7 @@ export function AtlasProvider({ children }: { children: ReactNode }) {
       setSelectedId,
       toggleLayer,
       visibleParts,
+      webglStatus,
     ],
   );
 
