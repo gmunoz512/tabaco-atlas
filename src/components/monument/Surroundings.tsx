@@ -60,22 +60,18 @@ function grassMaps() {
 function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
   return (
     <group position={[x, 0.02, z]} scale={scale}>
-      <mesh position={[0, 0.7, 0]} castShadow>
-        <cylinderGeometry args={[0.045, 0.07, 1.4, 8]} />
-        <meshStandardMaterial color="#6a5138" roughness={0.95} />
+      <mesh position={[0, 0.55, 0]} castShadow>
+        <cylinderGeometry args={[0.03, 0.05, 1.1, 8]} />
+        <meshStandardMaterial color="#5c4a38" roughness={0.96} />
       </mesh>
-      {[0, 1, 2, 3, 4, 5].map((i) => (
+      {[0, 1, 2, 3, 4].map((i) => (
         <mesh
           key={i}
-          position={[
-            Math.cos((i / 6) * Math.PI * 2) * 0.28,
-            1.42,
-            Math.sin((i / 6) * Math.PI * 2) * 0.28,
-          ]}
-          rotation={[0.85, (i / 6) * Math.PI * 2, 0]}
+          position={[0, 1.12, 0]}
+          rotation={[0.95, (i / 5) * Math.PI * 2, 0]}
         >
-          <sphereGeometry args={[0.22, 8, 6]} />
-          <meshStandardMaterial color="#3f5a32" roughness={1} />
+          <coneGeometry args={[0.16, 0.55, 6]} />
+          <meshStandardMaterial color="#35543a" roughness={1} />
         </mesh>
       ))}
     </group>
@@ -85,14 +81,14 @@ function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
 function DistantHills() {
   const hills = useMemo(
     () =>
-      Array.from({ length: 9 }, (_, i) => {
-        const a = -2.4 + i * 0.42;
-        const r = 36 + mulberry(i * 19) * 8;
+      Array.from({ length: 8 }, (_, i) => {
+        const a = Math.PI * 0.7 + i * 0.28;
+        const r = 40 + mulberry(i * 19) * 10;
         return {
           x: Math.cos(a) * r,
           z: Math.sin(a) * r,
-          w: 7 + mulberry(i * 3) * 6,
-          h: 2.2 + mulberry(i * 7) * 2.4,
+          w: 9 + mulberry(i * 3) * 8,
+          h: 1.6 + mulberry(i * 7) * 1.8,
         };
       }),
     [],
@@ -100,9 +96,9 @@ function DistantHills() {
   return (
     <group>
       {hills.map((hill, i) => (
-        <mesh key={i} position={[hill.x, hill.h * 0.15 - 1.6, hill.z]} scale={[hill.w, hill.h, hill.w * 0.7]}>
-          <sphereGeometry args={[1, 16, 10]} />
-          <meshStandardMaterial color={i % 2 ? "#6a7d62" : "#5c6e58"} roughness={1} />
+        <mesh key={i} position={[hill.x, hill.h * 0.08 - 1.9, hill.z]} scale={[hill.w, hill.h, hill.w * 0.65]}>
+          <sphereGeometry args={[1, 14, 8]} />
+          <meshStandardMaterial color={i % 2 ? "#6d7c70" : "#617066"} roughness={1} />
         </mesh>
       ))}
     </group>
@@ -112,18 +108,18 @@ function DistantHills() {
 function DistantCity() {
   const blocks = useMemo(() => {
     const list: { x: number; y: number; z: number; w: number; h: number; d: number; color: string }[] = [];
-    const colors = ["#c8c2b6", "#b7c0c6", "#d2c8b4", "#9aa4aa", "#e0d6c4"];
-    for (let i = 0; i < 42; i += 1) {
-      const a = -2.6 + mulberry(i * 11) * 2.2;
-      const r = 30 + mulberry(i * 17) * 10;
-      const h = 1.4 + mulberry(i * 23) * 4.8;
+    const colors = ["#8b908a", "#7d8688", "#918a80", "#6f7774"];
+    for (let i = 0; i < 36; i += 1) {
+      const a = Math.PI * 0.65 + mulberry(i * 11) * 1.7;
+      const r = 38 + mulberry(i * 17) * 12;
+      const h = 0.7 + mulberry(i * 23) * 2.4;
       list.push({
         x: Math.cos(a) * r,
-        y: h / 2 - 1.15,
+        y: h / 2 - 1.35,
         z: Math.sin(a) * r,
-        w: 0.55 + mulberry(i * 29) * 0.9,
+        w: 0.35 + mulberry(i * 29) * 0.55,
         h,
-        d: 0.55 + mulberry(i * 31) * 0.9,
+        d: 0.35 + mulberry(i * 31) * 0.55,
         color: colors[i % colors.length],
       });
     }
@@ -132,9 +128,9 @@ function DistantCity() {
   return (
     <group>
       {blocks.map((b, i) => (
-        <mesh key={i} position={[b.x, b.y, b.z]} castShadow={false}>
+        <mesh key={i} position={[b.x, b.y, b.z]}>
           <boxGeometry args={[b.w, b.h, b.d]} />
-          <meshStandardMaterial color={b.color} roughness={0.88} metalness={0.04} />
+          <meshStandardMaterial color={b.color} roughness={0.95} metalness={0.02} />
         </mesh>
       ))}
     </group>
@@ -160,7 +156,7 @@ export function Surroundings() {
   return (
     <group>
       <mesh geometry={terrain} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <meshStandardMaterial color="#6a8154" map={grass ?? undefined} roughness={0.98} />
+        <meshStandardMaterial color="#7a9160" map={grass ?? undefined} roughness={0.98} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
         <ringGeometry args={[6.6, 8.15, 72]} />

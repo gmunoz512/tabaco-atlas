@@ -48,8 +48,8 @@ function SceneContents() {
 
   return (
     <>
-      <color attach="background" args={["#8aa7c2"]} />
-      <fog attach="fog" args={["#9bb3c8", 42, 95]} />
+      <color attach="background" args={["#7f9ab4"]} />
+      <fog attach="fog" args={["#8ea6bb", 26, 62]} />
       <Sky
         sunPosition={[16, 4.2, 10]}
         turbidity={7.5}
