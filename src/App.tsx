@@ -13,10 +13,8 @@ function Shell() {
 
   useEffect(() => {
     const copy = t(locale);
-    document.title =
-      locale === "es"
-        ? `${copy.appName} — explorador botánico 3D`
-        : `${copy.appName} — 3D botanical explorer`;
+    document.documentElement.lang = locale;
+    document.title = copy.documentTitle;
   }, [locale]);
 
   return (

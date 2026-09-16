@@ -42,7 +42,7 @@ const ALL_VISIBLE: LayerVisibility = {
 };
 
 export function AtlasProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("es");
+  const [locale, setLocale] = useState<Locale>("en");
   const [selectedId, setSelectedIdState] = useState<string | null>(null);
   const [layers, setLayers] = useState<LayerVisibility>(ALL_VISIBLE);
   const [exploded, setExploded] = useState(false);

@@ -13,7 +13,7 @@ El producto sigue el patrón de un atlas humano exploratorio (órbita, capas, b�
 - Busca por nombre común (ES/EN) o científico.
 - Separa las piezas visibles para inventariarlas.
 - Lee la ficha: nombre, descripción llana y nota cultural dominicana/caribeña cuando aplica.
-- Interfaz en español primero, con conmutador ES/EN. El nombre del producto es **El Anatomy** en ambos idiomas.
+- Interface loads in English first, with an EN/ES toggle. The product name is **El Anatomy** in both languages. Dominican / Caribbean notes stay in the English detail copy.
 
 ## Requisitos
 

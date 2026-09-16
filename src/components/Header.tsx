@@ -1,4 +1,4 @@
-import { Languages, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { t } from "@/data/i18n";
 import { Button } from "@/components/ui/button";
 import { useAtlas } from "@/state/atlas-store";
@@ -19,17 +19,7 @@ export function Header() {
         >
           <RotateCcw className="size-4" />
         </Button>
-        <div className="panel-surface flex rounded-full p-1">
-          <button
-            type="button"
-            onClick={() => setLocale("es")}
-            className={`rounded-full px-3 py-1.5 text-xs ${
-              locale === "es" ? "bg-gold text-ink" : "text-cream/80"
-            }`}
-            aria-pressed={locale === "es"}
-          >
-            ES
-          </button>
+        <div className="panel-surface flex rounded-full p-1" role="group" aria-label={copy.language}>
           <button
             type="button"
             onClick={() => setLocale("en")}
@@ -40,10 +30,16 @@ export function Header() {
           >
             EN
           </button>
-          <span className="sr-only">
-            <Languages className="size-4" />
-            {copy.language}
-          </span>
+          <button
+            type="button"
+            onClick={() => setLocale("es")}
+            className={`rounded-full px-3 py-1.5 text-xs ${
+              locale === "es" ? "bg-gold text-ink" : "text-cream/80"
+            }`}
+            aria-pressed={locale === "es"}
+          >
+            ES
+          </button>
         </div>
       </div>
     </header>

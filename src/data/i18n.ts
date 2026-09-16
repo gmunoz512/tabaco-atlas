@@ -3,6 +3,7 @@ import type { Locale } from "@/data/parts";
 export const COPY = {
   es: {
     appName: "El Anatomy",
+    documentTitle: "El Anatomy — explorador botánico 3D",
     tagline: "Explorador botánico de Nicotiana",
     subtitle: "Planta del Caribe, vista por partes",
     searchPlaceholder: "Buscar hoja, raíz, flor…",
@@ -40,6 +41,7 @@ export const COPY = {
   },
   en: {
     appName: "El Anatomy",
+    documentTitle: "El Anatomy — 3D botanical explorer",
     tagline: "Botanical explorer of Nicotiana",
     subtitle: "A Caribbean plant, seen in parts",
     searchPlaceholder: "Search leaf, root, flower…",
