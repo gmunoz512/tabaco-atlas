@@ -10,3 +10,4 @@ dist-ssr
 .vscode
 *.tsbuildinfo
 .vercel
+.netlify
