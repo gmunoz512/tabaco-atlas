@@ -2,7 +2,6 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
   createAsphaltTexture,
-  createCloudSpriteTexture,
   createDuskSkyTexture,
   createFacadeTexture,
   createGrassTexture,
@@ -66,46 +65,9 @@ function DuskDome() {
         side={THREE.BackSide}
         fog={false}
         depthWrite={false}
+        toneMapped={false}
       />
     </mesh>
-  );
-}
-
-function CloudBillboards() {
-  const storm = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("storm")), []);
-  const sunset = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("sunset")), []);
-  const soft = useMemo(() => (typeof document === "undefined" ? null : createCloudSpriteTexture("soft")), []);
-  const cards = useMemo(
-    () =>
-      [
-        { tex: storm, p: [-38, 28, 18] as const, s: [62, 22] as const, r: 0.4 },
-        { tex: storm, p: [-22, 34, 42] as const, s: [48, 16] as const, r: -0.2 },
-        { tex: storm, p: [-50, 22, -8] as const, s: [54, 18] as const, r: 0.7 },
-        { tex: sunset, p: [42, 20, 8] as const, s: [58, 18] as const, r: -0.5 },
-        { tex: sunset, p: [28, 26, -24] as const, s: [50, 16] as const, r: 0.25 },
-        { tex: sunset, p: [18, 18, 36] as const, s: [36, 12] as const, r: -0.15 },
-        { tex: soft, p: [6, 32, -40] as const, s: [44, 14] as const, r: 0.1 },
-        { tex: soft, p: [-8, 30, 8] as const, s: [40, 13] as const, r: 0.05 },
-        { tex: soft, p: [10, 36, 20] as const, s: [34, 11] as const, r: -0.3 },
-      ] as const,
-    [storm, sunset, soft],
-  );
-  return (
-    <group>
-      {cards.map((c, i) => (
-        <mesh key={i} position={c.p} rotation={[0, c.r, 0]} renderOrder={-1}>
-          <planeGeometry args={[c.s[0], c.s[1]]} />
-          <meshBasicMaterial
-            map={c.tex ?? undefined}
-            transparent
-            opacity={0.92}
-            depthWrite={false}
-            fog={false}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-      ))}
-    </group>
   );
 }
 
@@ -151,19 +113,20 @@ function HedgeBeds() {
 function RoadSystem() {
   const asphalt = useMemo(() => (typeof document === "undefined" ? null : createAsphaltTexture()), []);
   const curve = useMemo(() => {
-    const pts = [
-      new THREE.Vector3(-20, 0.05, 16),
-      new THREE.Vector3(-12, 0.05, 12.2),
-      new THREE.Vector3(-3, 0.04, 11.4),
-      new THREE.Vector3(5, 0.04, 12.6),
-      new THREE.Vector3(13, 0.05, 11.2),
-      new THREE.Vector3(18, 0.04, 4.5),
-      new THREE.Vector3(16, 0.02, -6),
-      new THREE.Vector3(8, 0.0, -14),
-      new THREE.Vector3(-4, -0.02, -16),
-      new THREE.Vector3(-16, 0.0, -8),
-      new THREE.Vector3(-20, 0.03, 4),
+    const raw: [number, number][] = [
+      [-20, 16],
+      [-12, 12.2],
+      [-3, 11.4],
+      [5, 12.6],
+      [13, 11.2],
+      [18, 4.5],
+      [16, -6],
+      [8, -14],
+      [-4, -16],
+      [-16, -8],
+      [-20, 4],
     ];
+    const pts = raw.map(([x, z]) => new THREE.Vector3(x, terrainHeight(x, z) + 0.08, z));
     return new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.35);
   }, []);
   const ribbon = useMemo(() => new THREE.TubeGeometry(curve, 180, 1.35, 6, false), [curve]);
@@ -223,25 +186,37 @@ type BuildingSpec = {
 };
 
 function buildCity(): BuildingSpec[] {
-  const palette = ["#efe6d4", "#e8c9a0", "#f0d8b4", "#d9c4a0", "#cfd5d8", "#e8b8a4", "#dcc8b0", "#f2e4cc", "#c8b89a", "#e4d0b8"].map(
-    (hex) => new THREE.Color(hex),
-  );
-  const roofs = ["#8a4a32", "#6e5340", "#9a6a48", "#5c5854", "#a07050"].map((hex) => new THREE.Color(hex));
+  const palette = [
+    "#f2e4cc",
+    "#efc07a",
+    "#e8a090",
+    "#d9c4a0",
+    "#cfe0d4",
+    "#f0d8b4",
+    "#e8c9a0",
+    "#dcc8b0",
+    "#f7eee0",
+    "#c8d4c0",
+    "#e4b070",
+    "#d8dce0",
+  ].map((hex) => new THREE.Color(hex));
+  const roofs = ["#8a4a32", "#6e5340", "#9a6a48", "#5c5854", "#a07050", "#c45c38"].map((hex) => new THREE.Color(hex));
   const out: BuildingSpec[] = [];
-  for (let gx = -46; gx <= 46; gx += 1.85) {
-    for (let gz = -46; gz <= 46; gz += 1.85) {
-      const streetX = Math.abs((gx + 200) % 9.2) < 1.55;
-      const streetZ = Math.abs((gz + 200) % 9.2) < 1.55;
+  for (let gx = -48; gx <= 48; gx += 1.35) {
+    for (let gz = -48; gz <= 48; gz += 1.35) {
+      const streetX = Math.abs((gx + 200) % 8.4) < 1.25;
+      const streetZ = Math.abs((gz + 200) % 8.4) < 1.25;
       if (streetX || streetZ) continue;
-      const jx = gx + (mulberry(gx * 13 + gz * 7) - 0.5) * 0.5;
-      const jz = gz + (mulberry(gx * 19 + gz * 11) - 0.5) * 0.5;
+      const jx = gx + (mulberry(gx * 13 + gz * 7) - 0.5) * 0.4;
+      const jz = gz + (mulberry(gx * 19 + gz * 11) - 0.5) * 0.4;
       const r = Math.hypot(jx, jz);
-      if (r < 14.5 || r > 50) continue;
-      if (mulberry(gx * 3 + gz * 5) < 0.12) continue;
-      const tall = r > 26 && mulberry(gx * 9 + gz) > 0.86;
+      if (r < 13.2 || r > 51) continue;
+      if (mulberry(gx * 3 + gz * 5) < 0.06) continue;
+      if (out.length >= 920) return out;
+      const tall = r > 30 && mulberry(gx * 9 + gz) > 0.93;
       const h = tall
-        ? 2.4 + mulberry(gx * 17 + gz) * 4.2
-        : 0.28 + mulberry(gx * 11 + gz * 3) * 0.72 + (r > 32 ? mulberry(gx + gz) * 0.5 : 0);
+        ? 1.6 + mulberry(gx * 17 + gz) * 2.4
+        : 0.32 + mulberry(gx * 11 + gz * 3) * 0.7 + (r > 32 ? mulberry(gx + gz) * 0.35 : 0);
       const yBase = terrainHeight(jx, jz);
       out.push({
         x: jx,
@@ -330,16 +305,16 @@ function TreeField() {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const trunks = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 160;
+  const count = 70;
   const spots = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
         const a = mulberry(i * 3) * Math.PI * 2;
-        const r = 10.5 + mulberry(i * 7) * 28;
+        const r = 10.4 + mulberry(i * 7) * (i % 3 === 0 ? 22 : 4.5);
         const x = Math.cos(a) * r;
         const z = Math.sin(a) * r;
-        return { x, z, y: terrainHeight(x, z), s: 0.7 + mulberry(i * 11) * 1.1 };
-      }).filter((s) => Math.hypot(s.x, s.z) > 10.2),
+        return { x, z, y: terrainHeight(x, z), s: 0.65 + mulberry(i * 11) * 0.9 };
+      }).filter((s) => Math.hypot(s.x, s.z) > 10.1),
     [],
   );
 
@@ -450,7 +425,6 @@ export function Surroundings() {
   return (
     <group>
       <DuskDome />
-      <CloudBillboards />
       <mesh geometry={terrain} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <meshStandardMaterial map={grass ?? undefined} vertexColors roughness={0.98} />
       </mesh>

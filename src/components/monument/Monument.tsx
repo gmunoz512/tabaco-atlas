@@ -351,10 +351,10 @@ function WallBody({ id, size }: { id: string; size: [number, number, number] }) 
       <RoundedBox args={size} radius={0.02} smoothness={2} castShadow receiveShadow>
         <Surface id={id} roughness={0.86} />
       </RoundedBox>
-      {[-1.2, -0.4, 0.4, 1.2].map((x) => (
-        <mesh key={x} position={[x, 0.05, size[2] / 2 + 0.01]}>
-          <boxGeometry args={[0.22, size[1] * 0.62, 0.04]} />
-          <meshStandardMaterial color="#5a2a22" roughness={0.9} />
+      {[-1.15, -0.38, 0.38, 1.15].map((x) => (
+        <mesh key={x} position={[x, 0.02, size[2] / 2 + 0.012]}>
+          <boxGeometry args={[0.13, size[1] * 0.46, 0.03]} />
+          <meshStandardMaterial color="#5c241c" roughness={0.9} />
         </mesh>
       ))}
     </group>

@@ -141,25 +141,26 @@ export function createDuskSkyTexture() {
 
       col = mix3(col, mix3(col, peach, 0.55), sunset * Math.max(0, 1.05 - elev * 1.4));
 
-      const n1 = fbm(u * 7.2 + 2.1, elev * 11.4, 5);
-      const n2 = fbm(u * 3.4 - 4, elev * 5.5 + 8, 4);
-      const n3 = fbm(u * 14 + 9, elev * 18, 3);
-      const band = Math.sin(elev * Math.PI * 1.6) * 0.5 + 0.5;
-      let cloud = Math.min(1, Math.max(0, (n1 * 0.72 + n2 * 0.28 - 0.38) / 0.42));
-      cloud *= 0.35 + band * 0.75;
-      if (elev < 0.08 || elev > 0.92) cloud *= 0.15;
+      const n1 = fbm(u * 6.4 + 2.1, elev * 9.2, 5);
+      const n2 = fbm(u * 3.1 - 4, elev * 4.8 + 8, 4);
+      const n3 = fbm(u * 14 + 9, elev * 16, 3);
+      const upper = Math.min(1, Math.max(0, (elev - 0.22) / 0.55));
+      let cloud = Math.min(1, Math.max(0, (n1 * 0.68 + n2 * 0.32 - 0.28) / 0.4));
+      cloud *= 0.25 + upper * 0.9;
+      if (elev < 0.12) cloud *= 0.2;
+      if (elev > 0.94) cloud *= 0.35;
 
       const storm = Math.min(1, Math.max(0, 1 - u * 1.7));
       const duskCloud: [number, number, number] = mix3([255, 214, 186], [255, 150, 88], sunset);
       const stormCloud: [number, number, number] = mix3([48, 58, 78], [22, 28, 42], n3);
       const cloudCol = mix3(duskCloud, stormCloud, storm * 0.85);
-      col = mix3(col, cloudCol, cloud * (0.55 + storm * 0.35));
+      col = mix3(col, cloudCol, cloud * (0.72 + storm * 0.22));
 
-      const sunU = 0.78;
-      const sunV = 0.62;
+      const sunU = 0.8;
+      const sunV = 0.58;
       const sunD = Math.hypot((u - sunU) * 1.6, (v - sunV) * 2.2);
-      const glow = Math.min(1, Math.max(0, 1 - sunD * 2.4));
-      col = mix3(col, [255, 196, 120], glow * 0.55);
+      const glow = Math.min(1, Math.max(0, 1 - sunD * 2.2));
+      col = mix3(col, [255, 186, 110], glow * 0.62);
 
       const i = (y * w + x) * 4;
       data[i] = col[0];
@@ -169,6 +170,28 @@ export function createDuskSkyTexture() {
     }
   }
   ctx.putImageData(img, 0, 0);
+
+  const blob = (x: number, y: number, rw: number, rh: number, color: string) => {
+    const grd = ctx.createRadialGradient(x, y, 6, x, y, Math.max(rw, rh));
+    grd.addColorStop(0, color);
+    grd.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.ellipse(x, y, rw, rh, 0, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  for (let i = 0; i < 18; i += 1) {
+    blob(30 + i * 42, 90 + (i % 5) * 28, 160, 46, "rgba(24,32,52,0.55)");
+  }
+  for (let i = 0; i < 14; i += 1) {
+    blob(520 + i * 38, 70 + (i % 4) * 22, 140, 36, "rgba(232,236,242,0.32)");
+  }
+  for (let i = 0; i < 16; i += 1) {
+    blob(980 + i * 40, 150 + (i % 5) * 26, 170, 42, "rgba(255,168,96,0.42)");
+  }
+  blob(1280, 430, 320, 120, "rgba(255,150,70,0.38)");
+  blob(180, 260, 280, 90, "rgba(20,28,44,0.5)");
+
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
