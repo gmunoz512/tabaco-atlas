@@ -36,7 +36,7 @@ export function ControlDock({ mobileOpen, onToggleMobile }: ControlDockProps) {
       </div>
 
       <aside
-        className={`panel-surface absolute top-16 right-3 left-3 z-20 flex max-h-[58vh] flex-col gap-4 overflow-hidden rounded-3xl p-4 md:top-4 md:right-auto md:bottom-16 md:left-4 md:max-h-[min(78vh,46rem)] md:w-[22.5rem] ${
+        className={`panel-surface pointer-events-auto absolute top-16 right-3 left-3 z-20 flex max-h-[58vh] flex-col gap-4 overflow-hidden rounded-3xl p-4 md:top-4 md:right-auto md:bottom-16 md:left-4 md:max-h-[min(78vh,46rem)] md:w-[22.5rem] ${
           mobileOpen ? "flex" : "hidden md:flex"
         }`}
       >
