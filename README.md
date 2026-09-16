@@ -43,7 +43,7 @@ La geometría se genera en Three.js (primitivas y curvas). No se incluyen mallas
 
 Sitio público (GitHub Pages): [https://gmunoz512.github.io/tabaco-atlas/](https://gmunoz512.github.io/tabaco-atlas/)
 
-`vite.config.ts` usa `base: "/tabaco-atlas/"`. El workflow `.github/workflows/pages.yml` ejecuta `npm ci` / `npm run build`, publica `dist/` en la rama `gh-pages` y despliega con `actions/deploy-pages`. Fuente de Pages: GitHub Actions, o la rama `gh-pages` (carpeta `/`).
+`vite.config.ts` usa `base: "/tabaco-atlas/"`. El workflow `.github/workflows/pages.yml` ejecuta `npm ci` / `npm run build`, publica `dist/` en la rama `gh-pages` y despliega con `actions/deploy-pages`. Fuente de Pages: GitHub Actions, o la rama `gh-pages` (carpeta `/`). Si GitHub aún no tiene Pages activado en el repositorio, actívalo una vez en Settings → Pages.
 
 En local, `npm run dev` y `npm run preview` redirigen `/` a `/tabaco-atlas/`. `vercel.json` sigue sirviendo `dist/` si se usa Vercel.
 
