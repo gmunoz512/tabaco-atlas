@@ -73,8 +73,8 @@ function SceneContents() {
       <Environment
         files={HDRI_PATH}
         background
-        backgroundIntensity={1.05}
-        environmentIntensity={0.92}
+        backgroundIntensity={1.15}
+        environmentIntensity={0.7}
         backgroundRotation={[0, Math.PI * 0.42, 0]}
         environmentRotation={[0, Math.PI * 0.42, 0]}
       />
@@ -107,7 +107,7 @@ export function MonumentScene() {
       gl={{
         antialias: false,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 0.92,
+        toneMappingExposure: 1.02,
       }}
       className="absolute inset-0 z-0 h-full w-full touch-none"
     >

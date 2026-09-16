@@ -1,7 +1,7 @@
 Poly Haven (CC0)
 https://polyhaven.com
 
-- HDRI: the_sky_is_on_fire
+- HDRI: qwantani_dusk_2_puresky
 - Terrain: aerial_grass_rock
 - Road: asphalt_02
 - Monument stone: concrete_wall_008 (tinted cream limestone)

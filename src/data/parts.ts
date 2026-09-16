@@ -72,12 +72,12 @@ export const LAYERS: Record<
   },
 };
 
-export const CREAM = "#f3ece0";
-export const CREAM_HI = "#f8f3ea";
-export const CREAM_DEEP = "#e4d8c4";
-export const STONE_PLAZA = "#eee8de";
-export const GREY_PODIUM = "#d8d3ca";
-export const GREY_DEEP = "#c6c0b6";
+export const CREAM = "#f8f3ea";
+export const CREAM_HI = "#fcf8f2";
+export const CREAM_DEEP = "#efe6d6";
+export const STONE_PLAZA = "#f3eee6";
+export const GREY_PODIUM = "#e6e1d8";
+export const GREY_DEEP = "#d4cfc6";
 export const BRONZE = "#b54a28";
 export const BRONZE_DARK = "#7c341c";
 export const ARCH_VOID = "#4a1c18";

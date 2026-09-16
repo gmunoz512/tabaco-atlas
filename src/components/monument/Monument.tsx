@@ -54,7 +54,7 @@ function Surface({
       color={color}
       map={maps.stoneMap}
       normalMap={maps.stoneNor}
-      normalScale={new THREE.Vector2(0.42, 0.42)}
+      normalScale={new THREE.Vector2(0.22, 0.22)}
       roughnessMap={maps.stoneRough}
       roughness={selected ? 0.42 : roughness}
       metalness={selected ? 0.12 : metalness}
