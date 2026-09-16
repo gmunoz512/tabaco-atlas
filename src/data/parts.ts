@@ -1,9 +1,16 @@
-export const LAYER_IDS = ["roots", "stem", "leaves", "flower"] as const;
+export const LAYER_IDS = [
+  "plaza",
+  "pedestal",
+  "columns",
+  "tower",
+  "sculptures",
+  "lookout",
+] as const;
 
 export type LayerId = (typeof LAYER_IDS)[number];
 export type Locale = "es" | "en";
 
-export interface PlantPart {
+export interface AtlasPart {
   id: string;
   layer: LayerId;
   nameEs: string;
@@ -21,240 +28,618 @@ export const LAYERS: Record<
   LayerId,
   { nameEs: string; nameEn: string; hintEs: string; hintEn: string; swatch: string }
 > = {
-  roots: {
-    nameEs: "Raíces",
-    nameEn: "Roots",
-    hintEs: "Anclaje y absorción",
-    hintEn: "Anchorage and uptake",
-    swatch: "#b08968",
+  plaza: {
+    nameEs: "Plaza y gradas",
+    nameEn: "Plaza & stairs",
+    hintEs: "Explanada y accesos",
+    hintEn: "Esplanade and approaches",
+    swatch: "#c9c0b0",
   },
-  stem: {
-    nameEs: "Tallo",
-    nameEn: "Stem",
-    hintEs: "Eje y transporte",
-    hintEn: "Axis and transport",
-    swatch: "#6f7d3d",
+  pedestal: {
+    nameEs: "Pedestal",
+    nameEn: "Pedestal",
+    hintEs: "Plinto y caras",
+    hintEn: "Plinth and faces",
+    swatch: "#ddd4c4",
   },
-  leaves: {
-    nameEs: "Hojas",
-    nameEn: "Leaves",
-    hintEs: "Fotosíntesis",
-    hintEn: "Photosynthesis",
-    swatch: "#5d8a3a",
+  columns: {
+    nameEs: "Columnas",
+    nameEn: "Columns",
+    hintEs: "Peristilo y entablamento",
+    hintEn: "Colonnade and entablature",
+    swatch: "#f0e8d8",
   },
-  flower: {
-    nameEs: "Flor",
-    nameEn: "Flower",
-    hintEs: "Reproducción",
-    hintEn: "Reproduction",
-    swatch: "#e8b4bc",
+  tower: {
+    nameEs: "Torre",
+    nameEn: "Tower",
+    hintEs: "Fuste, vanos, ascensor",
+    hintEn: "Shaft, openings, elevator",
+    swatch: "#e7dfd0",
+  },
+  sculptures: {
+    nameEs: "Esculturas",
+    nameEn: "Sculptures",
+    hintEs: "Héroes y alegorías",
+    hintEn: "Heroes and allegories",
+    swatch: "#8a6a3d",
+  },
+  lookout: {
+    nameEs: "Mirador",
+    nameEn: "Lookout",
+    hintEs: "Cubierta, corona, asta",
+    hintEn: "Deck, crown, flagpole",
+    swatch: "#9aa7b8",
   },
 };
 
-export const PARTS: PlantPart[] = [
+const STONE = "#e6ddd0";
+const STONE_WARM = "#d8cfc0";
+const STONE_DEEP = "#c4b9a8";
+const MARBLE = "#f3ece1";
+const BRONZE = "#8a6a3d";
+const OPENING = "#3d4654";
+const METAL = "#8b95a4";
+
+const SIDES = [
   {
-    id: "taproot",
-    layer: "roots",
-    nameEs: "Raíz principal",
-    nameEn: "Taproot",
-    scientific: "Radix primaria",
-    descriptionEs:
-      "Raíz pivotante que baja en el suelo y da poco sostén a una planta tan alta. Desde ella nacen decenas de raíces secundarias, como una cabellera.",
-    descriptionEn:
-      "A downward taproot that offers limited support for such a tall herb. Secondary roots fan out from it in a fibrous fringe.",
+    id: "north",
+    es: "norte",
+    en: "north",
+    cityEs: "hacia el Cibao interior",
+    cityEn: "toward the inner Cibao",
+  },
+  {
+    id: "east",
+    es: "este",
+    en: "east",
+    cityEs: "hacia el centro de Santiago",
+    cityEn: "toward downtown Santiago",
+  },
+  {
+    id: "south",
+    es: "sur",
+    en: "south",
+    cityEs: "hacia el Yaque del Norte",
+    cityEn: "toward the Yaque del Norte",
+  },
+  {
+    id: "west",
+    es: "oeste",
+    en: "west",
+    cityEs: "hacia el atardecer del valle",
+    cityEn: "toward the valley sunset",
+  },
+] as const;
+
+const COMPASS_16 = [
+  "N",
+  "NNE",
+  "NE",
+  "ENE",
+  "E",
+  "ESE",
+  "SE",
+  "SSE",
+  "S",
+  "SSW",
+  "SW",
+  "WSW",
+  "W",
+  "WNW",
+  "NW",
+  "NNW",
+] as const;
+
+function sideParts(): AtlasPart[] {
+  const stairs: AtlasPart[] = SIDES.map((side) => ({
+    id: `stairs-${side.id}`,
+    layer: "plaza",
+    nameEs: `Gradas ${side.es}`,
+    nameEn: `${capitalize(side.en)} stairs`,
+    scientific: `Escalinata ${side.es}`,
+    descriptionEs: `Tramo de gradas en el ${side.es} de la explanada. Suben desde el borde de la colina hasta el descanso del pedestal.`,
+    descriptionEn: `A stair flight on the ${side.en} of the esplanade, climbing from the hill edge to the pedestal landing.`,
     culturalEs:
-      "En el Cibao se prepara la tierra con esmero antes de transplantar: la raíz ancla mal si el suelo queda compacto o encharcado.",
+      side.id === "east"
+        ? "El acceso este es el más ceremonial: la ciudad ve la torre primero desde abajo, como un eje cívico, no como un objeto privado."
+        : `Estas gradas ${side.es} ${side.cityEs}. El monumento se lee distinto según por dónde se suba.`,
     culturalEn:
-      "In the Cibao, growers loosen the bed before transplanting: this root anchors poorly in compacted or waterlogged soil.",
-    aliases: ["raiz", "raíz", "pivotante", "radix", "root", "taproot"],
-    color: "#8d6a4a",
-  },
-  {
-    id: "laterals",
-    layer: "roots",
-    nameEs: "Raíces laterales",
-    nameEn: "Lateral roots",
-    scientific: "Radices laterales",
-    descriptionEs:
-      "Red fibrosa que explora los primeros centímetros de suelo. Absorbe agua y minerales, pero sostiene poco el volumen aéreo de Nicotiana.",
-    descriptionEn:
-      "A fibrous net that explores the topsoil. It takes up water and minerals, but barely props up the bulky shoot of Nicotiana.",
+      side.id === "east"
+        ? "The east approach is the ceremonial one: the city meets the tower from below, as a civic axis rather than a private object."
+        : `The ${side.en} flight ${side.cityEn}. Which way you climb changes how the monument is read.`,
+    aliases: ["stairs", "gradas", "escalinata", "steps", side.en, side.es],
+    color: STONE_WARM,
+  }));
+
+  const landings: AtlasPart[] = SIDES.map((side) => ({
+    id: `landing-${side.id}`,
+    layer: "plaza",
+    nameEs: `Descanso ${side.es}`,
+    nameEn: `${capitalize(side.en)} landing`,
+    scientific: `Descanso ${side.es}`,
+    descriptionEs: `Meseta corta al pie del pedestal, ${side.es}. Rompe la pendiente de las gradas antes de entrar al plinto.`,
+    descriptionEn: `A short terrace at the foot of the pedestal on the ${side.en}, breaking the stair pitch before the plinth.`,
+    aliases: ["landing", "descanso", "terrace", side.en, side.es],
+    color: STONE,
+  }));
+
+  const faces: AtlasPart[] = SIDES.map((side) => ({
+    id: `pedestal-face-${side.id}`,
+    layer: "pedestal",
+    nameEs: `Cara ${side.es} del pedestal`,
+    nameEn: `Pedestal ${side.en} face`,
+    scientific: `Frons ${side.es}`,
+    descriptionEs: `Paño vertical del pedestal hacia el ${side.es}. Superficie de piedra para relieve, inscripción o sombra.`,
+    descriptionEn: `The pedestal’s ${side.en} vertical face — stone for relief, inscription, or shade.`,
     culturalEs:
-      "Los semilleros dominicanos —tradicionales al sol o en bandejas flotantes— se cuidan para que este sistema salga denso antes del transplante.",
+      side.id === "south"
+        ? "Las caras del pedestal son el zócalo donde la ciudad coloca ofrendas el 16 de agosto, día de la Restauración."
+        : undefined,
     culturalEn:
-      "Dominican seedbeds — open-soil or floating trays — are tended so this system is dense before the plant reaches the field.",
-    aliases: ["fibrosas", "secundarias", "cabellera", "lateral", "fibrous"],
-    color: "#a98467",
-  },
-  {
-    id: "stem",
-    layer: "stem",
-    nameEs: "Tallo",
-    nameEn: "Stem",
-    scientific: "Caulis",
-    descriptionEs:
-      "Eje herbáceo, velloso y un poco pegajoso, de 1 a 3 m. Los pelos glandulares cubren el tallo; las hojas nacen de forma alterna y a menudo abrazan el nudo.",
-    descriptionEn:
-      "A herbaceous, hairy, slightly sticky axis 1–3 m tall. Glandular hairs coat the stem; leaves arise alternately and often clasp the node.",
+      side.id === "south"
+        ? "The pedestal faces are the plinth where the city lays wreaths on 16 August, Restoration Day."
+        : undefined,
+    aliases: ["face", "cara", "pedestal", side.en, side.es],
+    color: MARBLE,
+  }));
+
+  const entablature: AtlasPart[] = SIDES.map((side) => ({
+    id: `entablature-${side.id}`,
+    layer: "columns",
+    nameEs: `Entablamento ${side.es}`,
+    nameEn: `${capitalize(side.en)} entablature`,
+    scientific: `Entablatura ${side.es}`,
+    descriptionEs: `Tramo del entablamento que cierra el anillo de columnas por el ${side.es}. Transmite carga al fuste.`,
+    descriptionEn: `Entablature span closing the column ring on the ${side.en}. It carries load into the shaft.`,
+    aliases: ["entablature", "entablamento", "cornisa", side.en, side.es],
+    color: MARBLE,
+  }));
+
+  const windowsMid: AtlasPart[] = SIDES.map((side) => ({
+    id: `window-mid-${side.id}`,
+    layer: "tower",
+    nameEs: `Vano medio ${side.es}`,
+    nameEn: `Mid ${side.en} opening`,
+    scientific: `Fenestra media ${side.es}`,
+    descriptionEs: `Abertura a media altura en la cara ${side.es} del fuste. Luz y sombra para el hueco interior.`,
+    descriptionEn: `A mid-height opening on the shaft’s ${side.en} face — light and shadow for the interior void.`,
+    aliases: ["window", "vano", "opening", "fenestra", side.en, side.es],
+    color: OPENING,
+  }));
+
+  const windowsHigh: AtlasPart[] = SIDES.map((side) => ({
+    id: `window-high-${side.id}`,
+    layer: "tower",
+    nameEs: `Vano alto ${side.es}`,
+    nameEn: `Upper ${side.en} opening`,
+    scientific: `Fenestra alta ${side.es}`,
+    descriptionEs: `Abertura cercana al mirador en la cara ${side.es}. Marca el último tercio de la torre.`,
+    descriptionEn: `An opening near the lookout on the ${side.en} face, marking the tower’s upper third.`,
+    aliases: ["window", "vano", "opening", "lookout", side.en, side.es],
+    color: OPENING,
+  }));
+
+  const rails: AtlasPart[] = SIDES.map((side) => ({
+    id: `rail-${side.id}`,
+    layer: "lookout",
+    nameEs: `Baranda ${side.es}`,
+    nameEn: `${capitalize(side.en)} railing`,
+    scientific: `Cancellum ${side.es}`,
+    descriptionEs: `Tramo de baranda del mirador hacia el ${side.es}. Protege el borde de la cubierta de observación.`,
+    descriptionEn: `Lookout railing on the ${side.en} edge, guarding the observation deck.`,
     culturalEs:
-      "En finca se suele «despuntar» el tallo para que la planta no gaste savia en semilla y las hojas terminen de llenarse. Aquí lo dejamos entero para estudiar la flor.",
+      side.id === "east"
+        ? "Desde esta baranda se lee Santiago: tejados, el Yaque y el valle. El mirador es civismo, no un palco privado."
+        : undefined,
     culturalEn:
-      "On farms the stem is often topped so energy stays in the leaves instead of seed. This model keeps the tip so the flower can be studied.",
-    aliases: ["tallo", "caulis", "stem", "eje", "despunte"],
-    color: "#6b7a3c",
-  },
+      side.id === "east"
+        ? "From this rail Santiago reads as roofs, the Yaque, and the valley. The lookout is civic, not a private box."
+        : undefined,
+    aliases: ["rail", "railing", "baranda", "mirador", side.en, side.es],
+    color: METAL,
+  }));
+
+  return [...stairs, ...landings, ...faces, ...entablature, ...windowsMid, ...windowsHigh, ...rails];
+}
+
+function columnParts(): AtlasPart[] {
+  const notesEs = [
+    "El peristilo da a la torre un basamento clásico, como un templo cívico más que un obelisco desnudo.",
+    "Dieciséis columnas marcan un ritmo. Contarlas es entender que el monumento es un anillo, no solo un palo.",
+    "Cada fuste del anillo recibe luz distinta; el mármol blanco de Santiago se vuelve gris o oro según la hora.",
+    "El anillo recuerda que la Restauración se peleó en círculo: varios frentes, no un solo héroe.",
+  ];
+  const notesEn = [
+    "The peristyle gives the tower a classical base — a civic temple more than a bare obelisk.",
+    "Sixteen columns set a beat. Counting them shows the monument is a ring, not only a stick.",
+    "Each shaft takes a different light; Santiago’s pale stone turns gray or gold by the hour.",
+    "The ring is a reminder that the Restoration was fought on several fronts, not by one hero.",
+  ];
+
+  return COMPASS_16.map((bearing, index) => {
+    const n = index + 1;
+    const pad = String(n).padStart(2, "0");
+    return {
+      id: `column-${pad}`,
+      layer: "columns" as const,
+      nameEs: `Columna ${pad} (${bearing})`,
+      nameEn: `Column ${pad} (${bearing})`,
+      scientific: `Columna peristyle ${pad}`,
+      descriptionEs: `Fuste ${n} del anillo de dieciséis columnas. Orienta hacia ${bearing}, en el tambor que ciñe la base de la torre.`,
+      descriptionEn: `Shaft ${n} of the sixteen-column ring, bearing ${bearing}, on the drum that belts the tower base.`,
+      culturalEs: notesEs[index % notesEs.length],
+      culturalEn: notesEn[index % notesEn.length],
+      aliases: ["column", "columna", "peristilo", "colonnade", bearing, String(n)],
+      color: MARBLE,
+    };
+  });
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+const CORE_PARTS: AtlasPart[] = [
   {
-    id: "leaf-basal-a",
-    layer: "leaves",
-    nameEs: "Hoja bajera",
-    nameEn: "Basal leaf",
-    scientific: "Folium basale",
+    id: "plaza-esplanade",
+    layer: "plaza",
+    nameEs: "Explanada",
+    nameEn: "Esplanade",
+    scientific: "Platea",
     descriptionEs:
-      "Hojas inferiores, las más grandes y las primeras en madurar. Lámina ovada o elíptica, borde ondulado, base que recorre el tallo.",
+      "Plataforma ancha sobre la colina. Es el piso cívico del conjunto: gente, ofrendas y sombra antes de subir.",
     descriptionEn:
-      "The lowest leaves: largest, and the first to mature. The blade is ovate to elliptic, with a wavy edge and a base that runs down the stem.",
+      "The broad platform on the hill. It is the civic floor of the ensemble: people, wreaths, and shade before the climb.",
     culturalEs:
-      "Campesinos del valle las llaman bajeras. Se cortan primero, de abajo hacia arriba, en una cosecha escalonada que puede durar semanas.",
+      "La colina ya era un alto de Santiago. Poner aquí un monumento convierte un cerro en un escenario público.",
     culturalEn:
-      "Valley growers call these bajeras. They are primed first, from the bottom up, in a harvest that can last several weeks.",
-    aliases: ["bajera", "basal", "folium", "hoja inferior", "volado bajo"],
-    color: "#4f7a32",
+      "The hill was already a high point of Santiago. Placing a monument here turns a ridge into a public stage.",
+    aliases: ["plaza", "explanada", "esplanade", "platea", "colina"],
+    color: STONE_WARM,
   },
   {
-    id: "leaf-basal-b",
-    layer: "leaves",
-    nameEs: "Hoja bajera opuesta",
-    nameEn: "Opposite basal leaf",
-    scientific: "Folium basale",
-    descriptionEs:
-      "Pareja de la hoja bajera. En la planta viva las hojas no son opuestas: siguen una espiral, pero aquí se separan para poder señalarlas.",
-    descriptionEn:
-      "Counterpart of the basal leaf. Living plants are not opposite-leaved — they spiral — but the pair is spaced here so each can be named.",
-    aliases: ["bajera", "basal", "hoja", "leaf"],
-    color: "#547f35",
+    id: "plaza-walk",
+    layer: "plaza",
+    nameEs: "Paseo perimetral",
+    nameEn: "Outer walk",
+    scientific: "Ambulatio",
+    descriptionEs: "Franja que ciñe la explanada. Recorrido para rodear el pedestal sin subir las gradas principales.",
+    descriptionEn: "A band around the esplanade — a path to circle the pedestal without climbing the main stairs.",
+    aliases: ["walk", "paseo", "perimeter", "ring"],
+    color: STONE_DEEP,
   },
   {
-    id: "leaf-mid-a",
-    layer: "leaves",
-    nameEs: "Hoja media (seco)",
-    nameEn: "Middle leaf (seco)",
-    scientific: "Folium medium",
-    descriptionEs:
-      "Hojas del tercio medio: aún anchas, más firmes que las bajeras. Reciben más sol y suelen tener una textura intermedia.",
-    descriptionEn:
-      "Leaves of the middle third: still broad, firmer than the bajeras. They take more sun and usually have an in-between texture.",
+    id: "pedestal-plinth",
+    layer: "pedestal",
+    nameEs: "Plinto",
+    nameEn: "Plinth",
+    scientific: "Plinthus",
+    descriptionEs: "Macizo inferior del pedestal. Asienta el anillo de columnas y reparte el peso del fuste.",
+    descriptionEn: "The pedestal’s lower mass. It seats the column ring and spreads the shaft’s weight.",
     culturalEs:
-      "En el habla agrícola dominicana el «seco» o «viso» nombra esta altura de la planta, no una marca. Es un dato de morfología y de cosecha.",
+      "Sin este zócalo la torre sería un palo. El plinto dice que el homenaje necesita suelo, no solo altura.",
     culturalEn:
-      "In Dominican farm speech, seco or viso names this height on the plant — a morphological and harvest term, not a brand.",
-    aliases: ["seco", "viso", "media", "middle", "folium medium"],
-    color: "#5d8a3a",
+      "Without this block the tower would be a stick. The plinth says remembrance needs ground, not only height.",
+    aliases: ["plinth", "plinto", "zócalo", "base"],
+    color: STONE,
   },
   {
-    id: "leaf-mid-b",
-    layer: "leaves",
-    nameEs: "Hoja media (viso)",
-    nameEn: "Middle leaf (viso)",
-    scientific: "Folium medium",
-    descriptionEs:
-      "Otra hoja del tercio medio. La lámina sigue siendo grande —hasta 50 cm en campo— y se estrecha poco a poco hacia el ápice de la planta.",
-    descriptionEn:
-      "Another mid-stem leaf. The blade is still large — up to 50 cm in the field — and narrows gradually toward the plant tip.",
-    aliases: ["viso", "seco", "media", "middle"],
-    color: "#628f3d",
+    id: "pedestal-corner-ne",
+    layer: "pedestal",
+    nameEs: "Esquina noreste",
+    nameEn: "Northeast pier",
+    scientific: "Angulus NE",
+    descriptionEs: "Machón de esquina noreste del pedestal. Arriostra las dos caras y marca el giro del plinto.",
+    descriptionEn: "Northeast corner pier of the pedestal. It braces two faces and turns the plinth.",
+    aliases: ["corner", "esquina", "pier", "ne", "noreste"],
+    color: STONE,
   },
   {
-    id: "leaf-mid-c",
-    layer: "leaves",
-    nameEs: "Hoja media alta",
-    nameEn: "Upper-middle leaf",
-    scientific: "Folium medium",
-    descriptionEs:
-      "Transición entre el tercio medio y el superior. Más erecta, con menos sombra de las hojas de abajo.",
-    descriptionEn:
-      "A transition between the middle and upper thirds. More upright, with less shade from the leaves below.",
-    aliases: ["media alta", "upper middle", "hoja"],
-    color: "#679444",
+    id: "pedestal-corner-se",
+    layer: "pedestal",
+    nameEs: "Esquina sureste",
+    nameEn: "Southeast pier",
+    scientific: "Angulus SE",
+    descriptionEs: "Machón sureste. Recibe sombra corta al mediodía y mira hacia el valle abierto.",
+    descriptionEn: "Southeast pier. It takes short noon shade and looks toward the open valley.",
+    aliases: ["corner", "esquina", "pier", "se", "sureste"],
+    color: STONE,
   },
   {
-    id: "leaf-upper-a",
-    layer: "leaves",
-    nameEs: "Hoja superior (ligero)",
-    nameEn: "Upper leaf (ligero)",
-    scientific: "Folium superius",
-    descriptionEs:
-      "Hojas del ápice vegetativo: más pequeñas, más expuestas al sol y al viento. Maduran al final de la cosecha.",
-    descriptionEn:
-      "Leaves of the vegetative tip: smaller, more exposed to sun and wind. They mature last.",
+    id: "pedestal-corner-sw",
+    layer: "pedestal",
+    nameEs: "Esquina suroeste",
+    nameEn: "Southwest pier",
+    scientific: "Angulus SW",
+    descriptionEs: "Machón suroeste, el más bañado por el sol de la tarde santiaguera.",
+    descriptionEn: "Southwest pier, the one most washed by Santiago’s afternoon sun.",
+    aliases: ["corner", "esquina", "pier", "sw", "suroeste"],
+    color: STONE,
+  },
+  {
+    id: "pedestal-corner-nw",
+    layer: "pedestal",
+    nameEs: "Esquina noroeste",
+    nameEn: "Northwest pier",
+    scientific: "Angulus NW",
+    descriptionEs: "Machón noroeste. Cierra el cuadrado del pedestal hacia el interior del Cibao.",
+    descriptionEn: "Northwest pier. It closes the pedestal square toward the inner Cibao.",
+    aliases: ["corner", "esquina", "pier", "nw", "noroeste"],
+    color: STONE,
+  },
+  {
+    id: "pedestal-cornice",
+    layer: "pedestal",
+    nameEs: "Cornisa del pedestal",
+    nameEn: "Pedestal cornice",
+    scientific: "Corona pedestalis",
+    descriptionEs: "Moldura que remata el pedestal y recibe el tambor de columnas. Línea de sombra horizontal.",
+    descriptionEn: "The molding that caps the pedestal and receives the column drum. A horizontal shade line.",
+    aliases: ["cornice", "cornisa", "moldura"],
+    color: MARBLE,
+  },
+  {
+    id: "shaft-drum",
+    layer: "tower",
+    nameEs: "Tambor de la torre",
+    nameEn: "Tower drum",
+    scientific: "Tympanum / podium",
+    descriptionEs: "Cuerpo bajo que nace del entablamento y lanza el fuste. Más ancho que los tramos de arriba.",
+    descriptionEn: "The low body that rises from the entablature and launches the shaft. Wider than the storeys above.",
+    aliases: ["drum", "tambor", "podium", "base tower"],
+    color: MARBLE,
+  },
+  {
+    id: "shaft-lower",
+    layer: "tower",
+    nameEs: "Fuste inferior",
+    nameEn: "Lower shaft",
+    scientific: "Scapus inferior",
+    descriptionEs: "Primer tramo alto de la torre. Empieza a estrecharse y marca la vertical que se ve desde la ciudad.",
+    descriptionEn: "The first tall storey. It begins to taper and sets the vertical seen from the city.",
     culturalEs:
-      "«Ligero» o «volado» describe esta posición en la planta. En el paisaje del Yaque del Norte esas hojas altas marcan el final del ciclo de corte.",
+      "Henry Gazón Bona pensó una torre blanca que se leyera a distancia. El fuste es esa firma en el cielo de Santiago.",
     culturalEn:
-      "Ligero or volado describes this position on the plant. In the Yaque del Norte landscape those high leaves mark the end of the priming cycle.",
-    aliases: ["ligero", "volado", "superior", "upper", "apex"],
-    color: "#6f9c4b",
+      "Henry Gazón Bona wanted a white tower readable at a distance. The shaft is that signature on Santiago’s sky.",
+    aliases: ["shaft", "fuste", "tower", "torre"],
+    color: MARBLE,
   },
   {
-    id: "leaf-upper-b",
-    layer: "leaves",
-    nameEs: "Hoja apical",
-    nameEn: "Apical leaf",
-    scientific: "Folium apicale",
-    descriptionEs:
-      "Últimas láminas bajo la inflorescencia. Sésiles o casi sésiles, más lanceoladas que las bajeras.",
-    descriptionEn:
-      "The last blades under the inflorescence. Sessile or nearly so, more lanceolate than the basal leaves.",
-    aliases: ["apical", "ligero", "corona", "tip leaf"],
-    color: "#78a554",
+    id: "shaft-mid",
+    layer: "tower",
+    nameEs: "Fuste medio",
+    nameEn: "Middle shaft",
+    scientific: "Scapus medius",
+    descriptionEs: "Tramo central, aún prismático. Aquí el hueco interior y el ascensor ganan proporción.",
+    descriptionEn: "The middle storey, still prismatic. The interior void and elevator take their proportion here.",
+    aliases: ["shaft", "fuste", "mid"],
+    color: "#efe8dc",
   },
   {
-    id: "inflorescence",
-    layer: "flower",
-    nameEs: "Inflorescencia",
-    nameEn: "Inflorescence",
-    scientific: "Inflorescentia (panicula)",
+    id: "shaft-upper",
+    layer: "tower",
+    nameEs: "Fuste superior",
+    nameEn: "Upper shaft",
+    scientific: "Scapus superior",
+    descriptionEs: "Último cuerpo largo antes del cuello. Los vanos altos perforan este tramo.",
+    descriptionEn: "The last long body before the neck. The high openings punch this storey.",
+    aliases: ["shaft", "fuste", "upper"],
+    color: MARBLE,
+  },
+  {
+    id: "shaft-neck",
+    layer: "tower",
+    nameEs: "Cuello de la torre",
+    nameEn: "Tower neck",
+    scientific: "Collum",
+    descriptionEs: "Estrechamiento bajo el mirador. Prepara la cubierta de observación.",
+    descriptionEn: "The narrowing under the lookout. It prepares the observation deck.",
+    aliases: ["neck", "cuello", "collar"],
+    color: "#ebe4d8",
+  },
+  {
+    id: "elevator-shaft",
+    layer: "tower",
+    nameEs: "Hueco del ascensor",
+    nameEn: "Elevator shaft",
+    scientific: "Puteus elevatoris",
     descriptionEs:
-      "Panoja terminal ramificada. En cada rama se abren flores tubulares hermafroditas; más tarde, cápsulas con miles de semillas minúsculas.",
+      "Vacío vertical interior. Sube visitantes al mirador; en el edificio real convive con murales de Vela Zanetti.",
     descriptionEn:
-      "A branched terminal panicle. Each branch bears tubular bisexual flowers, later capsules with thousands of tiny seeds.",
+      "The interior vertical void. It lifts visitors to the lookout; in the real building it shares the core with Vela Zanetti’s murals.",
     culturalEs:
-      "Si la planta no se despunta, esta panoja es la que guarda la semilla criolla —piloto, olor, san vicente y otras líneas del valle.",
+      "Los murales de Vela Zanetti (no modelados aquí) narran trabajo y pueblo. El hueco no es solo máquina: es el recorrido pedagógico del edificio.",
     culturalEn:
-      "If the plant is not topped, this panicle holds criollo seed — piloto, olor, san vicente and other valley lines.",
-    aliases: ["panoja", "panicle", "inflorescencia", "racimo", "semilla"],
-    color: "#8f9a4a",
+      "Vela Zanetti’s murals (not modeled here) speak of labor and people. The shaft is not only a machine: it is the building’s teaching path.",
+    aliases: ["elevator", "ascensor", "shaft", "interior", "vela zanetti"],
+    color: "#5c6572",
   },
   {
-    id: "flower",
-    layer: "flower",
-    nameEs: "Flor",
-    nameEn: "Flower",
-    scientific: "Flos (corolla tubulosa)",
-    descriptionEs:
-      "Corola gamopétala, tubo largo y limbo de cinco lóbulos, rosa, blanco o rojizo. El cáliz es tubular y más corto que el tubo.",
-    descriptionEn:
-      "A fused corolla with a long tube and a five-lobed limb, pink, white, or reddish. The calyx is tubular and shorter than the tube.",
+    id: "observation-deck",
+    layer: "lookout",
+    nameEs: "Cubierta de observación",
+    nameEn: "Observation deck",
+    scientific: "Specula",
+    descriptionEs: "Piso del mirador. Desde aquí Santiago se vuelve mapa: río, tejados y el anillo de cerros.",
+    descriptionEn: "The lookout floor. From here Santiago becomes a map: river, roofs, and the ring of hills.",
     culturalEs:
-      "En la isla las flores de Nicotiana se ven al atardecer; polinizadores nocturnos y colibríes visitan el tubo. No es un adorno de producto: es la reproducción de la planta.",
+      "Subir es un gesto cívico repetido en escuelas y visitas. El mirador enseña la ciudad, no un panorama de postal.",
     culturalEn:
-      "On the island the flowers open toward evening; moths and hummingbirds visit the tube. This is the plant’s reproduction, not product decoration.",
-    aliases: ["flor", "corola", "flos", "flower", "tubular", "rosa"],
-    color: "#f0b7c0",
+      "The climb is a civic habit of school groups and visits. The deck teaches the city, not a postcard panorama.",
+    aliases: ["deck", "mirador", "lookout", "observation", "specula"],
+    color: STONE,
+  },
+  {
+    id: "crown-lantern",
+    layer: "lookout",
+    nameEs: "Linterna / corona",
+    nameEn: "Lantern crown",
+    scientific: "Tholus",
+    descriptionEs: "Remate sobre el mirador. Cierra la vertical y recibe el asta.",
+    descriptionEn: "The cap above the lookout. It closes the vertical and receives the flagpole.",
+    aliases: ["crown", "lantern", "linterna", "corona", "tholus"],
+    color: MARBLE,
+  },
+  {
+    id: "flagpole",
+    layer: "lookout",
+    nameEs: "Asta y bandera",
+    nameEn: "Flagpole and flag",
+    scientific: "Hasta vexilli",
+    descriptionEs: "Asta en el eje. La bandera dominicana marca que el homenaje es republicano, no dinástico.",
+    descriptionEn: "A pole on axis. The Dominican flag marks the tribute as republican, not dynastic.",
+    culturalEs:
+      "Después de 1961 el nombre y la bandera reorientan un edificio nacido bajo la dictadura. El asta es esa corrección visible.",
+    culturalEn:
+      "After 1961 the name and the flag reorient a building born under dictatorship. The pole is that visible correction.",
+    aliases: ["flag", "bandera", "asta", "flagpole", "tricolor"],
+    color: METAL,
+  },
+  {
+    id: "figure-luperon",
+    layer: "sculptures",
+    nameEs: "Gregorio Luperón",
+    nameEn: "Gregorio Luperón",
+    scientific: "General de la Restauración",
+    descriptionEs:
+      "Figura simplificada del general puertoplateño. Luperón fue el jefe militar más visible de la guerra y luego presidente.",
+    descriptionEn:
+      "A simplified figure of the Puerto Plata general. Luperón was the war’s most visible military leader and later president.",
+    culturalEs:
+      "No es un santo de bronce: fue un político con contradicciones. El monumento lo coloca como eje de una guerra colectiva.",
+    culturalEn:
+      "Not a bronze saint: he was a politician with contradictions. The monument sets him as an axis of a collective war.",
+    aliases: ["luperon", "luperón", "gregorio", "general", "puerto plata"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-rodriguez",
+    layer: "sculptures",
+    nameEs: "Santiago Rodríguez",
+    nameEn: "Santiago Rodríguez",
+    scientific: "Grito de Capotillo, 16 ago 1863",
+    descriptionEs:
+      "Figura del militar que encabezó el alzamiento en Capotillo. Ese grito abre la Guerra de la Restauración.",
+    descriptionEn:
+      "Figure of the officer who led the rising at Capotillo. That cry opens the Restoration War.",
+    culturalEs:
+      "El 16 de agosto es feriado nacional porque un grupo pequeño en la frontera norte encendió una guerra de dos años.",
+    culturalEn:
+      "16 August is a national holiday because a small group on the northern border lit a two-year war.",
+    aliases: ["santiago rodriguez", "rodríguez", "capotillo", "grito"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-polanco",
+    layer: "sculptures",
+    nameEs: "Gaspar Polanco",
+    nameEn: "Gaspar Polanco",
+    scientific: "General restaurador",
+    descriptionEs:
+      "Figura de Polanco, general del Cibao. Participó en la toma y defensa de Santiago durante la guerra.",
+    descriptionEn:
+      "Figure of Polanco, a Cibao general. He took part in the seizure and defense of Santiago during the war.",
+    culturalEs:
+      "Santiago no fue telón de fondo: fue teatro de combate. Polanco ancla el monumento a esa ciudad concreta.",
+    culturalEn:
+      "Santiago was not a backdrop; it was a combat theater. Polanco anchors the monument to that city.",
+    aliases: ["polanco", "gaspar", "general", "cibao"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-salcedo",
+    layer: "sculptures",
+    nameEs: "José Antonio Salcedo",
+    nameEn: "José Antonio Salcedo",
+    scientific: "Presidente restaurador",
+    descriptionEs:
+      "Figura de Salcedo, primer presidente del gobierno restaurador. Encarnó la pretensión de un Estado, no solo una guerrilla.",
+    descriptionEn:
+      "Figure of Salcedo, first president of the Restoration government. He stood for a claim to a state, not only a guerrilla.",
+    culturalEs:
+      "La Restauración peleó y también gobernó. Salcedo recuerda que había diplomacia y administración en medio del fusil.",
+    culturalEn:
+      "The Restoration fought and also governed. Salcedo recalls diplomacy and administration beside the rifle.",
+    aliases: ["salcedo", "josé antonio", "presidente", "restaurador"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-moncion",
+    layer: "sculptures",
+    nameEs: "Benito Monción",
+    nameEn: "Benito Monción",
+    scientific: "General del norte",
+    descriptionEs:
+      "Figura de Monción, general de las campañas del norte. Su nombre quedó en pueblos y memoria fronteriza.",
+    descriptionEn:
+      "Figure of Monción, a general of the northern campaigns. His name remains in towns and border memory.",
+    aliases: ["moncion", "monción", "benito", "norte"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-pimentel",
+    layer: "sculptures",
+    nameEs: "Pedro Antonio Pimentel",
+    nameEn: "Pedro Antonio Pimentel",
+    scientific: "Presidente restaurador",
+    descriptionEs:
+      "Figura de Pimentel, militar y presidente breve de la Restauración, ligado al Cibao.",
+    descriptionEn:
+      "Figure of Pimentel, a soldier and brief Restoration president, tied to the Cibao.",
+    aliases: ["pimentel", "pedro antonio", "presidente"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-victory",
+    layer: "sculptures",
+    nameEs: "Victoria (alegoría)",
+    nameEn: "Victory (allegory)",
+    scientific: "Victoria restituta",
+    descriptionEs:
+      "Cuerpo alegórico, no un retrato. Representa el triunfo de 1865, cuando España abandonó la anexión.",
+    descriptionEn:
+      "An allegorical body, not a portrait. It stands for the 1865 outcome, when Spain abandoned reannexation.",
+    culturalEs:
+      "Las alegorías pueden borrar nombres de gente común. Aquí se lee junto a las figuras de oficiales, no en su lugar.",
+    culturalEn:
+      "Allegory can erase ordinary names. Here it is read beside officer figures, not instead of them.",
+    aliases: ["victory", "victoria", "alegoría", "allegory", "1865"],
+    color: BRONZE,
+  },
+  {
+    id: "figure-pueblo",
+    layer: "sculptures",
+    nameEs: "El pueblo en armas",
+    nameEn: "The people in arms",
+    scientific: "Plebs armata",
+    descriptionEs:
+      "Figura anónima: campesinos, mujeres de retaguardia, milicianos sin retrato. La guerra no fue solo de generales.",
+    descriptionEn:
+      "An anonymous figure: peasants, women in the rear, militias without portraits. The war was not only generals.",
+    culturalEs:
+      "Un monumento de héroes peca si olvida al común. Esta pieza nombra esa ausencia a propósito.",
+    culturalEn:
+      "A heroes’ monument fails if it forgets ordinary people. This piece names that absence on purpose.",
+    aliases: ["pueblo", "people", "militia", "campesino", "anonymous"],
+    color: BRONZE,
   },
 ];
 
+export const PARTS: AtlasPart[] = [...CORE_PARTS, ...sideParts(), ...columnParts()];
+
 export const PART_BY_ID = Object.fromEntries(PARTS.map((part) => [part.id, part])) as Record<
   string,
-  PlantPart
+  AtlasPart
 >;
 
-export function partLabel(part: PlantPart, locale: Locale) {
+export function partLabel(part: AtlasPart, locale: Locale) {
   return locale === "es" ? part.nameEs : part.nameEn;
 }
 
-export function partDescription(part: PlantPart, locale: Locale) {
+export function partDescription(part: AtlasPart, locale: Locale) {
   return locale === "es" ? part.descriptionEs : part.descriptionEn;
 }
 
-export function partCultural(part: PlantPart, locale: Locale) {
+export function partCultural(part: AtlasPart, locale: Locale) {
   return locale === "es" ? part.culturalEs : part.culturalEn;
 }

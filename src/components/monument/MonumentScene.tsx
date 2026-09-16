@@ -3,11 +3,11 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useAtlas } from "@/state/atlas-store";
-import { Ground } from "@/components/plant/Ground";
-import { TobaccoPlant } from "@/components/plant/TobaccoPlant";
+import { Hill } from "@/components/monument/Hill";
+import { Monument } from "@/components/monument/Monument";
 
-const CAMERA_POS: [number, number, number] = [5.4, 2.05, 4.3];
-const TARGET: [number, number, number] = [0, 1.05, 0];
+const CAMERA_POS: [number, number, number] = [11.5, 6.2, 13.2];
+const TARGET: [number, number, number] = [0, 3.6, 0];
 
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
@@ -23,8 +23,8 @@ function CameraRig() {
   useEffect(() => {
     const node = controls.current;
     if (!node) return;
-    node.minDistance = exploded ? 4.2 : 3.2;
-    node.maxDistance = exploded ? 12 : 9;
+    node.minDistance = exploded ? 8 : 6.5;
+    node.maxDistance = exploded ? 32 : 22;
   }, [exploded]);
 
   return (
@@ -33,10 +33,10 @@ function CameraRig() {
       makeDefault
       enableDamping
       dampingFactor={0.08}
-      minPolarAngle={0.55}
-      maxPolarAngle={Math.PI * 0.49}
-      minDistance={3.2}
-      maxDistance={9}
+      minPolarAngle={0.22}
+      maxPolarAngle={Math.PI * 0.48}
+      minDistance={6.5}
+      maxDistance={22}
       target={TARGET}
     />
   );
@@ -47,36 +47,42 @@ function SceneContents() {
 
   return (
     <>
-      <color attach="background" args={["#10140d"]} />
-      <hemisphereLight args={["#d7e4c7", "#3a2b1f", 0.85]} />
-      <ambientLight intensity={0.38} />
+      <color attach="background" args={["#0c1118"]} />
+      <fog attach="fog" args={["#0c1118", 22, 48]} />
+      <hemisphereLight args={["#8aa0b8", "#2a1c12", 0.72]} />
+      <ambientLight intensity={0.32} />
       <directionalLight
-        position={[5.4, 7.2, 4.1]}
-        intensity={1.45}
+        position={[10, 14, 6]}
+        intensity={1.55}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
+        shadow-camera-far={40}
+        shadow-camera-left={-12}
+        shadow-camera-right={12}
+        shadow-camera-top={14}
+        shadow-camera-bottom={-6}
       />
-      <directionalLight position={[-3.8, 2.8, -2.6]} intensity={0.35} color="#f0d7a0" />
+      <directionalLight position={[-8, 4, -6]} intensity={0.28} color="#f0c98a" />
       <CameraRig />
       <group
         onPointerMissed={() => {
           setSelectedId(null);
         }}
       >
-        <TobaccoPlant />
-        <Ground />
+        <Monument />
+        <Hill />
       </group>
-      <ContactShadows position={[0, 0.01, 0]} opacity={0.32} scale={9} blur={2.4} far={2.8} />
+      <ContactShadows position={[0, -0.02, 0]} opacity={0.38} scale={18} blur={2.6} far={6} />
     </>
   );
 }
 
-export function PlantScene() {
+export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 42, near: 0.1, far: 50 }}
+      camera={{ position: CAMERA_POS, fov: 42, near: 0.1, far: 80 }}
       dpr={[1, 2]}
       className="h-full w-full touch-none"
     >

@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { PART_BY_ID, PARTS, type LayerId, type Locale } from "@/data/parts";
+import { LAYER_IDS, PART_BY_ID, PARTS, type LayerId, type Locale } from "@/data/parts";
 import { rankSearchResults } from "@/lib/search";
 
 export type LayerVisibility = Record<LayerId, boolean>;
@@ -34,12 +34,7 @@ interface AtlasContextValue {
 
 const AtlasContext = createContext<AtlasContextValue | null>(null);
 
-const ALL_VISIBLE: LayerVisibility = {
-  roots: true,
-  stem: true,
-  leaves: true,
-  flower: true,
-};
+const ALL_VISIBLE = Object.fromEntries(LAYER_IDS.map((id) => [id, true])) as LayerVisibility;
 
 export function AtlasProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");

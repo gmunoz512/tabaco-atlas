@@ -3,7 +3,7 @@ import { useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 import { PART_BY_ID } from "@/data/parts";
 import { useAtlas } from "@/state/atlas-store";
-import { PART_POSES } from "@/components/plant/geometries";
+import { PART_POSES } from "@/components/monument/poses";
 
 interface SelectablePartProps {
   id: string;
@@ -25,7 +25,7 @@ export function SelectablePart({ id, children }: SelectablePartProps) {
     const node = group.current;
     if (!node) return;
     const target = exploded ? explodedPos : rest;
-    node.position.lerp(target, 1 - Math.exp(-delta * 7));
+    node.position.lerp(target, 1 - Math.exp(-delta * 6.2));
     node.visible = visible;
   });
 
@@ -34,7 +34,6 @@ export function SelectablePart({ id, children }: SelectablePartProps) {
       ref={group}
       position={pose.rest}
       rotation={pose.rotation}
-      rotation-order={pose.rotationOrder ?? "XYZ"}
       scale={pose.scale}
       onPointerDown={(event) => {
         event.stopPropagation();
@@ -63,6 +62,6 @@ export function SelectablePart({ id, children }: SelectablePartProps) {
   );
 }
 
-export function plantColor(id: string, selected: boolean) {
+export function partColor(id: string, selected: boolean) {
   return selected ? "#d7c07a" : PART_BY_ID[id].color;
 }

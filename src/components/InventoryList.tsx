@@ -14,7 +14,7 @@ export function InventoryList() {
           {visibleParts.length} {copy.partsVisible}
         </p>
       </div>
-      <div className="scrollbar-thin max-h-[28vh] space-y-3 overflow-auto pr-1 md:max-h-[36vh]">
+      <div className="scrollbar-thin max-h-[32vh] space-y-3 overflow-auto pr-1 md:max-h-[42vh]">
         {LAYER_IDS.map((layerId) => {
           const layerParts = PARTS.filter((part) => part.layer === layerId);
           const layer = LAYERS[layerId];

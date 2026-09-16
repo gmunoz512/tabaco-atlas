@@ -1,52 +1,52 @@
 # El Anatomy
 
-Explorador botánico 3D de *Nicotiana tabacum* (tabaco), pensado para un público dominicano y caribeño. Orbita la planta, selecciona raíces, tallo, hojas y flor, oculta capas y separa las piezas en una vista explosionada.
+3D architectural explorer of the **Monumento a los Héroes de la Restauración** in Santiago de los Caballeros — commonly *el Monumento*. Orbit the tower, select plaza, stairs, pedestal, columns, shaft, sculptures, and lookout, hide layers, and explode the pieces into an inventory.
 
-El producto sigue el patrón de un atlas humano exploratorio (órbita, capas, búsqueda, ficha y inventario separado). No es un clon: la geometría es procedural y el tema es la planta de tabaco, no la anatomía humana.
+The product follows a Human Atlas–style pattern (orbit, layers, search, detail card, separated inventory). It is not a clone: the geometry is procedural and the subject is Santiago’s civic tower.
 
-**Esto es educación sobre la planta.** No es consejo médico ni agronómico, ni publicidad de cigarros o de fumar.
+**This is education about a public monument and the Restoration War (1863–1865).** It is not tourism advertising. The building opened in 1953 under a different name; after 1961 the city dedicated it to Restoration heroes.
 
-## Explorar
+## Explore
 
-- Orbita, zoom y toca una parte para seleccionarla.
-- Alterna capas: raíces, tallo, hojas, flor.
-- Busca por nombre común (ES/EN) o científico.
-- Separa las piezas visibles para inventariarlas.
-- Lee la ficha: nombre, descripción llana y nota cultural dominicana/caribeña cuando aplica.
-- Interface loads in English first, with an EN/ES toggle. The product name is **El Anatomy** in both languages. Dominican / Caribbean notes stay in the English detail copy.
+- Orbit, zoom, and tap a part to select it.
+- Toggle layers: plaza & stairs, pedestal, columns, tower, sculptures, lookout.
+- Search by English or Spanish name, hero, or architectural term.
+- Separate the visible pieces to inventory them (dozens of named parts).
+- Read the card: plain description and a Dominican historical note when it applies.
+- Interface loads in **English** first, with an EN/ES toggle. The product name is **El Anatomy** in both languages.
 
-## Requisitos
+## Requirements
 
-Node.js 22 o superior. No hace falta cuenta ni clave de API.
+Node.js 22 or newer. No account or API key.
 
 ```sh
 npm install
 npm run dev
 ```
 
-Abre [http://localhost:5173](http://localhost:5173) (redirige a `/tabaco-atlas/`).
+Open [http://localhost:5173](http://localhost:5173) (redirects to `/tabaco-atlas/`).
 
 ```sh
 npm run typecheck
 npm run build
 ```
 
-La salida estática queda en `dist/`. `npm run preview` sirve esa carpeta.
+Static output is in `dist/`. `npm run preview` serves that folder.
 
-## Contenido
+## Content
 
-El modelo es una planta simplificada, creíble en estructura (raíz pivotante y laterales, tallo velloso, hojas ovadas en espiral, panoja de flores tubulares), no un herbario a escala. Los nombres agrícolas del valle del Cibao (*bajera*, *seco/viso*, *ligero*) se usan como vocabulario de altura en la planta, no como grados de producto.
+The model is a simplified, credible structure (esplanade and stairs, pedestal, colonnade, stacked shaft, openings, elevator void, lookout, flag, and named sculptural groups). It is not a measured survey. Hero figures are schematic bronze forms with historical names, not portraits.
 
-La geometría se genera en Three.js (primitivas y curvas). No se incluyen mallas comerciales.
+Geometry is generated in Three.js (boxes, cylinders, stacked steps). No commercial meshes.
 
-## Despliegue
+## Deploy
 
-Sitio público (GitHub Pages): [https://gmunoz512.github.io/tabaco-atlas/](https://gmunoz512.github.io/tabaco-atlas/)
+Public site (GitHub Pages): [https://gmunoz512.github.io/tabaco-atlas/](https://gmunoz512.github.io/tabaco-atlas/)
 
-`vite.config.ts` usa `base: "/tabaco-atlas/"`. El workflow `.github/workflows/pages.yml` ejecuta `npm ci` / `npm run build`, publica `dist/` en la rama `gh-pages` y despliega con `actions/deploy-pages`. Fuente de Pages: GitHub Actions, o la rama `gh-pages` (carpeta `/`). Si GitHub aún no tiene Pages activado en el repositorio, actívalo una vez en Settings → Pages.
+`vite.config.ts` uses `base: "/tabaco-atlas/"`. The workflow `.github/workflows/pages.yml` runs `npm ci` / `npm run build`, publishes `dist/` to the `gh-pages` branch, and deploys with `actions/deploy-pages`. Pages source: GitHub Actions, or branch `gh-pages` (folder `/`).
 
-En local, `npm run dev` y `npm run preview` redirigen `/` a `/tabaco-atlas/`. `vercel.json` sigue sirviendo `dist/` si se usa Vercel.
+Locally, `npm run dev` and `npm run preview` redirect `/` to `/tabaco-atlas/`.
 
-## Licencia
+## License
 
-MIT. Inspiración de patrón de producto: [Human Atlas](https://github.com/ashemag/human-atlas) (MIT). Las notas culturales son educativas y no sustituyen fuentes históricas o agronómicas primarias.
+MIT. Product-pattern inspiration: [Human Atlas](https://github.com/ashemag/human-atlas) (MIT). Historical notes are educational and do not replace primary sources on the Restoration War or the building’s later rededication.

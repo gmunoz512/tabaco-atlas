@@ -61,11 +61,12 @@ export function DetailPanel() {
       ) : (
         <div className="space-y-3 text-sm leading-relaxed text-cream/80">
           <p>{copy.tapHint}</p>
-          <p className="font-display text-gold italic">{copy.plantScientific}</p>
+          <p className="text-cream/90">{copy.intro}</p>
+          <p className="font-display text-gold italic">{copy.subjectOfficial}</p>
           <p className="text-xs text-muted">
-            {copy.family} · {copy.region}
+            {copy.architect} · {copy.region}
           </p>
-          <p className="text-xs text-muted">{copy.tainoNote}</p>
+          <p className="text-xs text-muted">{copy.historyNote}</p>
         </div>
       )}
     </aside>

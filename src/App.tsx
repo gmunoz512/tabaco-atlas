@@ -3,7 +3,7 @@ import { ControlDock } from "@/components/ControlDock";
 import { DetailPanel } from "@/components/DetailPanel";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { PlantScene } from "@/components/plant/PlantScene";
+import { MonumentScene } from "@/components/monument/MonumentScene";
 import { t } from "@/data/i18n";
 import { AtlasProvider, useAtlas } from "@/state/atlas-store";
 
@@ -19,7 +19,7 @@ function Shell() {
 
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-ink">
-      <PlantScene />
+      <MonumentScene />
       <Header />
       <ControlDock mobileOpen={mobileOpen} onToggleMobile={() => setMobileOpen((open) => !open)} />
       <div

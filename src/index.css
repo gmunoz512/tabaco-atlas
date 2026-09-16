@@ -3,8 +3,8 @@
 @theme {
   --font-display: "Fraunces", "Times New Roman", serif;
   --font-sans: "Outfit", "Segoe UI", sans-serif;
-  --color-ink: #12160f;
-  --color-panel: #1c2318;
+  --color-ink: #12151c;
+  --color-panel: #1a2030;
   --color-cream: #f3ead8;
   --color-muted: #c9c0ad;
   --color-leaf: #7ea24a;
@@ -24,7 +24,7 @@ body,
 
 body {
   margin: 0;
-  background: #10140d;
+  background: #0c1118;
   color: var(--color-cream);
   font-family: var(--font-sans);
   overflow: hidden;

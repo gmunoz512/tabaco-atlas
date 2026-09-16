@@ -1,7 +1,7 @@
 import { normalizeQuery } from "@/lib/utils";
-import type { PlantPart } from "@/data/parts";
+import type { AtlasPart } from "@/data/parts";
 
-export function partMatchesQuery(part: PlantPart, query: string) {
+export function partMatchesQuery(part: AtlasPart, query: string) {
   const needle = normalizeQuery(query);
   if (!needle) return true;
 
@@ -18,7 +18,7 @@ export function partMatchesQuery(part: PlantPart, query: string) {
   return haystack.includes(needle);
 }
 
-export function rankSearchResults(parts: PlantPart[], query: string) {
+export function rankSearchResults(parts: AtlasPart[], query: string) {
   const needle = normalizeQuery(query);
   if (!needle) return parts;
 
@@ -27,7 +27,7 @@ export function rankSearchResults(parts: PlantPart[], query: string) {
     .sort((a, b) => score(a, needle) - score(b, needle));
 }
 
-function score(part: PlantPart, needle: string) {
+function score(part: AtlasPart, needle: string) {
   const names = [part.nameEs, part.nameEn, part.scientific, ...part.aliases].map(
     normalizeQuery,
   );
