@@ -240,19 +240,19 @@ function AngelBody({ id }: { id: string }) {
         <sphereGeometry args={[0.03, 12, 10]} />
         <Surface id={id} roughness={0.3} metalness={0.65} stone={false} />
       </mesh>
-      <mesh position={[-0.038, 0.46, 0.01]} rotation={[0.12, 0, 0.22]} castShadow>
-        <cylinderGeometry args={[0.011, 0.013, 0.28, 8]} />
+      <mesh position={[-0.038, 0.44, 0.01]} rotation={[0.12, 0, 0.22]} castShadow>
+        <cylinderGeometry args={[0.011, 0.013, 0.22, 8]} />
         <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
       </mesh>
-      <mesh position={[0.038, 0.46, 0.01]} rotation={[0.12, 0, -0.22]} castShadow>
-        <cylinderGeometry args={[0.011, 0.013, 0.28, 8]} />
+      <mesh position={[0.038, 0.44, 0.01]} rotation={[0.12, 0, -0.22]} castShadow>
+        <cylinderGeometry args={[0.011, 0.013, 0.22, 8]} />
         <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
       </mesh>
-      <mesh position={[-0.055, 0.6, 0.04]} castShadow>
+      <mesh position={[-0.05, 0.55, 0.035]} castShadow>
         <sphereGeometry args={[0.014, 8, 8]} />
         <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
       </mesh>
-      <mesh position={[0.055, 0.6, 0.04]} castShadow>
+      <mesh position={[0.05, 0.55, 0.035]} castShadow>
         <sphereGeometry args={[0.014, 8, 8]} />
         <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
       </mesh>

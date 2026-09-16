@@ -7,8 +7,8 @@ import { useAtlas } from "@/state/atlas-store";
 import { Hill } from "@/components/monument/Hill";
 import { Monument } from "@/components/monument/Monument";
 
-const CAMERA_POS: [number, number, number] = [18.5, 11.8, 22.4];
-const TARGET: [number, number, number] = [0, 4.6, 0];
+const CAMERA_POS: [number, number, number] = [23.2, 9.4, 27.4];
+const TARGET: [number, number, number] = [0, 5.2, 0];
 
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
@@ -75,7 +75,9 @@ function SceneContents() {
           setSelectedId(null);
         }}
       >
-        <Monument />
+        <group scale={0.9}>
+          <Monument />
+        </group>
         <Hill />
       </group>
       <ContactShadows position={[0, 0, 0]} opacity={0.38} scale={24} blur={3.6} far={9} />
@@ -87,7 +89,7 @@ export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 36, near: 0.1, far: 140 }}
+      camera={{ position: CAMERA_POS, fov: 38, near: 0.1, far: 160 }}
       dpr={[1, 1.75]}
       gl={{
         antialias: true,
