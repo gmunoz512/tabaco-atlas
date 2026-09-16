@@ -7,8 +7,8 @@ import { useAtlas } from "@/state/atlas-store";
 import { Hill } from "@/components/monument/Hill";
 import { Monument } from "@/components/monument/Monument";
 
-const CAMERA_POS: [number, number, number] = [20.6, 7.6, 23.8];
-const TARGET: [number, number, number] = [0, 5.15, 0];
+const CAMERA_POS: [number, number, number] = [18.5, 11.8, 22.4];
+const TARGET: [number, number, number] = [0, 4.6, 0];
 
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
@@ -87,7 +87,7 @@ export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 33, near: 0.1, far: 140 }}
+      camera={{ position: CAMERA_POS, fov: 36, near: 0.1, far: 140 }}
       dpr={[1, 1.75]}
       gl={{
         antialias: true,
