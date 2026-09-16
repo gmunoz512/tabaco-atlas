@@ -12,7 +12,7 @@ export function Footer() {
         <p className="mt-0.5">
           {copy.footer}
           {webglStatus ? (
-            <span className="mt-0.5 block font-mono text-[9px] tracking-[0.14em] text-cream/45 uppercase">
+            <span className="mt-0.5 block font-mono text-[9px] tracking-[0.12em] text-cream/45">
               {webglStatus}
             </span>
           ) : null}
