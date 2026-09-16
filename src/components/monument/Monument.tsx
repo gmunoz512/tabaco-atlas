@@ -53,15 +53,15 @@ function Surface({
 function StairsBody({ id }: { id: string }) {
   return (
     <group>
-      {Array.from({ length: 14 }, (_, index) => (
+      {Array.from({ length: 18 }, (_, index) => (
         <mesh
           key={index}
-          position={[0, index * 0.042 - 0.27, 0.82 - index * 0.118]}
+          position={[0, index * 0.034 - 0.28, 0.95 - index * 0.1]}
           castShadow
           receiveShadow
         >
-          <boxGeometry args={[2.85, 0.042, 0.14]} />
-          <Surface id={id} roughness={0.95} />
+          <boxGeometry args={[3.15, 0.034, 0.12]} />
+          <Surface id={id} roughness={0.96} />
         </mesh>
       ))}
     </group>
@@ -69,28 +69,28 @@ function StairsBody({ id }: { id: string }) {
 }
 
 function ColumnBody({ id }: { id: string }) {
-  const shaftH = COL_HEIGHT - 0.32;
+  const shaftH = COL_HEIGHT - 0.28;
   const baseY = -COL_HEIGHT / 2;
   return (
     <group>
-      <mesh position={[0, baseY + 0.045, 0]} castShadow receiveShadow>
-        <boxGeometry args={[0.22, 0.09, 0.22]} />
+      <mesh position={[0, baseY + 0.04, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.08, 0.085, 0.08, 20]} />
         <Surface id={id} roughness={0.86} />
       </mesh>
-      <mesh position={[0, baseY + 0.12, 0]} castShadow>
-        <cylinderGeometry args={[0.1, 0.11, 0.07, 20]} />
+      <mesh position={[0, baseY + 0.1, 0]} castShadow>
+        <cylinderGeometry args={[0.062, 0.072, 0.06, 20]} />
         <Surface id={id} roughness={0.82} />
       </mesh>
       <mesh position={[0, 0.02, 0]} castShadow>
-        <cylinderGeometry args={[0.078, 0.092, shaftH, 28]} />
-        <Surface id={id} roughness={0.76} metalness={0.05} envMapIntensity={0.62} />
+        <cylinderGeometry args={[0.052, 0.062, shaftH, 28]} />
+        <Surface id={id} roughness={0.74} metalness={0.05} envMapIntensity={0.62} />
       </mesh>
-      <mesh position={[0, COL_HEIGHT / 2 - 0.14, 0]} castShadow>
-        <cylinderGeometry args={[0.105, 0.082, 0.07, 20]} />
+      <mesh position={[0, COL_HEIGHT / 2 - 0.12, 0]} castShadow>
+        <cylinderGeometry args={[0.07, 0.054, 0.06, 20]} />
         <Surface id={id} roughness={0.8} />
       </mesh>
-      <mesh position={[0, COL_HEIGHT / 2 - 0.07, 0]} castShadow>
-        <boxGeometry args={[0.2, 0.06, 0.2]} />
+      <mesh position={[0, COL_HEIGHT / 2 - 0.055, 0]} castShadow>
+        <cylinderGeometry args={[0.078, 0.078, 0.05, 16]} />
         <Surface id={id} roughness={0.84} />
       </mesh>
     </group>
@@ -140,7 +140,7 @@ function ArchBody({ id }: { id: string }) {
 }
 
 function HelixBody({ id }: { id: string }) {
-  const geo = useMemo(() => createHelixGeometry(0.27, 5.1, 2.55, 0.015), []);
+  const geo = useMemo(() => createHelixGeometry(0.218, 6.15, 2.8, 0.012), []);
   return (
     <mesh geometry={geo} castShadow>
       <Surface id={id} roughness={0.78} offset />
@@ -153,18 +153,18 @@ function BalconyBody({ id }: { id: string }) {
     () =>
       Array.from({ length: 16 }, (_, i) => {
         const a = (i / 16) * Math.PI * 2;
-        return [Math.cos(a) * 0.34, Math.sin(a) * 0.34] as const;
+        return [Math.cos(a) * 0.29, Math.sin(a) * 0.29] as const;
       }),
     [],
   );
   return (
     <group>
       <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[0.36, 0.34, 0.08, 40]} />
+        <cylinderGeometry args={[0.3, 0.28, 0.07, 40]} />
         <Surface id={id} roughness={0.84} />
       </mesh>
-      <mesh position={[0, 0.06, 0]}>
-        <torusGeometry args={[0.34, 0.014, 8, 48]} />
+      <mesh position={[0, 0.055, 0]}>
+        <torusGeometry args={[0.29, 0.012, 8, 48]} />
         <Surface id={id} roughness={0.62} metalness={0.12} />
       </mesh>
       {posts.map(([x, z], i) => (
@@ -282,7 +282,7 @@ function PodiumMass({ id, size }: { id: string; size: [number, number, number] }
   return (
     <group>
       {courses.map((h, index) => {
-        const inset = index * 0.045;
+        const inset = index * 0.028;
         const mid = y + h / 2;
         y += h;
         return (
@@ -337,7 +337,7 @@ function CylinderBody({ id, size }: { id: string; size: [number, number, number]
 
 function BoxBody({ id, size }: { id: string; size: [number, number, number] }) {
   const minDim = Math.min(size[0], size[1], size[2]);
-  const radius = Math.min(0.04, minDim * 0.28);
+  const radius = Math.min(0.028, minDim * 0.22);
   return (
     <RoundedBox args={size} radius={radius} smoothness={3} castShadow receiveShadow>
       <Surface id={id} roughness={0.88} />
