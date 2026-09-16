@@ -141,20 +141,17 @@ export function createDuskSkyTexture() {
 
       col = mix3(col, mix3(col, peach, 0.55), sunset * Math.max(0, 1.05 - elev * 1.4));
 
-      const n1 = fbm(u * 6.4 + 2.1, elev * 9.2, 5);
-      const n2 = fbm(u * 3.1 - 4, elev * 4.8 + 8, 4);
-      const n3 = fbm(u * 14 + 9, elev * 16, 3);
-      const upper = Math.min(1, Math.max(0, (elev - 0.22) / 0.55));
-      let cloud = Math.min(1, Math.max(0, (n1 * 0.68 + n2 * 0.32 - 0.28) / 0.4));
-      cloud *= 0.25 + upper * 0.9;
-      if (elev < 0.12) cloud *= 0.2;
-      if (elev > 0.94) cloud *= 0.35;
-
-      const storm = Math.min(1, Math.max(0, 1 - u * 1.7));
-      const duskCloud: [number, number, number] = mix3([255, 214, 186], [255, 150, 88], sunset);
-      const stormCloud: [number, number, number] = mix3([48, 58, 78], [22, 28, 42], n3);
-      const cloudCol = mix3(duskCloud, stormCloud, storm * 0.85);
-      col = mix3(col, cloudCol, cloud * (0.72 + storm * 0.22));
+      const n1 = fbm(u * 5.2 + 1.4, elev * 8.1, 5);
+      const n2 = fbm(u * 2.6 - 3.2, elev * 4.2 + 6, 4);
+      const n3 = fbm(u * 12 + 7, elev * 14, 3);
+      const upper = Math.min(1, Math.max(0, (elev - 0.16) / 0.7));
+      let cloud = Math.min(1, Math.max(0, (n1 * 0.7 + n2 * 0.3 - 0.34) / 0.36));
+      cloud *= 0.4 + upper * 0.75;
+      const stormBand = Math.min(1, Math.max(0, 1 - Math.abs(u - 0.68) * 2.4));
+      const duskCloud: [number, number, number] = n3 > 0.5 ? [255, 210, 170] : [255, 152, 88];
+      const stormCloud: [number, number, number] = n3 > 0.45 ? [62, 74, 96] : [22, 28, 44];
+      const cloudCol = mix3(duskCloud, stormCloud, Math.max(stormBand, 1 - sunset) * 0.9);
+      col = mix3(col, cloudCol, cloud * 0.88);
 
       const sunU = 0.8;
       const sunV = 0.58;
@@ -180,17 +177,17 @@ export function createDuskSkyTexture() {
     ctx.ellipse(x, y, rw, rh, 0, 0, Math.PI * 2);
     ctx.fill();
   };
-  for (let i = 0; i < 18; i += 1) {
-    blob(30 + i * 42, 90 + (i % 5) * 28, 160, 46, "rgba(24,32,52,0.55)");
-  }
-  for (let i = 0; i < 14; i += 1) {
-    blob(520 + i * 38, 70 + (i % 4) * 22, 140, 36, "rgba(232,236,242,0.32)");
+  for (let i = 0; i < 22; i += 1) {
+    blob(620 + i * 36, 70 + (i % 6) * 30, 170, 50, "rgba(18,24,40,0.62)");
   }
   for (let i = 0; i < 16; i += 1) {
-    blob(980 + i * 40, 150 + (i % 5) * 26, 170, 42, "rgba(255,168,96,0.42)");
+    blob(20 + i * 48, 210 + (i % 4) * 28, 150, 40, "rgba(255,176,110,0.4)");
   }
-  blob(1280, 430, 320, 120, "rgba(255,150,70,0.38)");
-  blob(180, 260, 280, 90, "rgba(20,28,44,0.5)");
+  for (let i = 0; i < 12; i += 1) {
+    blob(400 + i * 70, 40 + (i % 3) * 18, 130, 32, "rgba(236,240,248,0.28)");
+  }
+  blob(1080, 160, 300, 110, "rgba(16,22,38,0.5)");
+  blob(200, 380, 280, 90, "rgba(255,148,72,0.4)");
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;

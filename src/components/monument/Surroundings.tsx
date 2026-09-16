@@ -202,35 +202,32 @@ function buildCity(): BuildingSpec[] {
   ].map((hex) => new THREE.Color(hex));
   const roofs = ["#8a4a32", "#6e5340", "#9a6a48", "#5c5854", "#a07050", "#c45c38"].map((hex) => new THREE.Color(hex));
   const out: BuildingSpec[] = [];
-  for (let gx = -48; gx <= 48; gx += 1.35) {
-    for (let gz = -48; gz <= 48; gz += 1.35) {
-      const streetX = Math.abs((gx + 200) % 8.4) < 1.25;
-      const streetZ = Math.abs((gz + 200) % 8.4) < 1.25;
-      if (streetX || streetZ) continue;
-      const jx = gx + (mulberry(gx * 13 + gz * 7) - 0.5) * 0.4;
-      const jz = gz + (mulberry(gx * 19 + gz * 11) - 0.5) * 0.4;
-      const r = Math.hypot(jx, jz);
-      if (r < 13.2 || r > 51) continue;
-      if (mulberry(gx * 3 + gz * 5) < 0.06) continue;
-      if (out.length >= 920) return out;
-      const tall = r > 30 && mulberry(gx * 9 + gz) > 0.93;
-      const h = tall
-        ? 1.6 + mulberry(gx * 17 + gz) * 2.4
-        : 0.32 + mulberry(gx * 11 + gz * 3) * 0.7 + (r > 32 ? mulberry(gx + gz) * 0.35 : 0);
-      const yBase = terrainHeight(jx, jz);
-      out.push({
-        x: jx,
-        z: jz,
-        y: yBase + h / 2,
-        sx: tall ? 0.85 + mulberry(gx) * 0.7 : 0.55 + mulberry(gx * 23) * 0.7,
-        h,
-        sz: tall ? 0.7 + mulberry(gz) * 0.65 : 0.5 + mulberry(gz * 29) * 0.65,
-        rot: (mulberry(gx * 31 + gz) - 0.5) * 0.2,
-        color: palette[Math.floor(mulberry(gx * 41 + gz) * palette.length)],
-        roof: roofs[Math.floor(mulberry(gx * 43 + gz * 3) * roofs.length)],
-        tall,
-      });
-    }
+  for (let i = 0; i < 980; i += 1) {
+    const a = mulberry(i * 3) * Math.PI * 2;
+    const r = 13.4 + mulberry(i * 7) * 34;
+    const jx = Math.cos(a) * r + (mulberry(i * 13) - 0.5) * 0.45;
+    const jz = Math.sin(a) * r + (mulberry(i * 19) - 0.5) * 0.45;
+    const street = Math.abs((jx + 80) % 8.2) < 1.15 || Math.abs((jz + 80) % 8.2) < 1.15;
+    if (street && mulberry(i * 23) < 0.7) continue;
+    const rr = Math.hypot(jx, jz);
+    if (rr < 13.2 || rr > 50) continue;
+    const tall = rr > 28 && mulberry(i * 9) > 0.92;
+    const h = tall
+      ? 1.5 + mulberry(i * 17) * 2.2
+      : 0.32 + mulberry(i * 11) * 0.7 + (rr > 32 ? mulberry(i) * 0.35 : 0);
+    const yBase = terrainHeight(jx, jz);
+    out.push({
+      x: jx,
+      z: jz,
+      y: yBase + h / 2,
+      sx: tall ? 0.8 + mulberry(i) * 0.65 : 0.52 + mulberry(i * 23) * 0.7,
+      h,
+      sz: tall ? 0.68 + mulberry(i + 4) * 0.6 : 0.48 + mulberry(i * 29) * 0.62,
+      rot: (mulberry(i * 31) - 0.5) * 0.25,
+      color: palette[Math.floor(mulberry(i * 41) * palette.length)],
+      roof: roofs[Math.floor(mulberry(i * 43) * roofs.length)],
+      tall,
+    });
   }
   return out;
 }
