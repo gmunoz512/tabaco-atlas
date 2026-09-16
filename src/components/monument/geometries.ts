@@ -25,18 +25,24 @@ export function createArchGeometry(width: number, height: number, depth: number)
   return geo;
 }
 
-export function createHelixCurve(radius: number, height: number, turns: number, points = 360) {
+/** Clockwise from above so the front face reads up-and-right, matching photos. */
+export function createHelixCurve(radius: number, height: number, turns: number, points = 480) {
   const pts: THREE.Vector3[] = [];
   for (let i = 0; i <= points; i += 1) {
     const t = i / points;
-    const a = t * turns * Math.PI * 2;
+    const a = -t * turns * Math.PI * 2;
     pts.push(new THREE.Vector3(Math.cos(a) * radius, t * height - height / 2, Math.sin(a) * radius));
   }
   return new THREE.CatmullRomCurve3(pts);
 }
 
-export function createHelixGeometry(radius: number, height: number, turns: number, tube = 0.02) {
-  return new THREE.TubeGeometry(createHelixCurve(radius, height, turns), 420, tube, 12, false);
+export function createHelixGeometry(radius: number, height: number, turns: number, tube = 0.048) {
+  return new THREE.TubeGeometry(createHelixCurve(radius, height, turns), 560, tube, 14, false);
+}
+
+export function helixVentPositions(radius: number, height: number, turns: number, count = 18) {
+  const curve = createHelixCurve(radius, height, turns, count);
+  return curve.getSpacedPoints(count);
 }
 
 export function createShieldGeometry() {
@@ -61,14 +67,14 @@ export function createShieldGeometry() {
 export function createWingGeometry() {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
-  shape.bezierCurveTo(0.1, 0.18, 0.3, 0.46, 0.08, 0.86);
-  shape.bezierCurveTo(0.02, 0.74, -0.22, 0.38, -0.1, 0.05);
+  shape.bezierCurveTo(0.08, 0.12, 0.26, 0.28, 0.12, 0.62);
+  shape.bezierCurveTo(0.04, 0.52, -0.16, 0.24, -0.08, 0.04);
   shape.closePath();
   const geo = new THREE.ExtrudeGeometry(shape, {
-    depth: 0.018,
+    depth: 0.016,
     bevelEnabled: true,
-    bevelThickness: 0.008,
-    bevelSize: 0.01,
+    bevelThickness: 0.006,
+    bevelSize: 0.008,
     bevelSegments: 3,
     curveSegments: 24,
   });
@@ -78,21 +84,21 @@ export function createWingGeometry() {
 
 export function createAngelBodyGeometry() {
   const pts = [
-    new THREE.Vector2(0.012, 0),
-    new THREE.Vector2(0.09, 0.02),
-    new THREE.Vector2(0.078, 0.1),
-    new THREE.Vector2(0.1, 0.22),
-    new THREE.Vector2(0.048, 0.36),
-    new THREE.Vector2(0.038, 0.46),
-    new THREE.Vector2(0.05, 0.52),
-    new THREE.Vector2(0.02, 0.56),
+    new THREE.Vector2(0.01, 0),
+    new THREE.Vector2(0.07, 0.015),
+    new THREE.Vector2(0.062, 0.08),
+    new THREE.Vector2(0.082, 0.18),
+    new THREE.Vector2(0.04, 0.32),
+    new THREE.Vector2(0.032, 0.4),
+    new THREE.Vector2(0.04, 0.46),
+    new THREE.Vector2(0.016, 0.5),
   ];
   const geo = new THREE.LatheGeometry(pts, 48);
   geo.center();
   return geo;
 }
 
-export function createStairGeometry(steps = 18, width = 3.9, rise = 0.04, run = 0.11) {
+export function createStairGeometry(steps = 20, width = 5.1, rise = 0.038, run = 0.12) {
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
   for (let i = 0; i < steps; i += 1) {
@@ -114,8 +120,7 @@ export function createStairGeometry(steps = 18, width = 3.9, rise = 0.04, run = 
   return geo;
 }
 
-/** Clean dusk void — vertical gradient only, no weather, no city glow. */
-export function createVoidSkyTexture() {
+export function createDaySkyTexture() {
   const w = 8;
   const h = 512;
   const canvas = document.createElement("canvas");
@@ -124,17 +129,54 @@ export function createVoidSkyTexture() {
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   const grd = ctx.createLinearGradient(0, 0, 0, h);
-  grd.addColorStop(0, "#07090f");
-  grd.addColorStop(0.42, "#101826");
-  grd.addColorStop(0.72, "#1c2740");
-  grd.addColorStop(0.88, "#2a3348");
-  grd.addColorStop(1, "#1a1e28");
+  grd.addColorStop(0, "#4f86c6");
+  grd.addColorStop(0.38, "#7eadd8");
+  grd.addColorStop(0.72, "#c5def0");
+  grd.addColorStop(0.9, "#e7f1f8");
+  grd.addColorStop(1, "#f3f6f4");
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, w, h);
+  ctx.globalAlpha = 0.16;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, h * 0.2, w, 22);
+  ctx.globalAlpha = 0.1;
+  ctx.fillRect(0, h * 0.32, w, 12);
+  ctx.globalAlpha = 1;
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.magFilter = THREE.LinearFilter;
   tex.minFilter = THREE.LinearFilter;
   tex.needsUpdate = true;
+  return tex;
+}
+
+export function createMarbleTexture() {
+  const s = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = "#e6e1d8";
+  ctx.fillRect(0, 0, s, s);
+  for (let i = 0; i < 28; i += 1) {
+    ctx.strokeStyle = `rgba(108, 108, 116, ${0.1 + (i % 5) * 0.035})`;
+    ctx.lineWidth = 1 + (i % 3);
+    ctx.beginPath();
+    let x = (i * 47) % s;
+    let y = 0;
+    ctx.moveTo(x, y);
+    for (let k = 0; k < 8; k += 1) {
+      x += 40 + ((i * 13 + k * 17) % 50);
+      y += s / 8;
+      ctx.lineTo(x % s, y);
+    }
+    ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2.2, 2.2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
   return tex;
 }

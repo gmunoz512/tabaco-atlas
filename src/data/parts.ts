@@ -39,8 +39,8 @@ export const LAYERS: Record<
     nameEs: "Podio",
     nameEn: "Podium",
     hintEs: "Zócalo y portones",
-    hintEn: "Plinth and gates",
-    swatch: "#c9c6c0",
+    hintEn: "Grey-veined marble base",
+    swatch: "#cfc8be",
   },
   colonnade: {
     nameEs: "Columnata",
@@ -76,8 +76,8 @@ export const CREAM = "#f3eee6";
 export const CREAM_HI = "#faf7f2";
 export const CREAM_DEEP = "#e4ddd2";
 export const STONE_PLAZA = "#ece8e1";
-export const GREY_PODIUM = "#d5d1ca";
-export const GREY_DEEP = "#c4c0b8";
+export const GREY_PODIUM = "#d2cbc1";
+export const GREY_DEEP = "#c3bdb4";
 export const BRONZE = "#c17a4a";
 export const BRONZE_DARK = "#9a5a32";
 export const ARCH_VOID = "#151c28";
@@ -142,7 +142,7 @@ function generated(): AtlasPart[] {
     nameEn: `${cap(side.en)} gate`,
     scientific: `Portal ${side.es}`,
     descriptionEs: `Gran arco en el zócalo gris, ${side.es}, con hoja metálica oscura y hueco profundo.`,
-    descriptionEn: `A large arched doorway in the grey podium on the ${side.en}, with a dark metal leaf and a deep void.`,
+      descriptionEn: `Grey-veined marble podium with arched entries on the ${side.en}, glass-like leaves and a deep void.`,
     culturalEs:
       side.id === "south"
         ? "Los portones marcan el ingreso al interior: museo, murales y el ascensor hacia el mirador."
@@ -223,7 +223,7 @@ function generated(): AtlasPart[] {
       nameEn: `${cap(side.en)} column ${n}`,
       scientific: `Columna ${side.es} ${n}`,
       descriptionEs: `Fuste ${n} en la cara ${side.es} de la columnata. Orden alto, capitel sencillo, piedra crema.`,
-      descriptionEn: `Shaft ${n} on the ${side.en} colonnade face. A tall order, plain capital, cream stone.`,
+      descriptionEn: `Shaft ${n} on the ${side.en} colonnade face. Tall Ionic-ish order, cream stone.`,
       culturalEs:
         n === 1 && side.id === "east"
           ? "La columnata da al prisma un ritmo de templo cívico, no de obelisco desnudo."
@@ -314,6 +314,32 @@ function generated(): AtlasPart[] {
     color: RAIL,
   }));
 
+  const posts: AtlasPart[] = SIDES.flatMap((side) =>
+    [1, 2, 3, 4, 5].map((n) => ({
+      id: `post-${side.id}-${n}`,
+      layer: "plaza" as const,
+      nameEs: `Pilastra ${side.es} ${n}`,
+      nameEn: `${cap(side.en)} plaza pillar ${n}`,
+      scientific: `Pila ${side.es} ${n}`,
+      descriptionEs: `Pilastra baja ornamental en el perímetro de la explanada, cara ${side.es}.`,
+      descriptionEn: `A low ornamental square pillar on the ${side.en} plaza edge.`,
+      aliases: ["pillar", "post", "pilastra", "fence", side.en, side.es],
+      color: CREAM_HI,
+    })),
+  );
+
+  const balustrades: AtlasPart[] = SIDES.map((side) => ({
+    id: `balustrade-${side.id}`,
+    layer: "colonnade" as const,
+    nameEs: `Balaustrada ${side.es}`,
+    nameEn: `${cap(side.en)} balustrade`,
+    scientific: `Pluteus ${side.es}`,
+    descriptionEs: `Baranda de la terraza intermedia, cara ${side.es}, entre el zócalo de mármol y las columnas.`,
+    descriptionEn: `The mid-terrace balustrade on the ${side.en} face, between the marble podium and the columns.`,
+    aliases: ["balustrade", "balaustrada", "rail", side.en, side.es],
+    color: CREAM,
+  }));
+
   return [
     ...stairs,
     ...landings,
@@ -327,6 +353,8 @@ function generated(): AtlasPart[] {
     ...arches,
     ...emblems,
     ...rails,
+    ...posts,
+    ...balustrades,
   ];
 }
 
@@ -396,8 +424,8 @@ const CORE: AtlasPart[] = [
     nameEs: "Cuerpo del ático",
     nameEn: "Attic body",
     scientific: "Atticum",
-    descriptionEs: "Prisma menor, retranqueado, entre la terraza y el fuste cilíndrico. Lleva arcos rojizos.",
-    descriptionEn: "A smaller, set-back prism between the terrace and the cylindrical shaft. It carries the red arches.",
+    descriptionEs: "Prisma menor, retranqueado, entre la terraza y el fuste cilíndrico. Lleva arcos y el escudo.",
+    descriptionEn: "A smaller, set-back prism between the terrace and the cylindrical shaft. It carries the arches and the shield.",
     aliases: ["attic", "ático", "setback"],
     color: CREAM,
   },
@@ -504,12 +532,25 @@ const CORE: AtlasPart[] = [
     descriptionEs:
       "Estatua de bronce rojizo en la cima, alas y brazos alzados. Es la figura que cierra la vertical del monumento.",
     descriptionEn:
-      "A reddish bronze statue at the summit, wings and arms raised. It is the figure that closes the monument’s vertical.",
+      "A reddish bronze statue at the summit, wings back and arms raised in a V. It is the figure that closes the monument’s vertical.",
     culturalEs:
       "El ángel se pensó como Victoria/Paz en el proyecto original. Hoy se lee sobre un edificio rededicado a la Restauración, no a un dictador.",
     culturalEn:
       "The angel was conceived as Victory/Peace in the original project. Today it is read on a building rededicated to the Restoration, not to a dictator.",
     aliases: ["angel", "ángel", "peace", "paz", "statue", "victoria", "bronze"],
+    color: BRONZE,
+  },
+  {
+    id: "equestrian-luperon",
+    layer: "plaza",
+    nameEs: "Estatua ecuestre",
+    nameEn: "Equestrian statue",
+    scientific: "Eques",
+    descriptionEs: "Jinete de bronce sobre peana, en el eje de la aproximación. Marca el acceso cívico antes de las gradas.",
+    descriptionEn: "A bronze rider on a pedestal, on the approach axis. It marks the civic approach before the stairs.",
+    culturalEs: "En el eje sur el monumento se lee con un héroe a caballo: la Restauración llega a pie de plaza.",
+    culturalEn: "On the south axis the monument is read with a hero on horseback: the Restoration meets you at plaza level.",
+    aliases: ["equestrian", "horse", "caballo", "luperon", "luperón", "statue"],
     color: BRONZE,
   },
 ];

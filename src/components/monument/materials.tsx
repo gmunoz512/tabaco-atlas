@@ -1,7 +1,9 @@
 import { PART_BY_ID } from "@/data/parts";
 import { useAtlas } from "@/state/atlas-store";
 
-export type Finish = "stone" | "metal" | "void" | "accent";
+import type { Texture } from "three";
+
+export type Finish = "stone" | "metal" | "void" | "accent" | "marble";
 
 const SELECTED = "#e4c38a";
 
@@ -11,6 +13,7 @@ export function ExhibitMaterial({
   roughness,
   metalness,
   envMapIntensity,
+  map,
   offset = false,
 }: {
   id: string;
@@ -18,6 +21,7 @@ export function ExhibitMaterial({
   roughness?: number;
   metalness?: number;
   envMapIntensity?: number;
+  map?: Texture | null;
   offset?: boolean;
 }) {
   const { selectedId } = useAtlas();
@@ -51,6 +55,24 @@ export function ExhibitMaterial({
         envMapIntensity={0.2}
         emissive={selected ? "#6a4a20" : "#0a1018"}
         emissiveIntensity={selected ? 0.18 : 0.22}
+        polygonOffset={offset}
+        polygonOffsetFactor={offset ? -1 : 0}
+      />
+    );
+  }
+
+  if (finish === "marble") {
+    return (
+      <meshPhysicalMaterial
+        color={color}
+        map={map ?? undefined}
+        roughness={selected ? 0.28 : (roughness ?? 0.36)}
+        metalness={selected ? 0.16 : (metalness ?? 0.08)}
+        envMapIntensity={envMapIntensity ?? 0.85}
+        clearcoat={0.34}
+        clearcoatRoughness={0.28}
+        emissive={selected ? "#6a4e24" : "#000000"}
+        emissiveIntensity={selected ? 0.18 : 0}
         polygonOffset={offset}
         polygonOffsetFactor={offset ? -1 : 0}
       />

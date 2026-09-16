@@ -16,19 +16,24 @@ export function ControlDock({ open, onOpen, onClose }: ControlDockProps) {
   const { locale, explode, setExplode } = useAtlas();
   const copy = t(locale);
   const exploded = explode > 0.5;
+  const hidePanel = explode > 0.2;
 
   return (
     <>
-      {!open ? (
+      {!open || hidePanel ? (
         <div className="pointer-events-auto absolute top-3 left-3 z-30 flex max-w-[calc(100%-9rem)] flex-col items-start gap-2 md:top-4 md:left-4 md:max-w-[72%] md:flex-row md:flex-wrap md:items-center">
-          <span className="panel-surface rounded-full px-3 py-2 font-display text-xs tracking-wide text-gold md:text-sm">
-            {copy.appName}
-          </span>
+          {!hidePanel ? (
+            <span className="panel-surface rounded-full px-3 py-2 font-display text-xs tracking-wide text-gold md:text-sm">
+              {copy.appName}
+            </span>
+          ) : null}
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onOpen} aria-expanded={false}>
-              <Layers className="size-3.5" />
-              {copy.layers}
-            </Button>
+            {!hidePanel ? (
+              <Button variant="outline" size="sm" onClick={onOpen} aria-expanded={false}>
+                <Layers className="size-3.5" />
+                {copy.layers}
+              </Button>
+            ) : null}
             <Button
               variant={exploded ? "gold" : "outline"}
               size="sm"
@@ -41,7 +46,7 @@ export function ControlDock({ open, onOpen, onClose }: ControlDockProps) {
         </div>
       ) : null}
 
-      {open ? (
+      {open && !hidePanel ? (
         <aside
           className="panel-surface pointer-events-auto absolute top-16 right-3 left-3 z-20 flex max-h-[58vh] flex-col gap-4 overflow-hidden rounded-3xl p-4 md:top-4 md:right-auto md:bottom-16 md:left-4 md:max-h-[min(78vh,46rem)] md:w-[22.5rem]"
           aria-label={copy.layers}

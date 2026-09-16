@@ -14,6 +14,7 @@
   --color-soil: #3d2c20;
   --color-blossom: #e8b4bc;
   --color-cyan: #8ec8dc;
+  --color-sky: #8eb8dc;
 }
 
 html,
@@ -25,10 +26,20 @@ body,
 
 body {
   margin: 0;
-  background: #07090d;
+  background: #8eb8dc;
   color: var(--color-cream);
   font-family: var(--font-sans);
   overflow: hidden;
+}
+
+.chrome-fade {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.chrome-fade-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
 }
 
 button,

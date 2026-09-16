@@ -1,5 +1,5 @@
 import type { Vector3Tuple } from "three";
-import { CORNERS, PARTS, SIDES, type LayerId } from "@/data/parts";
+import { CORNERS, LAYER_IDS, PARTS, SIDES, type LayerId } from "@/data/parts";
 
 export type MeshKind =
   | "box"
@@ -17,7 +17,10 @@ export type MeshKind =
   | "figure"
   | "podium"
   | "attic"
-  | "wall";
+  | "wall"
+  | "post"
+  | "statue"
+  | "balustrade";
 
 export interface PartPose {
   rest: Vector3Tuple;
@@ -46,29 +49,29 @@ const CORNER_DIR = {
 } as const;
 
 /** Half-width of the square colonnade / podium. */
-export const COL_HW = 2.18;
-export const POD_HW = 2.18;
-/** Visible column height, matching colonnade walls. */
-export const COL_HEIGHT = 3.62;
-export const COL_Y = 3.28;
-export const ATTIC_W = 3.74;
-export const ATTIC_Y = 5.92;
+export const COL_HW = 2.28;
+export const POD_HW = 2.28;
+export const COL_HEIGHT = 3.55;
+export const COL_Y = 3.42;
+export const ATTIC_W = 3.86;
+export const ATTIC_Y = 6.05;
 export const SHAFT = {
-  r0: 0.4,
-  r1: 0.385,
-  r2: 0.37,
-  seg: 2.88,
-  helixR: 0.428,
-  helixH: 8.64,
+  r0: 0.42,
+  r1: 0.4,
+  r2: 0.385,
+  seg: 3.05,
+  helixR: 0.472,
+  helixH: 9.15,
+  turns: 8.2,
 };
 
-const LAYER_SPREAD: Record<LayerId, { radial: number; lift: number }> = {
-  plaza: { radial: 6.4, lift: -1.8 },
-  podium: { radial: 5.2, lift: -0.35 },
-  colonnade: { radial: 5.8, lift: 0.55 },
-  attic: { radial: 4.8, lift: 1.15 },
-  shaft: { radial: 3.4, lift: 1.6 },
-  lookout: { radial: 3.8, lift: 2.8 },
+export const CLUSTER: Record<LayerId, Vector3Tuple> = {
+  plaza: [-18.5, 1.4, 6],
+  podium: [-10.5, 2.4, 5],
+  colonnade: [-1.2, 3.6, 4],
+  attic: [8.4, 5.2, 4.5],
+  shaft: [15.2, 7.8, 3.5],
+  lookout: [21.2, 11.2, 3],
 };
 
 function pose(
@@ -80,51 +83,46 @@ function pose(
   return { rest, explode, rotation: ZERO, scale: UNIT, kind, ...extra };
 }
 
-function explodeFrom(rest: Vector3Tuple, layer: LayerId, extraLift = 0): Vector3Tuple {
-  const spread = LAYER_SPREAD[layer];
-  const len = Math.hypot(rest[0], rest[2]);
-  if (len < 0.12) {
-    return [rest[0] + 0.15, rest[1] + spread.lift + extraLift, rest[2] + 0.2];
-  }
-  const nx = rest[0] / len;
-  const nz = rest[2] / len;
-  return [rest[0] + nx * spread.radial, rest[1] + spread.lift + extraLift, rest[2] + nz * spread.radial];
-}
-
 function buildPoses(): Record<string, PartPose> {
   const p: Record<string, PartPose> = {};
 
-  p["plaza-esplanade"] = pose([0, 0.06, 0], [0, -2.4, 0], "box", { size: [9.4, 0.12, 9.4] });
-  p["plaza-walk"] = pose([0, 0.015, 0], [0, -3.0, 0], "box", { size: [11.6, 0.05, 11.6] });
+  p["plaza-esplanade"] = pose([0, 0.05, 0], CLUSTER.plaza, "box", { size: [11.2, 0.1, 11.2] });
+  p["plaza-walk"] = pose([0, 0.012, 0], [CLUSTER.plaza[0], 0.4, CLUSTER.plaza[2] + 2.2], "box", {
+    size: [13.4, 0.04, 13.4],
+  });
+  p["equestrian-luperon"] = pose([0, 0.62, 8.6], [CLUSTER.plaza[0] + 2.4, 1.6, CLUSTER.plaza[2] + 3.2], "statue");
 
   for (const side of SIDES) {
     const d = SIDE_DIR[side.id];
-    const stairsRest: Vector3Tuple = [d.x * 4.7, 0.32, d.z * 4.7];
-    p[`stairs-${side.id}`] = pose(stairsRest, explodeFrom(stairsRest, "plaza", -0.2), "stairs", {
+    const stairsRest: Vector3Tuple = [d.x * 5.35, 0.38, d.z * 5.35];
+    p[`stairs-${side.id}`] = pose(stairsRest, [0, 0, 0], "stairs", { rotation: [0, d.rot, 0] });
+    const landingRest: Vector3Tuple = [d.x * 3.55, 0.72, d.z * 3.55];
+    p[`landing-${side.id}`] = pose(landingRest, [0, 0, 0], "box", {
+      size: [4.2, 0.08, 0.9],
       rotation: [0, d.rot, 0],
     });
-    const landingRest: Vector3Tuple = [d.x * 3.38, 0.64, d.z * 3.38];
-    p[`landing-${side.id}`] = pose(landingRest, explodeFrom(landingRest, "plaza", 0.2), "box", {
-      size: [3.2, 0.08, 0.85],
+    const gateRest: Vector3Tuple = [d.x * 2.32, 0.72, d.z * 2.32];
+    p[`gate-${side.id}`] = pose(gateRest, [0, 0, 0], "gate", { rotation: [0, d.rot, 0] });
+    const wallRest: Vector3Tuple = [d.x * 1.42, COL_Y, d.z * 1.42];
+    p[`wall-${side.id}`] = pose(wallRest, [0, 0, 0], "wall", {
+      size: [3.7, COL_HEIGHT - 0.18, 0.16],
       rotation: [0, d.rot, 0],
     });
-    const gateRest: Vector3Tuple = [d.x * 2.22, 0.58, d.z * 2.22];
-    p[`gate-${side.id}`] = pose(gateRest, explodeFrom(gateRest, "podium"), "gate", {
+    const entRest: Vector3Tuple = [d.x * 2.3, 5.28, d.z * 2.3];
+    p[`entablature-${side.id}`] = pose(entRest, [0, 0, 0], "box", {
+      size: [4.64, 0.22, 0.4],
       rotation: [0, d.rot, 0],
     });
-    const wallRest: Vector3Tuple = [d.x * 1.38, COL_Y, d.z * 1.38];
-    p[`wall-${side.id}`] = pose(wallRest, explodeFrom(wallRest, "colonnade", -0.3), "wall", {
-      size: [3.52, COL_HEIGHT - 0.16, 0.14],
-      rotation: [0, d.rot, 0],
-    });
-    const entRest: Vector3Tuple = [d.x * 2.2, 5.14, d.z * 2.2];
-    p[`entablature-${side.id}`] = pose(entRest, explodeFrom(entRest, "colonnade", 0.8), "box", {
-      size: [4.44, 0.2, 0.38],
-      rotation: [0, d.rot, 0],
-    });
-    const railRest: Vector3Tuple = [d.x * 0.38, 16.18, d.z * 0.38];
-    p[`rail-${side.id}`] = pose(railRest, explodeFrom(railRest, "lookout", 0.4), "rail", {
-      rotation: [0, d.rot, 0],
+    const railRest: Vector3Tuple = [d.x * 0.42, 16.55, d.z * 0.42];
+    p[`rail-${side.id}`] = pose(railRest, [0, 0, 0], "rail", { rotation: [0, d.rot, 0] });
+    const balRest: Vector3Tuple = [d.x * 2.32, 1.78, d.z * 2.32];
+    p[`balustrade-${side.id}`] = pose(balRest, [0, 0, 0], "balustrade", { rotation: [0, d.rot, 0] });
+
+    ;[0.1, 0.3, 0.5, 0.7, 0.9].forEach((t, index) => {
+      const along = -4.95 + 9.9 * t;
+      const rest: Vector3Tuple =
+        d.z !== 0 ? [along, 0.28, d.z * 6.22] : [d.x * 6.22, 0.28, along];
+      p[`post-${side.id}-${index + 1}`] = pose(rest, [0, 0, 0], "post");
     });
 
     const midTs = [0.2, 0.4, 0.6, 0.8];
@@ -145,7 +143,7 @@ function buildPoses(): Record<string, PartPose> {
         z = -COL_HW + 2 * COL_HW * t;
       }
       const rest: Vector3Tuple = [x, COL_Y, z];
-      p[`column-${side.id}-${index + 1}`] = pose(rest, explodeFrom(rest, "colonnade", index * 0.12), "column", {
+      p[`column-${side.id}-${index + 1}`] = pose(rest, [0, 0, 0], "column", {
         rotation: [0, d.rot, 0],
       });
     });
@@ -154,59 +152,83 @@ function buildPoses(): Record<string, PartPose> {
   for (const side of SIDES) {
     const d = SIDE_DIR[side.id];
     for (const n of [1, 2, 3] as const) {
-      const along = (n - 2) * 1.08;
+      const along = (n - 2) * 1.12;
       const rest: Vector3Tuple =
         d.z !== 0 ? [along, ATTIC_Y, d.z * (ATTIC_W / 2 + 0.02)] : [d.x * (ATTIC_W / 2 + 0.02), ATTIC_Y, along];
-      p[`arch-${side.id}-${n}`] = pose(rest, explodeFrom(rest, "attic", (n - 2) * 0.25), "arch", {
-        rotation: [0, d.rot, 0],
-      });
+      p[`arch-${side.id}-${n}`] = pose(rest, [0, 0, 0], "arch", { rotation: [0, d.rot, 0] });
     }
     const emblemRest: Vector3Tuple = [
       d.x * (ATTIC_W / 2 + 0.04),
-      ATTIC_Y + 0.48,
+      ATTIC_Y + 0.5,
       d.z * (ATTIC_W / 2 + 0.04),
     ];
-    p[`emblem-${side.id}`] = pose(emblemRest, explodeFrom(emblemRest, "attic", 1.1), "emblem", {
-      rotation: [0, d.rot, 0],
-    });
+    p[`emblem-${side.id}`] = pose(emblemRest, [0, 0, 0], "emblem", { rotation: [0, d.rot, 0] });
   }
 
   for (const corner of CORNERS) {
     const c = CORNER_DIR[corner.id];
-    const pierRest: Vector3Tuple = [c.x * POD_HW, 0.72, c.z * POD_HW];
-    p[`podium-corner-${corner.id}`] = pose(pierRest, explodeFrom(pierRest, "podium", 0.15), "box", {
-      size: [0.38, 1.32, 0.38],
-    });
+    const pierRest: Vector3Tuple = [c.x * POD_HW, 0.88, c.z * POD_HW];
+    p[`podium-corner-${corner.id}`] = pose(pierRest, [0, 0, 0], "box", { size: [0.42, 1.62, 0.42] });
     const colRest: Vector3Tuple = [c.x * COL_HW, COL_Y, c.z * COL_HW];
-    p[`column-corner-${corner.id}`] = pose(colRest, explodeFrom(colRest, "colonnade", 0.35), "column");
-    const pinRest: Vector3Tuple = [c.x * 2.08, 5.42, c.z * 2.08];
-    p[`pinnacle-${corner.id}`] = pose(pinRest, explodeFrom(pinRest, "colonnade", 1.4), "pinnacle");
+    p[`column-corner-${corner.id}`] = pose(colRest, [0, 0, 0], "column");
+    const pinRest: Vector3Tuple = [c.x * 2.18, 5.56, c.z * 2.18];
+    p[`pinnacle-${corner.id}`] = pose(pinRest, [0, 0, 0], "pinnacle");
   }
 
-  p["podium-plinth"] = pose([0, 0.72, 0], [0, -1.35, 0], "podium", { size: [4.36, 1.32, 4.36] });
-  p["podium-cornice"] = pose([0, 1.4, 0], [0, -0.2, 0], "box", { size: [4.52, 0.1, 4.52] });
-  p["colonnade-terrace"] = pose([0, 5.28, 0], [0, 6.35, 0], "box", { size: [4.52, 0.12, 4.52] });
-  p["attic-body"] = pose([0, ATTIC_Y, 0], [0, 7.4, 0], "attic", { size: [ATTIC_W, 1.2, ATTIC_W] });
+  p["podium-plinth"] = pose([0, 0.88, 0], [0, 0, 0], "podium", { size: [4.56, 1.62, 4.56] });
+  p["podium-cornice"] = pose([0, 1.72, 0], [0, 0, 0], "box", { size: [4.72, 0.1, 4.72] });
+  p["colonnade-terrace"] = pose([0, 5.42, 0], [0, 0, 0], "box", { size: [4.72, 0.14, 4.72] });
+  p["attic-body"] = pose([0, ATTIC_Y, 0], [0, 0, 0], "attic", { size: [ATTIC_W, 1.18, ATTIC_W] });
 
-  const shaft0 = 7.0 + SHAFT.seg / 2;
-  p["shaft-lower"] = pose([0, shaft0, 0], [0, 9.1, 0], "cylinder", { size: [SHAFT.r0, SHAFT.seg, SHAFT.r0] });
-  p["shaft-mid"] = pose([0, shaft0 + SHAFT.seg, 0], [2.4, 12.2, 0.4], "cylinder", {
+  const shaft0 = 7.12 + SHAFT.seg / 2;
+  p["shaft-lower"] = pose([0, shaft0, 0], [0, 0, 0], "cylinder", { size: [SHAFT.r0, SHAFT.seg, SHAFT.r0] });
+  p["shaft-mid"] = pose([0, shaft0 + SHAFT.seg, 0], [0, 0, 0], "cylinder", {
     size: [SHAFT.r1, SHAFT.seg, SHAFT.r0 * 0.98],
   });
-  p["shaft-upper"] = pose([0, shaft0 + SHAFT.seg * 2, 0], [-2.2, 15.0, 0.5], "cylinder", {
+  p["shaft-upper"] = pose([0, shaft0 + SHAFT.seg * 2, 0], [0, 0, 0], "cylinder", {
     size: [SHAFT.r2, SHAFT.seg, SHAFT.r1],
   });
-  p["shaft-spiral"] = pose([0, shaft0 + SHAFT.seg, 0], [4.6, 11.6, 2.8], "helix", {
-    size: [SHAFT.helixR, SHAFT.helixH, 0.016],
+  p["shaft-spiral"] = pose([0, shaft0 + SHAFT.seg, 0], [0, 0, 0], "helix", {
+    size: [SHAFT.helixR, SHAFT.helixH, 0.048],
   });
-  p["shaft-capital"] = pose([0, 15.52, 0], [0, 18.2, 0], "cylinder", { size: [0.5, 0.16, 0.5] });
-  p["elevator-shaft"] = pose([0, 10.6, 0], [5.2, 10.8, 3.4], "box", { size: [0.16, 7.2, 0.16] });
+  p["shaft-capital"] = pose([0, 16.05, 0], [0, 0, 0], "cylinder", { size: [0.52, 0.18, 0.52] });
+  p["elevator-shaft"] = pose([0, 11.0, 0], [0, 0, 0], "box", { size: [0.16, 7.6, 0.16] });
 
-  p["observation-deck"] = pose([0, 15.82, 0], [0, 19.1, 0], "balcony");
-  p["crown-cap"] = pose([0, 16.18, 0], [0, 20.0, 0], "cylinder", { size: [0.28, 0.32, 0.24] });
-  p["angel-peace"] = pose([0, 16.55, 0], [0, 21.4, 0], "angel", { scale: [2.15, 2.15, 2.15] });
+  p["observation-deck"] = pose([0, 16.38, 0], [0, 0, 0], "balcony");
+  p["crown-cap"] = pose([0, 16.78, 0], [0, 0, 0], "cylinder", { size: [0.3, 0.34, 0.26] });
+  p["angel-peace"] = pose([0, 17.12, 0], [0, 0, 0], "angel", { scale: [2.35, 2.35, 2.35] });
 
+  applyCategoryLayout(p);
   return p;
+}
+
+function applyCategoryLayout(p: Record<string, PartPose>) {
+  const spacing: Record<LayerId, number> = {
+    plaza: 2.05,
+    podium: 1.85,
+    colonnade: 1.15,
+    attic: 1.45,
+    shaft: 2.1,
+    lookout: 1.8,
+  };
+
+  for (const layer of LAYER_IDS) {
+    const ids = PARTS.filter((part) => part.layer === layer).map((part) => part.id);
+    const cols = Math.max(3, Math.ceil(Math.sqrt(ids.length)));
+    const gap = spacing[layer];
+    const origin = CLUSTER[layer];
+    ids.forEach((id, index) => {
+      const poseNode = p[id];
+      if (!poseNode) return;
+      const c = index % cols;
+      const r = Math.floor(index / cols);
+      poseNode.explode = [
+        origin[0] + (c - (cols - 1) / 2) * gap,
+        origin[1] + r * gap * 0.72,
+        origin[2],
+      ];
+    });
+  }
 }
 
 export const PART_POSES: Record<string, PartPose> = buildPoses();
