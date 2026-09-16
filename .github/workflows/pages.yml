@@ -36,7 +36,7 @@ jobs:
           publish_dir: ./dist
           force_orphan: true
           enable_jekyll: false
-          full_commit_message: "Deploy El Anatomy to GitHub Pages"
+          full_commit_message: "Deploy Monumento's Anatomy to GitHub Pages"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
