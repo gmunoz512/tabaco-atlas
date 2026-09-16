@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Abre [http://localhost:5173](http://localhost:5173).
+Abre [http://localhost:5173](http://localhost:5173) (redirige a `/tabaco-atlas/`).
 
 ```sh
 npm run typecheck
@@ -41,9 +41,11 @@ La geometría se genera en Three.js (primitivas y curvas). No se incluyen mallas
 
 ## Despliegue
 
-Sitio público: [https://elanatomy6750.tiiny.site](https://elanatomy6750.tiiny.site)
+Sitio público (GitHub Pages): [https://gmunoz512.github.io/tabaco-atlas/](https://gmunoz512.github.io/tabaco-atlas/)
 
-Proyecto Vite. `vercel.json` configura `npm run build` y el directorio `dist/` para Vercel u otro host estático. `base: "./"` en Vite permite servir el sitio desde la raíz o una subruta.
+`vite.config.ts` usa `base: "/tabaco-atlas/"`. El workflow `.github/workflows/pages.yml` ejecuta `npm ci` / `npm run build`, publica `dist/` en la rama `gh-pages` y despliega con `actions/deploy-pages`. Fuente de Pages: GitHub Actions, o la rama `gh-pages` (carpeta `/`).
+
+En local, `npm run dev` y `npm run preview` redirigen `/` a `/tabaco-atlas/`. `vercel.json` sigue sirviendo `dist/` si se usa Vercel.
 
 ## Licencia
 
