@@ -1,28 +1,34 @@
+import { useMemo } from "react";
 import { PARTS, PART_BY_ID } from "@/data/parts";
 import { useAtlas } from "@/state/atlas-store";
+import { createArchGeometry, createHelixGeometry } from "@/components/monument/geometries";
 import { PART_POSES, type MeshKind } from "@/components/monument/poses";
 import { SelectablePart } from "@/components/monument/SelectablePart";
 
-function StoneMaterial({
+function Surface({
   id,
-  roughness = 0.72,
-  metalness = 0.04,
+  roughness = 0.9,
+  metalness = 0.03,
+  envMapIntensity = 0.55,
 }: {
   id: string;
   roughness?: number;
   metalness?: number;
+  envMapIntensity?: number;
 }) {
   const { selectedId } = useAtlas();
   const selected = selectedId === id;
-  const color = PART_BY_ID[id].color;
+  const base = PART_BY_ID[id].color;
+  const color = selected ? "#c4a56a" : base;
 
   return (
     <meshStandardMaterial
-      color={selected ? "#d7c07a" : color}
-      roughness={roughness}
-      metalness={metalness}
-      emissive={selected ? "#8a6c32" : "#141414"}
-      emissiveIntensity={selected ? 0.38 : 0.03}
+      color={color}
+      roughness={selected ? 0.55 : roughness}
+      metalness={selected ? 0.12 : metalness}
+      envMapIntensity={envMapIntensity}
+      emissive={selected ? "#5c4520" : "#000000"}
+      emissiveIntensity={selected ? 0.16 : 0}
     />
   );
 }
@@ -30,15 +36,15 @@ function StoneMaterial({
 function StairsBody({ id }: { id: string }) {
   return (
     <group>
-      {Array.from({ length: 7 }, (_, index) => (
+      {Array.from({ length: 11 }, (_, index) => (
         <mesh
           key={index}
-          position={[0, index * 0.075 - 0.22, 0.55 - index * 0.175]}
+          position={[0, index * 0.055 - 0.28, 0.72 - index * 0.13]}
           castShadow
           receiveShadow
         >
-          <boxGeometry args={[2.15, 0.075, 0.22]} />
-          <StoneMaterial id={id} roughness={0.86} />
+          <boxGeometry args={[2.55, 0.055, 0.16]} />
+          <Surface id={id} roughness={0.94} />
         </mesh>
       ))}
     </group>
@@ -48,129 +54,242 @@ function StairsBody({ id }: { id: string }) {
 function ColumnBody({ id }: { id: string }) {
   return (
     <group>
-      <mesh position={[0, -0.68, 0]} castShadow receiveShadow>
-        <boxGeometry args={[0.3, 0.12, 0.3]} />
-        <StoneMaterial id={id} roughness={0.7} />
+      <mesh position={[0, -1.02, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.26, 0.08, 0.26]} />
+        <Surface id={id} roughness={0.86} />
       </mesh>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.09, 0.11, 1.32, 12]} />
-        <StoneMaterial id={id} roughness={0.58} metalness={0.06} />
+      <mesh position={[0, -0.94, 0]} castShadow>
+        <cylinderGeometry args={[0.12, 0.13, 0.08, 16]} />
+        <Surface id={id} roughness={0.82} />
       </mesh>
-      <mesh position={[0, 0.7, 0]} castShadow>
-        <boxGeometry args={[0.26, 0.1, 0.26]} />
-        <StoneMaterial id={id} roughness={0.62} />
+      <mesh position={[0, 0.02, 0]} castShadow>
+        <cylinderGeometry args={[0.09, 0.105, 1.88, 20]} />
+        <Surface id={id} roughness={0.78} metalness={0.05} envMapIntensity={0.7} />
+      </mesh>
+      <mesh position={[0, 0.98, 0]} castShadow>
+        <cylinderGeometry args={[0.12, 0.1, 0.08, 16]} />
+        <Surface id={id} roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 1.05, 0]} castShadow>
+        <boxGeometry args={[0.24, 0.07, 0.24]} />
+        <Surface id={id} roughness={0.84} />
       </mesh>
     </group>
   );
 }
 
-function FigureBody({ id }: { id: string }) {
+function GateBody({ id }: { id: string }) {
+  const voidGeo = useMemo(() => createArchGeometry(0.95, 1.05, 0.12), []);
+  const frameGeo = useMemo(() => createArchGeometry(1.12, 1.18, 0.06), []);
+  return (
+    <group>
+      <mesh geometry={frameGeo} position={[0, -0.52, -0.08]} castShadow>
+        <Surface id="podium-plinth" roughness={0.88} />
+      </mesh>
+      <mesh geometry={voidGeo} position={[0, -0.48, -0.02]}>
+        <meshStandardMaterial color="#4a1c18" roughness={0.92} />
+      </mesh>
+      {[-0.22, 0, 0.22].map((x) => (
+        <mesh key={x} position={[x, -0.08, 0.04]} castShadow>
+          <boxGeometry args={[0.035, 0.85, 0.03]} />
+          <Surface id={id} roughness={0.4} metalness={0.55} envMapIntensity={0.9} />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.22, 0.05]} castShadow>
+        <boxGeometry args={[0.78, 0.035, 0.03]} />
+        <Surface id={id} roughness={0.4} metalness={0.55} />
+      </mesh>
+    </group>
+  );
+}
+
+function ArchBody({ id }: { id: string }) {
+  const voidGeo = useMemo(() => createArchGeometry(0.42, 0.52, 0.1), []);
+  const frameGeo = useMemo(() => createArchGeometry(0.52, 0.62, 0.05), []);
+  return (
+    <group>
+      <mesh geometry={frameGeo} position={[0, -0.22, -0.04]} castShadow>
+        <meshStandardMaterial color="#e4d4b4" roughness={0.86} />
+      </mesh>
+      <mesh geometry={voidGeo} position={[0, -0.2, 0]}>
+        <Surface id={id} roughness={0.78} metalness={0.08} envMapIntensity={0.35} />
+      </mesh>
+    </group>
+  );
+}
+
+function HelixBody({ id }: { id: string }) {
+  const geo = useMemo(() => createHelixGeometry(0.49, 5.05, 2.35, 0.03), []);
+  return (
+    <mesh geometry={geo} castShadow>
+      <Surface id={id} roughness={0.8} />
+    </mesh>
+  );
+}
+
+function BalconyBody({ id }: { id: string }) {
+  return (
+    <group>
+      <mesh castShadow receiveShadow>
+        <cylinderGeometry args={[0.66, 0.66, 0.1, 32]} />
+        <Surface id={id} roughness={0.86} />
+      </mesh>
+      <mesh position={[0, 0.08, 0]}>
+        <torusGeometry args={[0.64, 0.025, 8, 40]} />
+        <Surface id={id} roughness={0.7} metalness={0.08} />
+      </mesh>
+    </group>
+  );
+}
+
+function RailBody({ id }: { id: string }) {
+  return (
+    <group>
+      {[-0.28, 0, 0.28].map((x) => (
+        <mesh key={x} position={[x, 0.08, 0]} castShadow>
+          <cylinderGeometry args={[0.012, 0.012, 0.2, 8]} />
+          <Surface id={id} roughness={0.55} metalness={0.2} />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.18, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <cylinderGeometry args={[0.012, 0.012, 0.62, 8]} />
+        <Surface id={id} roughness={0.55} metalness={0.2} />
+      </mesh>
+    </group>
+  );
+}
+
+function PinnacleBody({ id }: { id: string }) {
+  return (
+    <group>
+      <mesh castShadow>
+        <boxGeometry args={[0.22, 0.12, 0.22]} />
+        <Surface id={id} roughness={0.84} />
+      </mesh>
+      <mesh position={[0, 0.18, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.08, 0.22, 8]} />
+        <Surface id={id} roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <sphereGeometry args={[0.055, 12, 8]} />
+        <Surface id={id} roughness={0.76} />
+      </mesh>
+    </group>
+  );
+}
+
+function EmblemBody({ id }: { id: string }) {
+  return (
+    <group>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.11, 0.11, 0.04, 16]} />
+        <Surface id={id} roughness={0.38} metalness={0.55} envMapIntensity={0.85} />
+      </mesh>
+      <mesh position={[0, 0, 0.025]} rotation={[Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.07, 16]} />
+        <meshStandardMaterial color="#7a341c" roughness={0.45} metalness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+function AngelBody({ id }: { id: string }) {
   return (
     <group>
       <mesh position={[0, 0.08, 0]} castShadow>
-        <cylinderGeometry args={[0.1, 0.12, 0.18, 8]} />
-        <StoneMaterial id={id} roughness={0.45} metalness={0.28} />
+        <cylinderGeometry args={[0.045, 0.055, 0.16, 10]} />
+        <Surface id={id} roughness={0.32} metalness={0.62} envMapIntensity={1} />
       </mesh>
-      <mesh position={[0, 0.36, 0]} castShadow>
-        <cylinderGeometry args={[0.11, 0.09, 0.34, 8]} />
-        <StoneMaterial id={id} roughness={0.42} metalness={0.3} />
+      <mesh position={[0, 0.28, 0]} castShadow>
+        <cylinderGeometry args={[0.07, 0.05, 0.22, 10]} />
+        <Surface id={id} roughness={0.3} metalness={0.65} envMapIntensity={1} />
       </mesh>
-      <mesh position={[-0.16, 0.34, 0]} rotation={[0, 0, 0.45]} castShadow>
-        <cylinderGeometry args={[0.028, 0.028, 0.3, 6]} />
-        <StoneMaterial id={id} roughness={0.45} metalness={0.28} />
+      <mesh position={[0, 0.48, 0]} castShadow>
+        <sphereGeometry args={[0.055, 12, 10]} />
+        <Surface id={id} roughness={0.28} metalness={0.62} />
       </mesh>
-      <mesh position={[0.16, 0.34, 0]} rotation={[0, 0, -0.45]} castShadow>
-        <cylinderGeometry args={[0.028, 0.028, 0.3, 6]} />
-        <StoneMaterial id={id} roughness={0.45} metalness={0.28} />
+      <mesh position={[-0.08, 0.42, 0]} rotation={[0, 0, 0.85]} castShadow>
+        <cylinderGeometry args={[0.018, 0.018, 0.28, 8]} />
+        <Surface id={id} roughness={0.32} metalness={0.6} />
       </mesh>
-      <mesh position={[0, 0.62, 0]} castShadow>
-        <sphereGeometry args={[0.09, 12, 10]} />
-        <StoneMaterial id={id} roughness={0.4} metalness={0.32} />
+      <mesh position={[0.08, 0.42, 0]} rotation={[0, 0, -0.85]} castShadow>
+        <cylinderGeometry args={[0.018, 0.018, 0.28, 8]} />
+        <Surface id={id} roughness={0.32} metalness={0.6} />
+      </mesh>
+      <mesh position={[-0.16, 0.28, -0.02]} rotation={[0.15, 0.4, 0.7]} scale={[0.35, 1, 0.55]} castShadow>
+        <sphereGeometry args={[0.12, 10, 8]} />
+        <meshStandardMaterial
+          color={PART_BY_ID[id].color}
+          roughness={0.35}
+          metalness={0.58}
+          envMapIntensity={0.9}
+        />
+      </mesh>
+      <mesh position={[0.16, 0.28, -0.02]} rotation={[0.15, -0.4, -0.7]} scale={[0.35, 1, 0.55]} castShadow>
+        <sphereGeometry args={[0.12, 10, 8]} />
+        <meshStandardMaterial
+          color={PART_BY_ID[id].color}
+          roughness={0.35}
+          metalness={0.58}
+          envMapIntensity={0.9}
+        />
       </mesh>
     </group>
   );
 }
 
-function LanternBody({ id }: { id: string }) {
+function CylinderBody({ id, size }: { id: string; size: [number, number, number] }) {
   return (
-    <group>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.22, 0.28, 0.18, 8]} />
-        <StoneMaterial id={id} roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 0.22, 0]} castShadow>
-        <cylinderGeometry args={[0.12, 0.16, 0.28, 8]} />
-        <StoneMaterial id={id} roughness={0.55} />
-      </mesh>
-      <mesh position={[0, 0.42, 0]} castShadow>
-        <coneGeometry args={[0.18, 0.16, 8]} />
-        <StoneMaterial id={id} roughness={0.52} />
-      </mesh>
-    </group>
+    <mesh castShadow receiveShadow>
+      <cylinderGeometry args={[size[0], size[2] ?? size[0], size[1], 48]} />
+      <Surface id={id} roughness={0.84} envMapIntensity={0.65} />
+    </mesh>
   );
 }
 
-function FlagpoleBody({ id }: { id: string }) {
-  return (
-    <group>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.028, 0.034, 1.55, 8]} />
-        <StoneMaterial id={id} metalness={0.45} roughness={0.35} />
-      </mesh>
-      <mesh position={[0.22, 0.42, 0]} castShadow>
-        <boxGeometry args={[0.42, 0.26, 0.02]} />
-        <meshStandardMaterial color="#002d62" roughness={0.55} />
-      </mesh>
-      <mesh position={[0.22, 0.42, 0.006]}>
-        <boxGeometry args={[0.08, 0.26, 0.01]} />
-        <meshStandardMaterial color="#fafafa" roughness={0.6} />
-      </mesh>
-      <mesh position={[0.34, 0.48, 0.006]}>
-        <boxGeometry args={[0.16, 0.12, 0.01]} />
-        <meshStandardMaterial color="#ce1126" roughness={0.55} />
-      </mesh>
-    </group>
-  );
-}
-
-function BoxBody({
-  id,
-  size,
-  kind,
-}: {
-  id: string;
-  size: [number, number, number];
-  kind: MeshKind;
-}) {
+function BoxBody({ id, size, kind }: { id: string; size: [number, number, number]; kind: MeshKind }) {
+  const radius = kind === "box" ? 0.04 : 0;
   return (
     <mesh castShadow receiveShadow>
       <boxGeometry args={size} />
-      <StoneMaterial
+      <Surface
         id={id}
-        roughness={kind === "window" ? 0.4 : 0.74}
-        metalness={kind === "window" ? 0.12 : 0.04}
+        roughness={kind === "arch" ? 0.7 : 0.9}
+        metalness={kind === "gate" ? 0.4 : 0.03}
       />
+      {radius ? null : null}
     </mesh>
   );
 }
 
 function PartBody({ id }: { id: string }) {
   const pose = PART_POSES[id];
+  const size = pose.size ?? [1, 1, 1];
   switch (pose.kind) {
     case "stairs":
       return <StairsBody id={id} />;
     case "column":
       return <ColumnBody id={id} />;
-    case "figure":
-      return <FigureBody id={id} />;
-    case "lantern":
-      return <LanternBody id={id} />;
-    case "flagpole":
-      return <FlagpoleBody id={id} />;
-    case "window":
-      return <BoxBody id={id} size={pose.size ?? [0.3, 0.4, 0.1]} kind="window" />;
+    case "gate":
+      return <GateBody id={id} />;
+    case "arch":
+      return <ArchBody id={id} />;
+    case "helix":
+      return <HelixBody id={id} />;
+    case "balcony":
+      return <BalconyBody id={id} />;
+    case "rail":
+      return <RailBody id={id} />;
+    case "pinnacle":
+      return <PinnacleBody id={id} />;
+    case "emblem":
+      return <EmblemBody id={id} />;
+    case "angel":
+      return <AngelBody id={id} />;
+    case "cylinder":
+      return <CylinderBody id={id} size={size} />;
     default:
-      return <BoxBody id={id} size={pose.size ?? [1, 1, 1]} kind="box" />;
+      return <BoxBody id={id} size={size} kind={pose.kind} />;
   }
 }
 

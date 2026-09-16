@@ -2,11 +2,11 @@ import type { Locale } from "@/data/parts";
 
 export const COPY = {
   es: {
-    appName: "El Anatomy",
-    documentTitle: "El Anatomy — Monumento a los Héroes de la Restauración",
+    appName: "Anatomía del Monumento",
+    documentTitle: "Anatomía del Monumento — Héroes de la Restauración",
     tagline: "Atlas 3D del Monumento de Santiago",
     subtitle: "Una torre cívica, vista por partes",
-    searchPlaceholder: "Buscar plaza, columna, héroe…",
+    searchPlaceholder: "Buscar plaza, columna, ángel…",
     searchEmpty: "Ninguna parte coincide.",
     layers: "Capas",
     inventory: "Inventario",
@@ -22,7 +22,7 @@ export const COPY = {
     culturalNote: "Nota histórica dominicana",
     orbitHint: "Arrastra para orbitar · pellizca o rueda para zoom",
     footer:
-      "El Anatomy — explorador arquitectónico educativo. No es publicidad turística ni un juicio político de una sola época.",
+      "Anatomía del Monumento — explorador arquitectónico educativo. No es publicidad turística ni un juicio político de una sola época.",
     language: "Idioma",
     languageEs: "Español",
     languageEn: "English",
@@ -35,16 +35,16 @@ export const COPY = {
     architect: "Henry Gazón Bona",
     region: "Santiago de los Caballeros, República Dominicana",
     intro:
-      "Modelo simplificado de la torre sobre la colina de Santiago. Gira, oculta capas y separa las piezas para inventariar plaza, pedestal, columnas, fuste, esculturas y mirador.",
+      "Modelo de la torre sobre la colina de Santiago. Gira, oculta capas y separa plaza, podio, columnata, ático, fuste y mirador.",
     historyNote:
-      "Se inauguró en 1953 como monumento a la «paz» de Trujillo. Tras 1961 la ciudad lo dedicó a quienes pelearon la Guerra de la Restauración (1863–1865) contra la anexión española.",
+      "Se inauguró en 1953 como monumento a la «paz» de Trujillo. Tras 1961 la ciudad lo dedicó a quienes pelearon la Guerra de la Restauración (1863–1865) contra la anexión española. En la cima está el Ángel de la Paz.",
   },
   en: {
-    appName: "El Anatomy",
-    documentTitle: "El Anatomy — Monument to the Heroes of the Restoration",
+    appName: "Monumento's Anatomy",
+    documentTitle: "Monumento's Anatomy — Heroes of the Restoration",
     tagline: "3D atlas of Santiago’s Monument",
     subtitle: "A civic tower, seen in parts",
-    searchPlaceholder: "Search plaza, column, hero…",
+    searchPlaceholder: "Search plaza, column, angel…",
     searchEmpty: "No parts match.",
     layers: "Layers",
     inventory: "Inventory",
@@ -60,7 +60,7 @@ export const COPY = {
     culturalNote: "Dominican historical note",
     orbitHint: "Drag to orbit · pinch or scroll to zoom",
     footer:
-      "El Anatomy — educational architectural explorer. Not tourism advertising, and not a verdict on a single political era.",
+      "Monumento's Anatomy — educational architectural explorer. Not tourism advertising, and not a verdict on a single political era.",
     language: "Language",
     languageEs: "Español",
     languageEn: "English",
@@ -73,9 +73,9 @@ export const COPY = {
     architect: "Henry Gazón Bona",
     region: "Santiago de los Caballeros, Dominican Republic",
     intro:
-      "A simplified model of the tower on Santiago’s hill. Orbit, hide layers, and space the pieces to inventory plaza, pedestal, columns, shaft, sculptures, and lookout.",
+      "A model of the tower on Santiago’s hill. Orbit, hide layers, and space plaza, podium, colonnade, attic, shaft, and lookout.",
     historyNote:
-      "It opened in 1953 as a monument to Trujillo’s “peace.” After 1961 the city dedicated it to those who fought the Restoration War (1863–1865) against Spanish reannexation.",
+      "It opened in 1953 as a monument to Trujillo’s “peace.” After 1961 the city dedicated it to those who fought the Restoration War (1863–1865) against Spanish reannexation. The bronze Angel of Peace stands at the crown.",
   },
 } as const;
 

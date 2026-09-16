@@ -41,7 +41,7 @@ export function ControlDock({ mobileOpen, onToggleMobile }: ControlDockProps) {
         }`}
       >
         <div className="min-w-0">
-          <p className="font-display text-xl leading-none text-gold">{copy.appName}</p>
+          <p className="font-display text-lg leading-tight text-gold md:text-xl">{copy.appName}</p>
           <p className="mt-1 text-xs text-muted">{copy.tagline}</p>
         </div>
         <SearchPanel />

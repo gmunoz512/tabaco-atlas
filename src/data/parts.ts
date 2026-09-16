@@ -1,9 +1,9 @@
 export const LAYER_IDS = [
   "plaza",
-  "pedestal",
-  "columns",
-  "tower",
-  "sculptures",
+  "podium",
+  "colonnade",
+  "attic",
+  "shaft",
   "lookout",
 ] as const;
 
@@ -31,271 +31,318 @@ export const LAYERS: Record<
   plaza: {
     nameEs: "Plaza y gradas",
     nameEn: "Plaza & stairs",
-    hintEs: "Explanada y accesos",
-    hintEn: "Esplanade and approaches",
-    swatch: "#c9c0b0",
+    hintEs: "Explanada de piedra clara",
+    hintEn: "Light stone esplanade",
+    swatch: "#d8d0c4",
   },
-  pedestal: {
-    nameEs: "Pedestal",
-    nameEn: "Pedestal",
-    hintEs: "Plinto y caras",
-    hintEn: "Plinth and faces",
-    swatch: "#ddd4c4",
+  podium: {
+    nameEs: "Podio",
+    nameEn: "Podium",
+    hintEs: "Zócalo gris y portones",
+    hintEn: "Grey base and gates",
+    swatch: "#8a8580",
   },
-  columns: {
-    nameEs: "Columnas",
-    nameEn: "Columns",
-    hintEs: "Peristilo y entablamento",
-    hintEn: "Colonnade and entablature",
-    swatch: "#f0e8d8",
+  colonnade: {
+    nameEs: "Columnata",
+    nameEn: "Colonnade",
+    hintEs: "Columnas crema y terraza",
+    hintEn: "Cream columns and terrace",
+    swatch: "#efe4cc",
   },
-  tower: {
-    nameEs: "Torre",
-    nameEn: "Tower",
-    hintEs: "Fuste, vanos, ascensor",
-    hintEn: "Shaft, openings, elevator",
-    swatch: "#e7dfd0",
+  attic: {
+    nameEs: "Ático",
+    nameEn: "Attic",
+    hintEs: "Arcos y escudos",
+    hintEn: "Arches and shields",
+    swatch: "#e4d7bc",
   },
-  sculptures: {
-    nameEs: "Esculturas",
-    nameEn: "Sculptures",
-    hintEs: "Héroes y alegorías",
-    hintEn: "Heroes and allegories",
-    swatch: "#8a6a3d",
+  shaft: {
+    nameEs: "Fuste",
+    nameEn: "Shaft",
+    hintEs: "Cilindro y espiral",
+    hintEn: "Cylinder and spiral",
+    swatch: "#f0e6d2",
   },
   lookout: {
     nameEs: "Mirador",
     nameEn: "Lookout",
-    hintEs: "Cubierta, corona, asta",
-    hintEn: "Deck, crown, flagpole",
-    swatch: "#9aa7b8",
+    hintEs: "Balcón y Ángel de la Paz",
+    hintEn: "Balcony and Angel of Peace",
+    swatch: "#b4532a",
   },
 };
 
-const STONE = "#e6ddd0";
-const STONE_WARM = "#d8cfc0";
-const STONE_DEEP = "#c4b9a8";
-const MARBLE = "#f3ece1";
-const BRONZE = "#8a6a3d";
-const OPENING = "#3d4654";
-const METAL = "#8b95a4";
+export const CREAM = "#ead9b8";
+export const CREAM_HI = "#f3e6cc";
+export const CREAM_DEEP = "#dcc9a4";
+export const STONE_PLAZA = "#d5cec2";
+export const GREY_PODIUM = "#8d8881";
+export const GREY_DEEP = "#6f6b66";
+export const BRONZE = "#a14b2c";
+export const BRONZE_DARK = "#7c341c";
+export const ARCH_VOID = "#5a221c";
+export const GATE_METAL = "#2a2622";
+export const RAIL = "#c9c2b4";
 
-const SIDES = [
-  {
-    id: "north",
-    es: "norte",
-    en: "north",
-    cityEs: "hacia el Cibao interior",
-    cityEn: "toward the inner Cibao",
-  },
-  {
-    id: "east",
-    es: "este",
-    en: "east",
-    cityEs: "hacia el centro de Santiago",
-    cityEn: "toward downtown Santiago",
-  },
-  {
-    id: "south",
-    es: "sur",
-    en: "south",
-    cityEs: "hacia el Yaque del Norte",
-    cityEn: "toward the Yaque del Norte",
-  },
-  {
-    id: "west",
-    es: "oeste",
-    en: "west",
-    cityEs: "hacia el atardecer del valle",
-    cityEn: "toward the valley sunset",
-  },
+export const SIDES = [
+  { id: "north", es: "norte", en: "north" },
+  { id: "east", es: "este", en: "east" },
+  { id: "south", es: "sur", en: "south" },
+  { id: "west", es: "oeste", en: "west" },
 ] as const;
 
-const COMPASS_16 = [
-  "N",
-  "NNE",
-  "NE",
-  "ENE",
-  "E",
-  "ESE",
-  "SE",
-  "SSE",
-  "S",
-  "SSW",
-  "SW",
-  "WSW",
-  "W",
-  "WNW",
-  "NW",
-  "NNW",
+export const CORNERS = [
+  { id: "ne", es: "noreste", en: "northeast" },
+  { id: "se", es: "sureste", en: "southeast" },
+  { id: "sw", es: "suroeste", en: "southwest" },
+  { id: "nw", es: "noroeste", en: "northwest" },
 ] as const;
 
-function sideParts(): AtlasPart[] {
+function cap(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function generated(): AtlasPart[] {
   const stairs: AtlasPart[] = SIDES.map((side) => ({
     id: `stairs-${side.id}`,
     layer: "plaza",
     nameEs: `Gradas ${side.es}`,
-    nameEn: `${capitalize(side.en)} stairs`,
+    nameEn: `${cap(side.en)} stairs`,
     scientific: `Escalinata ${side.es}`,
-    descriptionEs: `Tramo de gradas en el ${side.es} de la explanada. Suben desde el borde de la colina hasta el descanso del pedestal.`,
-    descriptionEn: `A stair flight on the ${side.en} of the esplanade, climbing from the hill edge to the pedestal landing.`,
+    descriptionEs: `Tramo de gradas de piedra clara en el ${side.es}, subiendo la colina hasta la explanada del podio.`,
+    descriptionEn: `Light-stone stair flight on the ${side.en}, climbing the hill to the podium terrace.`,
     culturalEs:
       side.id === "east"
-        ? "El acceso este es el más ceremonial: la ciudad ve la torre primero desde abajo, como un eje cívico, no como un objeto privado."
-        : `Estas gradas ${side.es} ${side.cityEs}. El monumento se lee distinto según por dónde se suba.`,
+        ? "El acceso este es el más abierto hacia la ciudad: Santiago ve primero las gradas, luego el fuste."
+        : undefined,
     culturalEn:
       side.id === "east"
-        ? "The east approach is the ceremonial one: the city meets the tower from below, as a civic axis rather than a private object."
-        : `The ${side.en} flight ${side.cityEn}. Which way you climb changes how the monument is read.`,
-    aliases: ["stairs", "gradas", "escalinata", "steps", side.en, side.es],
-    color: STONE_WARM,
+        ? "The east flight is the most open to the city: Santiago meets the stairs first, then the shaft."
+        : undefined,
+    aliases: ["stairs", "gradas", "escalinata", side.en, side.es],
+    color: STONE_PLAZA,
   }));
 
   const landings: AtlasPart[] = SIDES.map((side) => ({
     id: `landing-${side.id}`,
     layer: "plaza",
     nameEs: `Descanso ${side.es}`,
-    nameEn: `${capitalize(side.en)} landing`,
+    nameEn: `${cap(side.en)} landing`,
     scientific: `Descanso ${side.es}`,
-    descriptionEs: `Meseta corta al pie del pedestal, ${side.es}. Rompe la pendiente de las gradas antes de entrar al plinto.`,
-    descriptionEn: `A short terrace at the foot of the pedestal on the ${side.en}, breaking the stair pitch before the plinth.`,
-    aliases: ["landing", "descanso", "terrace", side.en, side.es],
-    color: STONE,
+    descriptionEs: `Meseta corta al pie del podio, ${side.es}.`,
+    descriptionEn: `A short landing at the podium foot on the ${side.en}.`,
+    aliases: ["landing", "descanso", side.en, side.es],
+    color: STONE_PLAZA,
   }));
 
-  const faces: AtlasPart[] = SIDES.map((side) => ({
-    id: `pedestal-face-${side.id}`,
-    layer: "pedestal",
-    nameEs: `Cara ${side.es} del pedestal`,
-    nameEn: `Pedestal ${side.en} face`,
-    scientific: `Frons ${side.es}`,
-    descriptionEs: `Paño vertical del pedestal hacia el ${side.es}. Superficie de piedra para relieve, inscripción o sombra.`,
-    descriptionEn: `The pedestal’s ${side.en} vertical face — stone for relief, inscription, or shade.`,
+  const gates: AtlasPart[] = SIDES.map((side) => ({
+    id: `gate-${side.id}`,
+    layer: "podium",
+    nameEs: `Portón ${side.es}`,
+    nameEn: `${cap(side.en)} gate`,
+    scientific: `Portal ${side.es}`,
+    descriptionEs: `Gran arco en el zócalo gris, ${side.es}, con hoja metálica oscura y hueco profundo.`,
+    descriptionEn: `A large arched doorway in the grey podium on the ${side.en}, with a dark metal leaf and a deep void.`,
     culturalEs:
       side.id === "south"
-        ? "Las caras del pedestal son el zócalo donde la ciudad coloca ofrendas el 16 de agosto, día de la Restauración."
+        ? "Los portones marcan el ingreso al interior: museo, murales y el ascensor hacia el mirador."
         : undefined,
     culturalEn:
       side.id === "south"
-        ? "The pedestal faces are the plinth where the city lays wreaths on 16 August, Restoration Day."
+        ? "The gates mark entry to the interior: museum rooms, murals, and the elevator toward the lookout."
         : undefined,
-    aliases: ["face", "cara", "pedestal", side.en, side.es],
-    color: MARBLE,
+    aliases: ["gate", "portón", "portal", "door", "arco", side.en, side.es],
+    color: GATE_METAL,
+  }));
+
+  const podiumCorners: AtlasPart[] = CORNERS.map((corner) => ({
+    id: `podium-corner-${corner.id}`,
+    layer: "podium",
+    nameEs: `Esquina ${corner.es} del podio`,
+    nameEn: `${cap(corner.en)} podium pier`,
+    scientific: `Angulus ${corner.id.toUpperCase()}`,
+    descriptionEs: `Machón de esquina del zócalo gris, ${corner.es}. Afirma el cuadrado de la base.`,
+    descriptionEn: `Grey podium corner pier, ${corner.en}. It holds the square of the base.`,
+    aliases: ["corner", "esquina", "pier", corner.id, corner.en, corner.es],
+    color: GREY_DEEP,
+  }));
+
+  const walls: AtlasPart[] = SIDES.map((side) => ({
+    id: `wall-${side.id}`,
+    layer: "colonnade",
+    nameEs: `Muro ${side.es} de la columnata`,
+    nameEn: `${cap(side.en)} colonnade wall`,
+    scientific: `Paries ${side.es}`,
+    descriptionEs: `Paño crema detrás de las columnas, cara ${side.es}. Da cuerpo al prisma cuadrado.`,
+    descriptionEn: `Cream wall behind the columns on the ${side.en} face. It gives the square prism its body.`,
+    aliases: ["wall", "muro", "colonnade", side.en, side.es],
+    color: CREAM,
   }));
 
   const entablature: AtlasPart[] = SIDES.map((side) => ({
     id: `entablature-${side.id}`,
-    layer: "columns",
+    layer: "colonnade",
     nameEs: `Entablamento ${side.es}`,
-    nameEn: `${capitalize(side.en)} entablature`,
+    nameEn: `${cap(side.en)} entablature`,
     scientific: `Entablatura ${side.es}`,
-    descriptionEs: `Tramo del entablamento que cierra el anillo de columnas por el ${side.es}. Transmite carga al fuste.`,
-    descriptionEn: `Entablature span closing the column ring on the ${side.en}. It carries load into the shaft.`,
-    aliases: ["entablature", "entablamento", "cornisa", side.en, side.es],
-    color: MARBLE,
+    descriptionEs: `Faja que corona las columnas en el ${side.es} y sostiene la terraza.`,
+    descriptionEn: `The band that crowns the ${side.en} columns and carries the terrace.`,
+    aliases: ["entablature", "entablamento", side.en, side.es],
+    color: CREAM_HI,
   }));
 
-  const windowsMid: AtlasPart[] = SIDES.map((side) => ({
-    id: `window-mid-${side.id}`,
-    layer: "tower",
-    nameEs: `Vano medio ${side.es}`,
-    nameEn: `Mid ${side.en} opening`,
-    scientific: `Fenestra media ${side.es}`,
-    descriptionEs: `Abertura a media altura en la cara ${side.es} del fuste. Luz y sombra para el hueco interior.`,
-    descriptionEn: `A mid-height opening on the shaft’s ${side.en} face — light and shadow for the interior void.`,
-    aliases: ["window", "vano", "opening", "fenestra", side.en, side.es],
-    color: OPENING,
+  const pinnacles: AtlasPart[] = CORNERS.map((corner) => ({
+    id: `pinnacle-${corner.id}`,
+    layer: "colonnade",
+    nameEs: `Pináculo ${corner.es}`,
+    nameEn: `${cap(corner.en)} pinnacle`,
+    scientific: `Pinaculum ${corner.id.toUpperCase()}`,
+    descriptionEs: `Remate de esquina sobre la terraza de la columnata, ${corner.es}.`,
+    descriptionEn: `A corner finial on the colonnade terrace, ${corner.en}.`,
+    aliases: ["pinnacle", "pináculo", "finial", corner.id, corner.en],
+    color: CREAM_HI,
   }));
 
-  const windowsHigh: AtlasPart[] = SIDES.map((side) => ({
-    id: `window-high-${side.id}`,
-    layer: "tower",
-    nameEs: `Vano alto ${side.es}`,
-    nameEn: `Upper ${side.en} opening`,
-    scientific: `Fenestra alta ${side.es}`,
-    descriptionEs: `Abertura cercana al mirador en la cara ${side.es}. Marca el último tercio de la torre.`,
-    descriptionEn: `An opening near the lookout on the ${side.en} face, marking the tower’s upper third.`,
-    aliases: ["window", "vano", "opening", "lookout", side.en, side.es],
-    color: OPENING,
+  const columnCorners: AtlasPart[] = CORNERS.map((corner) => ({
+    id: `column-corner-${corner.id}`,
+    layer: "colonnade",
+    nameEs: `Columna de esquina ${corner.es}`,
+    nameEn: `${cap(corner.en)} corner column`,
+    scientific: `Columna anguli ${corner.id.toUpperCase()}`,
+    descriptionEs: `Fuste de esquina de la columnata crema, ${corner.es}. Más grueso a la vista que los intermedios.`,
+    descriptionEn: `Cream colonnade corner shaft, ${corner.en}. It reads heavier than the intermediates.`,
+    aliases: ["column", "columna", "corner", corner.id, corner.en],
+    color: CREAM_HI,
   }));
+
+  const columnMids: AtlasPart[] = SIDES.flatMap((side) =>
+    [1, 2, 3, 4].map((n) => ({
+      id: `column-${side.id}-${n}`,
+      layer: "colonnade" as const,
+      nameEs: `Columna ${side.es} ${n}`,
+      nameEn: `${cap(side.en)} column ${n}`,
+      scientific: `Columna ${side.es} ${n}`,
+      descriptionEs: `Fuste ${n} en la cara ${side.es} de la columnata. Orden alto, capitel sencillo, piedra crema.`,
+      descriptionEn: `Shaft ${n} on the ${side.en} colonnade face. A tall order, plain capital, cream stone.`,
+      culturalEs:
+        n === 1 && side.id === "east"
+          ? "La columnata da al prisma un ritmo de templo cívico, no de obelisco desnudo."
+          : undefined,
+      culturalEn:
+        n === 1 && side.id === "east"
+          ? "The colonnade gives the prism a civic-temple rhythm, not a bare obelisk."
+          : undefined,
+      aliases: ["column", "columna", side.en, side.es, String(n)],
+      color: CREAM_HI,
+    })),
+  );
+
+  const arches: AtlasPart[] = SIDES.flatMap((side) =>
+    [1, 2, 3].map((n) => ({
+      id: `arch-${side.id}-${n}`,
+      layer: "attic" as const,
+      nameEs: `Arco del ático ${side.es} ${n}`,
+      nameEn: `Attic arch ${side.en} ${n}`,
+      scientific: `Arcus ${side.es} ${n}`,
+      descriptionEs: `Vano arqueado en el ático, cara ${side.es}. El hueco se lee rojo oscuro, como en las fotos del edificio.`,
+      descriptionEn: `An arched opening in the attic, ${side.en} face. The void reads dark red, as in photographs of the building.`,
+      aliases: ["arch", "arco", "attic", "ático", "window", side.en, side.es],
+      color: ARCH_VOID,
+    })),
+  );
+
+  const emblems: AtlasPart[] = [
+    {
+      id: "emblem-north",
+      layer: "attic",
+      nameEs: "Escudo norte — Luperón",
+      nameEn: "North shield — Luperón",
+      scientific: "Insigne septentrionale",
+      descriptionEs: "Emblema sobre el ático norte. Recuerda a Gregorio Luperón en la cara más alta del prisma.",
+      descriptionEn: "Emblem on the north attic. It recalls Gregorio Luperón on the high face of the prism.",
+      culturalEs: "Luperón fue el jefe militar más visible de la Restauración y luego presidente.",
+      culturalEn: "Luperón was the Restoration’s most visible military leader and later president.",
+      aliases: ["shield", "escudo", "luperon", "luperón", "emblem"],
+      color: BRONZE,
+    },
+    {
+      id: "emblem-east",
+      layer: "attic",
+      nameEs: "Escudo este — Capotillo",
+      nameEn: "East shield — Capotillo",
+      scientific: "Insigne orientale",
+      descriptionEs: "Emblema este. Nombra el Grito de Capotillo (16 de agosto de 1863).",
+      descriptionEn: "East emblem. It names the Cry of Capotillo (16 August 1863).",
+      culturalEs: "Un alzamiento pequeño en la frontera norte encendió dos años de guerra.",
+      culturalEn: "A small rising on the northern border lit two years of war.",
+      aliases: ["shield", "capotillo", "rodriguez", "emblem"],
+      color: BRONZE,
+    },
+    {
+      id: "emblem-south",
+      layer: "attic",
+      nameEs: "Escudo sur — Santiago en armas",
+      nameEn: "South shield — Santiago in arms",
+      scientific: "Insigne australe",
+      descriptionEs: "Emblema sur. Santiago no fue telón: fue teatro de la Restauración.",
+      descriptionEn: "South emblem. Santiago was not a backdrop; it was a Restoration theater.",
+      aliases: ["shield", "santiago", "polanco", "emblem"],
+      color: BRONZE,
+    },
+    {
+      id: "emblem-west",
+      layer: "attic",
+      nameEs: "Escudo oeste — la República",
+      nameEn: "West shield — the Republic",
+      scientific: "Insigne occidentale",
+      descriptionEs: "Emblema oeste. La Restauración peleó y también gobernó.",
+      descriptionEn: "West emblem. The Restoration fought and also governed.",
+      aliases: ["shield", "republic", "salcedo", "emblem"],
+      color: BRONZE,
+    },
+  ];
 
   const rails: AtlasPart[] = SIDES.map((side) => ({
     id: `rail-${side.id}`,
     layer: "lookout",
     nameEs: `Baranda ${side.es}`,
-    nameEn: `${capitalize(side.en)} railing`,
+    nameEn: `${cap(side.en)} balcony rail`,
     scientific: `Cancellum ${side.es}`,
-    descriptionEs: `Tramo de baranda del mirador hacia el ${side.es}. Protege el borde de la cubierta de observación.`,
-    descriptionEn: `Lookout railing on the ${side.en} edge, guarding the observation deck.`,
-    culturalEs:
-      side.id === "east"
-        ? "Desde esta baranda se lee Santiago: tejados, el Yaque y el valle. El mirador es civismo, no un palco privado."
-        : undefined,
-    culturalEn:
-      side.id === "east"
-        ? "From this rail Santiago reads as roofs, the Yaque, and the valley. The lookout is civic, not a private box."
-        : undefined,
-    aliases: ["rail", "railing", "baranda", "mirador", side.en, side.es],
-    color: METAL,
+    descriptionEs: `Tramo de baranda del balcón circular, ${side.es}.`,
+    descriptionEn: `A segment of the circular balcony railing, ${side.en}.`,
+    aliases: ["rail", "baranda", "balcony", "mirador", side.en, side.es],
+    color: RAIL,
   }));
 
-  return [...stairs, ...landings, ...faces, ...entablature, ...windowsMid, ...windowsHigh, ...rails];
-}
-
-function columnParts(): AtlasPart[] {
-  const notesEs = [
-    "El peristilo da a la torre un basamento clásico, como un templo cívico más que un obelisco desnudo.",
-    "Dieciséis columnas marcan un ritmo. Contarlas es entender que el monumento es un anillo, no solo un palo.",
-    "Cada fuste del anillo recibe luz distinta; el mármol blanco de Santiago se vuelve gris o oro según la hora.",
-    "El anillo recuerda que la Restauración se peleó en círculo: varios frentes, no un solo héroe.",
+  return [
+    ...stairs,
+    ...landings,
+    ...gates,
+    ...podiumCorners,
+    ...walls,
+    ...entablature,
+    ...pinnacles,
+    ...columnCorners,
+    ...columnMids,
+    ...arches,
+    ...emblems,
+    ...rails,
   ];
-  const notesEn = [
-    "The peristyle gives the tower a classical base — a civic temple more than a bare obelisk.",
-    "Sixteen columns set a beat. Counting them shows the monument is a ring, not only a stick.",
-    "Each shaft takes a different light; Santiago’s pale stone turns gray or gold by the hour.",
-    "The ring is a reminder that the Restoration was fought on several fronts, not by one hero.",
-  ];
-
-  return COMPASS_16.map((bearing, index) => {
-    const n = index + 1;
-    const pad = String(n).padStart(2, "0");
-    return {
-      id: `column-${pad}`,
-      layer: "columns" as const,
-      nameEs: `Columna ${pad} (${bearing})`,
-      nameEn: `Column ${pad} (${bearing})`,
-      scientific: `Columna peristyle ${pad}`,
-      descriptionEs: `Fuste ${n} del anillo de dieciséis columnas. Orienta hacia ${bearing}, en el tambor que ciñe la base de la torre.`,
-      descriptionEn: `Shaft ${n} of the sixteen-column ring, bearing ${bearing}, on the drum that belts the tower base.`,
-      culturalEs: notesEs[index % notesEs.length],
-      culturalEn: notesEn[index % notesEn.length],
-      aliases: ["column", "columna", "peristilo", "colonnade", bearing, String(n)],
-      color: MARBLE,
-    };
-  });
 }
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-const CORE_PARTS: AtlasPart[] = [
+const CORE: AtlasPart[] = [
   {
     id: "plaza-esplanade",
     layer: "plaza",
     nameEs: "Explanada",
     nameEn: "Esplanade",
     scientific: "Platea",
-    descriptionEs:
-      "Plataforma ancha sobre la colina. Es el piso cívico del conjunto: gente, ofrendas y sombra antes de subir.",
-    descriptionEn:
-      "The broad platform on the hill. It is the civic floor of the ensemble: people, wreaths, and shade before the climb.",
-    culturalEs:
-      "La colina ya era un alto de Santiago. Poner aquí un monumento convierte un cerro en un escenario público.",
-    culturalEn:
-      "The hill was already a high point of Santiago. Placing a monument here turns a ridge into a public stage.",
-    aliases: ["plaza", "explanada", "esplanade", "platea", "colina"],
-    color: STONE_WARM,
+    descriptionEs: "Plataforma de piedra clara sobre la colina. Piso cívico antes del podio.",
+    descriptionEn: "A light-stone platform on the hill. The civic floor before the podium.",
+    culturalEs: "La colina ya era un alto de Santiago; el monumento la convierte en escenario público.",
+    culturalEn: "The hill was already a high point of Santiago; the monument turns it into a public stage.",
+    aliases: ["plaza", "explanada", "esplanade"],
+    color: STONE_PLAZA,
   },
   {
     id: "plaza-walk",
@@ -303,329 +350,171 @@ const CORE_PARTS: AtlasPart[] = [
     nameEs: "Paseo perimetral",
     nameEn: "Outer walk",
     scientific: "Ambulatio",
-    descriptionEs: "Franja que ciñe la explanada. Recorrido para rodear el pedestal sin subir las gradas principales.",
-    descriptionEn: "A band around the esplanade — a path to circle the pedestal without climbing the main stairs.",
-    aliases: ["walk", "paseo", "perimeter", "ring"],
-    color: STONE_DEEP,
+    descriptionEs: "Franja que rodea la explanada, un poco más baja y grisácea.",
+    descriptionEn: "A slightly lower, greyer band around the esplanade.",
+    aliases: ["walk", "paseo", "ring"],
+    color: "#c4bdb2",
   },
   {
-    id: "pedestal-plinth",
-    layer: "pedestal",
-    nameEs: "Plinto",
-    nameEn: "Plinth",
-    scientific: "Plinthus",
-    descriptionEs: "Macizo inferior del pedestal. Asienta el anillo de columnas y reparte el peso del fuste.",
-    descriptionEn: "The pedestal’s lower mass. It seats the column ring and spreads the shaft’s weight.",
-    culturalEs:
-      "Sin este zócalo la torre sería un palo. El plinto dice que el homenaje necesita suelo, no solo altura.",
-    culturalEn:
-      "Without this block the tower would be a stick. The plinth says remembrance needs ground, not only height.",
-    aliases: ["plinth", "plinto", "zócalo", "base"],
-    color: STONE,
+    id: "podium-plinth",
+    layer: "podium",
+    nameEs: "Zócalo gris",
+    nameEn: "Grey podium",
+    scientific: "Podium",
+    descriptionEs: "Cuerpo inferior de piedra más oscura. Contrasta con la columnata crema de encima.",
+    descriptionEn: "The lower mass in darker stone. It contrasts with the cream colonnade above.",
+    culturalEs: "El zócalo ancla el prisma: el homenaje empieza en el suelo, no en el cielo.",
+    culturalEn: "The podium anchors the prism: remembrance starts on the ground, not in the sky.",
+    aliases: ["podium", "zócalo", "plinth", "grey", "base"],
+    color: GREY_PODIUM,
   },
   {
-    id: "pedestal-corner-ne",
-    layer: "pedestal",
-    nameEs: "Esquina noreste",
-    nameEn: "Northeast pier",
-    scientific: "Angulus NE",
-    descriptionEs: "Machón de esquina noreste del pedestal. Arriostra las dos caras y marca el giro del plinto.",
-    descriptionEn: "Northeast corner pier of the pedestal. It braces two faces and turns the plinth.",
-    aliases: ["corner", "esquina", "pier", "ne", "noreste"],
-    color: STONE,
+    id: "podium-cornice",
+    layer: "podium",
+    nameEs: "Cornisa del zócalo",
+    nameEn: "Podium cornice",
+    scientific: "Corona podii",
+    descriptionEs: "Filete que separa el gris del crema y recibe las bases de las columnas.",
+    descriptionEn: "A belt that splits grey from cream and receives the column bases.",
+    aliases: ["cornice", "cornisa", "belt"],
+    color: GREY_DEEP,
   },
   {
-    id: "pedestal-corner-se",
-    layer: "pedestal",
-    nameEs: "Esquina sureste",
-    nameEn: "Southeast pier",
-    scientific: "Angulus SE",
-    descriptionEs: "Machón sureste. Recibe sombra corta al mediodía y mira hacia el valle abierto.",
-    descriptionEn: "Southeast pier. It takes short noon shade and looks toward the open valley.",
-    aliases: ["corner", "esquina", "pier", "se", "sureste"],
-    color: STONE,
+    id: "colonnade-terrace",
+    layer: "colonnade",
+    nameEs: "Terraza de la columnata",
+    nameEn: "Colonnade terrace",
+    scientific: "Solarium",
+    descriptionEs: "Cubierta plana sobre las columnas, con pináculos en las esquinas.",
+    descriptionEn: "The flat roof over the columns, with pinnacles at the corners.",
+    aliases: ["terrace", "terraza", "roof", "deck"],
+    color: CREAM,
   },
   {
-    id: "pedestal-corner-sw",
-    layer: "pedestal",
-    nameEs: "Esquina suroeste",
-    nameEn: "Southwest pier",
-    scientific: "Angulus SW",
-    descriptionEs: "Machón suroeste, el más bañado por el sol de la tarde santiaguera.",
-    descriptionEn: "Southwest pier, the one most washed by Santiago’s afternoon sun.",
-    aliases: ["corner", "esquina", "pier", "sw", "suroeste"],
-    color: STONE,
-  },
-  {
-    id: "pedestal-corner-nw",
-    layer: "pedestal",
-    nameEs: "Esquina noroeste",
-    nameEn: "Northwest pier",
-    scientific: "Angulus NW",
-    descriptionEs: "Machón noroeste. Cierra el cuadrado del pedestal hacia el interior del Cibao.",
-    descriptionEn: "Northwest pier. It closes the pedestal square toward the inner Cibao.",
-    aliases: ["corner", "esquina", "pier", "nw", "noroeste"],
-    color: STONE,
-  },
-  {
-    id: "pedestal-cornice",
-    layer: "pedestal",
-    nameEs: "Cornisa del pedestal",
-    nameEn: "Pedestal cornice",
-    scientific: "Corona pedestalis",
-    descriptionEs: "Moldura que remata el pedestal y recibe el tambor de columnas. Línea de sombra horizontal.",
-    descriptionEn: "The molding that caps the pedestal and receives the column drum. A horizontal shade line.",
-    aliases: ["cornice", "cornisa", "moldura"],
-    color: MARBLE,
-  },
-  {
-    id: "shaft-drum",
-    layer: "tower",
-    nameEs: "Tambor de la torre",
-    nameEn: "Tower drum",
-    scientific: "Tympanum / podium",
-    descriptionEs: "Cuerpo bajo que nace del entablamento y lanza el fuste. Más ancho que los tramos de arriba.",
-    descriptionEn: "The low body that rises from the entablature and launches the shaft. Wider than the storeys above.",
-    aliases: ["drum", "tambor", "podium", "base tower"],
-    color: MARBLE,
+    id: "attic-body",
+    layer: "attic",
+    nameEs: "Cuerpo del ático",
+    nameEn: "Attic body",
+    scientific: "Atticum",
+    descriptionEs: "Prisma menor, retranqueado, entre la terraza y el fuste cilíndrico. Lleva arcos rojizos.",
+    descriptionEn: "A smaller, set-back prism between the terrace and the cylindrical shaft. It carries the red arches.",
+    aliases: ["attic", "ático", "setback"],
+    color: CREAM_DEEP,
   },
   {
     id: "shaft-lower",
-    layer: "tower",
+    layer: "shaft",
     nameEs: "Fuste inferior",
     nameEn: "Lower shaft",
     scientific: "Scapus inferior",
-    descriptionEs: "Primer tramo alto de la torre. Empieza a estrecharse y marca la vertical que se ve desde la ciudad.",
-    descriptionEn: "The first tall storey. It begins to taper and sets the vertical seen from the city.",
-    culturalEs:
-      "Henry Gazón Bona pensó una torre blanca que se leyera a distancia. El fuste es esa firma en el cielo de Santiago.",
-    culturalEn:
-      "Henry Gazón Bona wanted a white tower readable at a distance. The shaft is that signature on Santiago’s sky.",
-    aliases: ["shaft", "fuste", "tower", "torre"],
-    color: MARBLE,
+    descriptionEs: "Tramo bajo del cilindro crema. Empieza la espiral que envuelve la torre.",
+    descriptionEn: "Lower length of the cream cylinder. The wrapping spiral starts here.",
+    aliases: ["shaft", "fuste", "cylinder", "tower"],
+    color: CREAM_HI,
   },
   {
     id: "shaft-mid",
-    layer: "tower",
+    layer: "shaft",
     nameEs: "Fuste medio",
     nameEn: "Middle shaft",
     scientific: "Scapus medius",
-    descriptionEs: "Tramo central, aún prismático. Aquí el hueco interior y el ascensor ganan proporción.",
-    descriptionEn: "The middle storey, still prismatic. The interior void and elevator take their proportion here.",
+    descriptionEs: "Tramo central del cilindro. La helice se lee mejor a contraluz.",
+    descriptionEn: "Middle length of the cylinder. The helix reads best against the light.",
     aliases: ["shaft", "fuste", "mid"],
-    color: "#efe8dc",
+    color: CREAM_HI,
   },
   {
     id: "shaft-upper",
-    layer: "tower",
+    layer: "shaft",
     nameEs: "Fuste superior",
     nameEn: "Upper shaft",
     scientific: "Scapus superior",
-    descriptionEs: "Último cuerpo largo antes del cuello. Los vanos altos perforan este tramo.",
-    descriptionEn: "The last long body before the neck. The high openings punch this storey.",
+    descriptionEs: "Tramo alto, ya cerca del balcón de observación.",
+    descriptionEn: "Upper length, already near the observation balcony.",
     aliases: ["shaft", "fuste", "upper"],
-    color: MARBLE,
+    color: CREAM_HI,
   },
   {
-    id: "shaft-neck",
-    layer: "tower",
-    nameEs: "Cuello de la torre",
-    nameEn: "Tower neck",
-    scientific: "Collum",
-    descriptionEs: "Estrechamiento bajo el mirador. Prepara la cubierta de observación.",
-    descriptionEn: "The narrowing under the lookout. It prepares the observation deck.",
-    aliases: ["neck", "cuello", "collar"],
-    color: "#ebe4d8",
+    id: "shaft-spiral",
+    layer: "shaft",
+    nameEs: "Espiral del fuste",
+    nameEn: "Shaft spiral",
+    scientific: "Helix",
+    descriptionEs: "Banda helicoidal que envuelve el cilindro. Es el detalle que distingue la silueta real.",
+    descriptionEn: "A helical band wrapping the cylinder. It is the detail that distinguishes the real silhouette.",
+    culturalEs: "Henry Gazón Bona usó esa cinta para que el fuste no fuera un tubo liso a distancia.",
+    culturalEn: "Henry Gazón Bona used that ribbon so the shaft would not read as a plain tube at a distance.",
+    aliases: ["spiral", "helix", "fluting", "espiral", "banda"],
+    color: CREAM_DEEP,
+  },
+  {
+    id: "shaft-capital",
+    layer: "shaft",
+    nameEs: "Collarín bajo el mirador",
+    nameEn: "Lookout collar",
+    scientific: "Collare",
+    descriptionEs: "Anillo que ensancha el cilindro justo bajo el balcón.",
+    descriptionEn: "A ring that widens the cylinder just under the balcony.",
+    aliases: ["collar", "capital", "ring", "collarín"],
+    color: CREAM,
   },
   {
     id: "elevator-shaft",
-    layer: "tower",
+    layer: "shaft",
     nameEs: "Hueco del ascensor",
     nameEn: "Elevator shaft",
     scientific: "Puteus elevatoris",
-    descriptionEs:
-      "Vacío vertical interior. Sube visitantes al mirador; en el edificio real convive con murales de Vela Zanetti.",
-    descriptionEn:
-      "The interior vertical void. It lifts visitors to the lookout; in the real building it shares the core with Vela Zanetti’s murals.",
-    culturalEs:
-      "Los murales de Vela Zanetti (no modelados aquí) narran trabajo y pueblo. El hueco no es solo máquina: es el recorrido pedagógico del edificio.",
-    culturalEn:
-      "Vela Zanetti’s murals (not modeled here) speak of labor and people. The shaft is not only a machine: it is the building’s teaching path.",
-    aliases: ["elevator", "ascensor", "shaft", "interior", "vela zanetti"],
-    color: "#5c6572",
+    descriptionEs: "Vacío interior. En el edificio real convive con murales de Vela Zanetti.",
+    descriptionEn: "The interior void. In the real building it shares the core with Vela Zanetti’s murals.",
+    culturalEs: "El recorrido pedagógico del edificio no es solo la vista: es subir por dentro.",
+    culturalEn: "The building’s teaching path is not only the view: it is the climb inside.",
+    aliases: ["elevator", "ascensor", "interior", "vela zanetti"],
+    color: "#5a5550",
   },
   {
     id: "observation-deck",
     layer: "lookout",
-    nameEs: "Cubierta de observación",
-    nameEn: "Observation deck",
+    nameEs: "Balcón de observación",
+    nameEn: "Observation balcony",
     scientific: "Specula",
-    descriptionEs: "Piso del mirador. Desde aquí Santiago se vuelve mapa: río, tejados y el anillo de cerros.",
-    descriptionEn: "The lookout floor. From here Santiago becomes a map: river, roofs, and the ring of hills.",
-    culturalEs:
-      "Subir es un gesto cívico repetido en escuelas y visitas. El mirador enseña la ciudad, no un panorama de postal.",
-    culturalEn:
-      "The climb is a civic habit of school groups and visits. The deck teaches the city, not a postcard panorama.",
-    aliases: ["deck", "mirador", "lookout", "observation", "specula"],
-    color: STONE,
+    descriptionEs: "Anillo circular cerca de la cima, más ancho que el fuste, con baranda.",
+    descriptionEn: "A circular ring near the top, wider than the shaft, with a railing.",
+    culturalEs: "Desde aquí Santiago se vuelve mapa: río, tejados y cerros.",
+    culturalEn: "From here Santiago becomes a map: river, roofs, and hills.",
+    aliases: ["balcony", "deck", "mirador", "lookout", "specula"],
+    color: CREAM,
   },
   {
-    id: "crown-lantern",
+    id: "crown-cap",
     layer: "lookout",
-    nameEs: "Linterna / corona",
-    nameEn: "Lantern crown",
+    nameEs: "Capitel de coronación",
+    nameEn: "Crowning cap",
     scientific: "Tholus",
-    descriptionEs: "Remate sobre el mirador. Cierra la vertical y recibe el asta.",
-    descriptionEn: "The cap above the lookout. It closes the vertical and receives the flagpole.",
-    aliases: ["crown", "lantern", "linterna", "corona", "tholus"],
-    color: MARBLE,
+    descriptionEs: "Remate cilíndrico sobre el balcón, peana del ángel.",
+    descriptionEn: "A cylindrical cap above the balcony, the angel’s pedestal.",
+    aliases: ["crown", "cap", "tholus", "peana"],
+    color: CREAM_HI,
   },
   {
-    id: "flagpole",
+    id: "angel-peace",
     layer: "lookout",
-    nameEs: "Asta y bandera",
-    nameEn: "Flagpole and flag",
-    scientific: "Hasta vexilli",
-    descriptionEs: "Asta en el eje. La bandera dominicana marca que el homenaje es republicano, no dinástico.",
-    descriptionEn: "A pole on axis. The Dominican flag marks the tribute as republican, not dynastic.",
+    nameEs: "Ángel de la Paz",
+    nameEn: "Angel of Peace",
+    scientific: "Angelus Pacis",
+    descriptionEs:
+      "Estatua de bronce rojizo en la cima, alas y brazos alzados. Es la figura que cierra la vertical del monumento.",
+    descriptionEn:
+      "A reddish bronze statue at the summit, wings and arms raised. It is the figure that closes the monument’s vertical.",
     culturalEs:
-      "Después de 1961 el nombre y la bandera reorientan un edificio nacido bajo la dictadura. El asta es esa corrección visible.",
+      "El ángel se pensó como Victoria/Paz en el proyecto original. Hoy se lee sobre un edificio rededicado a la Restauración, no a un dictador.",
     culturalEn:
-      "After 1961 the name and the flag reorient a building born under dictatorship. The pole is that visible correction.",
-    aliases: ["flag", "bandera", "asta", "flagpole", "tricolor"],
-    color: METAL,
-  },
-  {
-    id: "figure-luperon",
-    layer: "sculptures",
-    nameEs: "Gregorio Luperón",
-    nameEn: "Gregorio Luperón",
-    scientific: "General de la Restauración",
-    descriptionEs:
-      "Figura simplificada del general puertoplateño. Luperón fue el jefe militar más visible de la guerra y luego presidente.",
-    descriptionEn:
-      "A simplified figure of the Puerto Plata general. Luperón was the war’s most visible military leader and later president.",
-    culturalEs:
-      "No es un santo de bronce: fue un político con contradicciones. El monumento lo coloca como eje de una guerra colectiva.",
-    culturalEn:
-      "Not a bronze saint: he was a politician with contradictions. The monument sets him as an axis of a collective war.",
-    aliases: ["luperon", "luperón", "gregorio", "general", "puerto plata"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-rodriguez",
-    layer: "sculptures",
-    nameEs: "Santiago Rodríguez",
-    nameEn: "Santiago Rodríguez",
-    scientific: "Grito de Capotillo, 16 ago 1863",
-    descriptionEs:
-      "Figura del militar que encabezó el alzamiento en Capotillo. Ese grito abre la Guerra de la Restauración.",
-    descriptionEn:
-      "Figure of the officer who led the rising at Capotillo. That cry opens the Restoration War.",
-    culturalEs:
-      "El 16 de agosto es feriado nacional porque un grupo pequeño en la frontera norte encendió una guerra de dos años.",
-    culturalEn:
-      "16 August is a national holiday because a small group on the northern border lit a two-year war.",
-    aliases: ["santiago rodriguez", "rodríguez", "capotillo", "grito"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-polanco",
-    layer: "sculptures",
-    nameEs: "Gaspar Polanco",
-    nameEn: "Gaspar Polanco",
-    scientific: "General restaurador",
-    descriptionEs:
-      "Figura de Polanco, general del Cibao. Participó en la toma y defensa de Santiago durante la guerra.",
-    descriptionEn:
-      "Figure of Polanco, a Cibao general. He took part in the seizure and defense of Santiago during the war.",
-    culturalEs:
-      "Santiago no fue telón de fondo: fue teatro de combate. Polanco ancla el monumento a esa ciudad concreta.",
-    culturalEn:
-      "Santiago was not a backdrop; it was a combat theater. Polanco anchors the monument to that city.",
-    aliases: ["polanco", "gaspar", "general", "cibao"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-salcedo",
-    layer: "sculptures",
-    nameEs: "José Antonio Salcedo",
-    nameEn: "José Antonio Salcedo",
-    scientific: "Presidente restaurador",
-    descriptionEs:
-      "Figura de Salcedo, primer presidente del gobierno restaurador. Encarnó la pretensión de un Estado, no solo una guerrilla.",
-    descriptionEn:
-      "Figure of Salcedo, first president of the Restoration government. He stood for a claim to a state, not only a guerrilla.",
-    culturalEs:
-      "La Restauración peleó y también gobernó. Salcedo recuerda que había diplomacia y administración en medio del fusil.",
-    culturalEn:
-      "The Restoration fought and also governed. Salcedo recalls diplomacy and administration beside the rifle.",
-    aliases: ["salcedo", "josé antonio", "presidente", "restaurador"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-moncion",
-    layer: "sculptures",
-    nameEs: "Benito Monción",
-    nameEn: "Benito Monción",
-    scientific: "General del norte",
-    descriptionEs:
-      "Figura de Monción, general de las campañas del norte. Su nombre quedó en pueblos y memoria fronteriza.",
-    descriptionEn:
-      "Figure of Monción, a general of the northern campaigns. His name remains in towns and border memory.",
-    aliases: ["moncion", "monción", "benito", "norte"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-pimentel",
-    layer: "sculptures",
-    nameEs: "Pedro Antonio Pimentel",
-    nameEn: "Pedro Antonio Pimentel",
-    scientific: "Presidente restaurador",
-    descriptionEs:
-      "Figura de Pimentel, militar y presidente breve de la Restauración, ligado al Cibao.",
-    descriptionEn:
-      "Figure of Pimentel, a soldier and brief Restoration president, tied to the Cibao.",
-    aliases: ["pimentel", "pedro antonio", "presidente"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-victory",
-    layer: "sculptures",
-    nameEs: "Victoria (alegoría)",
-    nameEn: "Victory (allegory)",
-    scientific: "Victoria restituta",
-    descriptionEs:
-      "Cuerpo alegórico, no un retrato. Representa el triunfo de 1865, cuando España abandonó la anexión.",
-    descriptionEn:
-      "An allegorical body, not a portrait. It stands for the 1865 outcome, when Spain abandoned reannexation.",
-    culturalEs:
-      "Las alegorías pueden borrar nombres de gente común. Aquí se lee junto a las figuras de oficiales, no en su lugar.",
-    culturalEn:
-      "Allegory can erase ordinary names. Here it is read beside officer figures, not instead of them.",
-    aliases: ["victory", "victoria", "alegoría", "allegory", "1865"],
-    color: BRONZE,
-  },
-  {
-    id: "figure-pueblo",
-    layer: "sculptures",
-    nameEs: "El pueblo en armas",
-    nameEn: "The people in arms",
-    scientific: "Plebs armata",
-    descriptionEs:
-      "Figura anónima: campesinos, mujeres de retaguardia, milicianos sin retrato. La guerra no fue solo de generales.",
-    descriptionEn:
-      "An anonymous figure: peasants, women in the rear, militias without portraits. The war was not only generals.",
-    culturalEs:
-      "Un monumento de héroes peca si olvida al común. Esta pieza nombra esa ausencia a propósito.",
-    culturalEn:
-      "A heroes’ monument fails if it forgets ordinary people. This piece names that absence on purpose.",
-    aliases: ["pueblo", "people", "militia", "campesino", "anonymous"],
+      "The angel was conceived as Victory/Peace in the original project. Today it is read on a building rededicated to the Restoration, not to a dictator.",
+    aliases: ["angel", "ángel", "peace", "paz", "statue", "victoria", "bronze"],
     color: BRONZE,
   },
 ];
 
-export const PARTS: AtlasPart[] = [...CORE_PARTS, ...sideParts(), ...columnParts()];
+export const PARTS: AtlasPart[] = [...CORE, ...generated()];
 
 export const PART_BY_ID = Object.fromEntries(PARTS.map((part) => [part.id, part])) as Record<
   string,

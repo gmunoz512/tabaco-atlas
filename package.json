@@ -1,8 +1,8 @@
 {
-  "name": "el-anatomy",
+  "name": "monumentos-anatomy",
   "private": true,
   "version": "1.0.0",
-  "description": "El Anatomy — 3D explorer of the Monument to the Heroes of the Restoration in Santiago",
+  "description": "Monumento's Anatomy — 3D explorer of the Monument to the Heroes of the Restoration in Santiago",
   "type": "module",
   "license": "MIT",
   "engines": {
