@@ -105,7 +105,7 @@ function SceneContents() {
       </group>
       <EffectComposer multisampling={0} enableNormalPass>
         <N8AO aoRadius={0.85} intensity={1.15} quality="medium" halfRes color="#0a0c10" distanceFalloff={1.2} />
-        <Bloom luminanceThreshold={0.82} intensity={0.28} mipmapBlur />
+        <Bloom luminanceThreshold={0.86} intensity={0.2} mipmapBlur />
         <Vignette offset={0.28} darkness={0.32} />
         <SMAA />
       </EffectComposer>

@@ -204,7 +204,7 @@ function buildPoses(): Record<string, PartPose> {
 
   p["observation-deck"] = pose([0, 15.82, 0], [0, 19.1, 0], "balcony");
   p["crown-cap"] = pose([0, 16.18, 0], [0, 20.0, 0], "cylinder", { size: [0.28, 0.32, 0.24] });
-  p["angel-peace"] = pose([0, 16.62, 0], [0, 21.4, 0], "angel", { scale: [2.85, 2.85, 2.85] });
+  p["angel-peace"] = pose([0, 16.55, 0], [0, 21.4, 0], "angel", { scale: [2.15, 2.15, 2.15] });
 
   return p;
 }

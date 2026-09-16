@@ -99,10 +99,10 @@ function ArchBody({ id }: { id: string }) {
 }
 
 function HelixBody({ id }: { id: string }) {
-  const geo = useMemo(() => createHelixGeometry(SHAFT.helixR, SHAFT.helixH, 2.7, 0.018), []);
+  const geo = useMemo(() => createHelixGeometry(SHAFT.helixR, SHAFT.helixH, 2.7, 0.03), []);
   return (
     <mesh geometry={geo} castShadow>
-      <ExhibitMaterial id={id} roughness={0.4} metalness={0.16} offset />
+      <ExhibitMaterial id={id} finish="accent" roughness={0.34} metalness={0.42} offset />
     </mesh>
   );
 }
@@ -186,29 +186,29 @@ function AngelBody({ id }: { id: string }) {
   const wing = useMemo(() => createWingGeometry(), []);
   return (
     <group>
-      <mesh geometry={body} position={[0, 0.28, 0]} castShadow>
+      <mesh geometry={body} position={[0, 0.22, 0]} castShadow>
         <ExhibitMaterial id={id} finish="metal" envMapIntensity={1.35} />
       </mesh>
-      <mesh position={[0, 0.62, 0]} castShadow>
-        <sphereGeometry args={[0.042, 24, 18]} />
+      <mesh position={[0, 0.54, 0]} castShadow>
+        <sphereGeometry args={[0.038, 24, 18]} />
         <ExhibitMaterial id={id} finish="metal" envMapIntensity={1.25} />
       </mesh>
-      <mesh position={[-0.05, 0.72, 0.04]} rotation={[0.18, 0, 0.48]} castShadow>
-        <cylinderGeometry args={[0.01, 0.016, 0.42, 12]} />
+      <mesh position={[-0.07, 0.62, 0.05]} rotation={[0.28, 0.1, 0.72]} castShadow>
+        <cylinderGeometry args={[0.009, 0.014, 0.38, 12]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh position={[0.05, 0.72, 0.04]} rotation={[0.18, 0, -0.48]} castShadow>
-        <cylinderGeometry args={[0.01, 0.016, 0.42, 12]} />
+      <mesh position={[0.07, 0.62, 0.05]} rotation={[0.28, -0.1, -0.72]} castShadow>
+        <cylinderGeometry args={[0.009, 0.014, 0.38, 12]} />
         <ExhibitMaterial id={id} finish="metal" />
       </mesh>
-      <mesh geometry={wing} position={[-0.08, 0.38, -0.04]} rotation={[0.32, -0.58, 0.52]} scale={[1.2, 1.15, 1]} castShadow>
+      <mesh geometry={wing} position={[-0.16, 0.28, -0.02]} rotation={[0.15, -0.85, 0.35]} scale={[1.05, 0.95, 1]} castShadow>
         <ExhibitMaterial id={id} finish="metal" envMapIntensity={1.3} />
       </mesh>
       <mesh
         geometry={wing}
-        position={[0.08, 0.38, -0.04]}
-        rotation={[0.32, Math.PI + 0.58, -0.52]}
-        scale={[1.2, 1.15, 1]}
+        position={[0.16, 0.28, -0.02]}
+        rotation={[0.15, Math.PI + 0.85, -0.35]}
+        scale={[1.05, 0.95, 1]}
         castShadow
       >
         <ExhibitMaterial id={id} finish="metal" envMapIntensity={1.3} />
