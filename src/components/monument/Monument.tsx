@@ -69,29 +69,29 @@ function StairsBody({ id }: { id: string }) {
 }
 
 function ColumnBody({ id }: { id: string }) {
-  const shaftH = COL_HEIGHT - 0.28;
+  const shaftH = COL_HEIGHT - 0.26;
   const baseY = -COL_HEIGHT / 2;
   return (
     <group>
-      <mesh position={[0, baseY + 0.04, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.08, 0.085, 0.08, 20]} />
-        <Surface id={id} roughness={0.86} />
+      <mesh position={[0, baseY + 0.035, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.07, 0.074, 0.07, 22]} />
+        <Surface id={id} roughness={0.84} />
       </mesh>
-      <mesh position={[0, baseY + 0.1, 0]} castShadow>
-        <cylinderGeometry args={[0.062, 0.072, 0.06, 20]} />
-        <Surface id={id} roughness={0.82} />
-      </mesh>
-      <mesh position={[0, 0.02, 0]} castShadow>
-        <cylinderGeometry args={[0.052, 0.062, shaftH, 28]} />
-        <Surface id={id} roughness={0.74} metalness={0.05} envMapIntensity={0.62} />
-      </mesh>
-      <mesh position={[0, COL_HEIGHT / 2 - 0.12, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.054, 0.06, 20]} />
+      <mesh position={[0, baseY + 0.09, 0]} castShadow>
+        <cylinderGeometry args={[0.052, 0.062, 0.05, 22]} />
         <Surface id={id} roughness={0.8} />
       </mesh>
-      <mesh position={[0, COL_HEIGHT / 2 - 0.055, 0]} castShadow>
-        <cylinderGeometry args={[0.078, 0.078, 0.05, 16]} />
-        <Surface id={id} roughness={0.84} />
+      <mesh position={[0, 0.02, 0]} castShadow>
+        <cylinderGeometry args={[0.044, 0.054, shaftH, 28]} />
+        <Surface id={id} roughness={0.72} metalness={0.05} envMapIntensity={0.7} />
+      </mesh>
+      <mesh position={[0, COL_HEIGHT / 2 - 0.11, 0]} castShadow>
+        <cylinderGeometry args={[0.062, 0.046, 0.055, 22]} />
+        <Surface id={id} roughness={0.78} />
+      </mesh>
+      <mesh position={[0, COL_HEIGHT / 2 - 0.05, 0]} castShadow>
+        <cylinderGeometry args={[0.07, 0.07, 0.045, 16]} />
+        <Surface id={id} roughness={0.82} />
       </mesh>
     </group>
   );
@@ -140,7 +140,7 @@ function ArchBody({ id }: { id: string }) {
 }
 
 function HelixBody({ id }: { id: string }) {
-  const geo = useMemo(() => createHelixGeometry(0.218, 6.15, 2.8, 0.012), []);
+  const geo = useMemo(() => createHelixGeometry(0.21, 7.2, 2.85, 0.013), []);
   return (
     <mesh geometry={geo} castShadow>
       <Surface id={id} roughness={0.78} offset />
@@ -228,46 +228,41 @@ function AngelBody({ id }: { id: string }) {
   const wing = useMemo(() => createWingGeometry(), []);
   return (
     <group>
-      <mesh position={[0, 0.1, 0]} castShadow>
-        <cylinderGeometry args={[0.028, 0.07, 0.26, 14]} />
-        <Surface id={id} roughness={0.28} metalness={0.7} envMapIntensity={1} stone={false} />
+      <mesh position={[0, 0.12, 0]} castShadow>
+        <cylinderGeometry args={[0.035, 0.09, 0.32, 16]} />
+        <Surface id={id} roughness={0.28} metalness={0.72} envMapIntensity={1} stone={false} />
       </mesh>
-      <mesh position={[0, 0.3, 0]} castShadow>
-        <sphereGeometry args={[0.048, 14, 12]} />
-        <Surface id={id} roughness={0.26} metalness={0.72} envMapIntensity={1} stone={false} />
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <sphereGeometry args={[0.055, 14, 12]} />
+        <Surface id={id} roughness={0.26} metalness={0.74} envMapIntensity={1} stone={false} />
       </mesh>
-      <mesh position={[0, 0.44, 0]} castShadow>
-        <sphereGeometry args={[0.03, 12, 10]} />
+      <mesh position={[0, 0.5, 0]} castShadow>
+        <sphereGeometry args={[0.034, 12, 10]} />
         <Surface id={id} roughness={0.3} metalness={0.65} stone={false} />
       </mesh>
-      <mesh position={[-0.038, 0.44, 0.01]} rotation={[0.12, 0, 0.22]} castShadow>
-        <cylinderGeometry args={[0.011, 0.013, 0.22, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
+      <mesh position={[-0.05, 0.52, 0.02]} rotation={[0.08, 0, 0.2]} castShadow>
+        <cylinderGeometry args={[0.012, 0.014, 0.34, 8]} />
+        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
       </mesh>
-      <mesh position={[0.038, 0.44, 0.01]} rotation={[0.12, 0, -0.22]} castShadow>
-        <cylinderGeometry args={[0.011, 0.013, 0.22, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
+      <mesh position={[0.05, 0.52, 0.02]} rotation={[0.08, 0, -0.2]} castShadow>
+        <cylinderGeometry args={[0.012, 0.014, 0.34, 8]} />
+        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
       </mesh>
-      <mesh position={[-0.05, 0.55, 0.035]} castShadow>
-        <sphereGeometry args={[0.014, 8, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
+      <mesh position={[-0.07, 0.68, 0.05]} castShadow>
+        <sphereGeometry args={[0.016, 8, 8]} />
+        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
       </mesh>
-      <mesh position={[0.05, 0.55, 0.035]} castShadow>
-        <sphereGeometry args={[0.014, 8, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.68} stone={false} />
+      <mesh position={[0.07, 0.68, 0.05]} castShadow>
+        <sphereGeometry args={[0.016, 8, 8]} />
+        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
       </mesh>
-      <mesh
-        geometry={wing}
-        position={[-0.02, 0.18, -0.03]}
-        rotation={[0.15, -0.35, 0.35]}
-        castShadow
-      >
+      <mesh geometry={wing} position={[-0.03, 0.22, -0.04]} rotation={[0.2, -0.4, 0.4]} castShadow>
         <Surface id={id} roughness={0.32} metalness={0.66} envMapIntensity={0.95} stone={false} />
       </mesh>
       <mesh
         geometry={wing}
-        position={[0.02, 0.18, -0.03]}
-        rotation={[0.15, Math.PI - 0.35, -0.35]}
+        position={[0.03, 0.22, -0.04]}
+        rotation={[0.2, Math.PI + 0.4, -0.4]}
         castShadow
       >
         <Surface id={id} roughness={0.32} metalness={0.66} envMapIntensity={0.95} stone={false} />
@@ -277,7 +272,7 @@ function AngelBody({ id }: { id: string }) {
 }
 
 function PodiumMass({ id, size }: { id: string; size: [number, number, number] }) {
-  const courses = [0.28, 0.3, 0.3, 0.34];
+  const courses = [0.24, 0.26, 0.28, 0.34];
   let y = -size[1] / 2;
   return (
     <group>

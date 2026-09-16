@@ -48,7 +48,7 @@ function Shell() {
       <ControlDock open={dockOpen} onOpen={() => setDockOpen(true)} onClose={() => setDockOpen(false)} />
       <div
         className={`pointer-events-auto absolute right-3 bottom-16 left-3 z-20 md:top-24 md:right-4 md:bottom-auto md:left-auto md:w-[24rem] ${
-          selectedId ? "block" : "hidden md:block"
+          selectedId ? "block" : "hidden xl:block"
         }`}
       >
         <DetailPanel />
