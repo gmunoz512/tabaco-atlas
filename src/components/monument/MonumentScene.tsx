@@ -7,8 +7,8 @@ import { useAtlas } from "@/state/atlas-store";
 import { Hill } from "@/components/monument/Hill";
 import { Monument } from "@/components/monument/Monument";
 
-const CAMERA_POS: [number, number, number] = [16.8, 8.1, 19.2];
-const TARGET: [number, number, number] = [0, 5.5, 0];
+const CAMERA_POS: [number, number, number] = [17.4, 8.5, 19.8];
+const TARGET: [number, number, number] = [0, 5.8, 0];
 
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
@@ -49,7 +49,7 @@ function SceneContents() {
   return (
     <>
       <color attach="background" args={["#7ea3c4"]} />
-      <fog attach="fog" args={["#8aabca", 32, 78]} />
+      <fog attach="fog" args={["#8aabca", 38, 88]} />
       <Sky sunPosition={[14, 7, 8]} turbidity={5.5} rayleigh={1.35} mieCoefficient={0.0038} />
       <hemisphereLight args={["#d7e6f5", "#5b5348", 0.62]} />
       <ambientLight intensity={0.32} />
@@ -87,7 +87,7 @@ export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 32, near: 0.1, far: 130 }}
+      camera={{ position: CAMERA_POS, fov: 31, near: 0.1, far: 130 }}
       dpr={[1, 1.75]}
       gl={{
         antialias: true,

@@ -76,8 +76,8 @@ export const CREAM = "#ead9b8";
 export const CREAM_HI = "#f3e6cc";
 export const CREAM_DEEP = "#dcc9a4";
 export const STONE_PLAZA = "#d5cec2";
-export const GREY_PODIUM = "#8d8881";
-export const GREY_DEEP = "#6f6b66";
+export const GREY_PODIUM = "#b2ada6";
+export const GREY_DEEP = "#9a948c";
 export const BRONZE = "#a14b2c";
 export const BRONZE_DARK = "#7c341c";
 export const ARCH_VOID = "#5a221c";
@@ -176,7 +176,7 @@ function generated(): AtlasPart[] {
     descriptionEs: `Paño crema detrás de las columnas, cara ${side.es}. Da cuerpo al prisma cuadrado.`,
     descriptionEn: `Cream wall behind the columns on the ${side.en} face. It gives the square prism its body.`,
     aliases: ["wall", "muro", "colonnade", side.en, side.es],
-    color: CREAM,
+    color: CREAM_DEEP,
   }));
 
   const entablature: AtlasPart[] = SIDES.map((side) => ({

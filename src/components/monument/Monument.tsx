@@ -140,7 +140,7 @@ function ArchBody({ id }: { id: string }) {
 }
 
 function HelixBody({ id }: { id: string }) {
-  const geo = useMemo(() => createHelixGeometry(0.285, 4.44, 2.45, 0.016), []);
+  const geo = useMemo(() => createHelixGeometry(0.27, 5.1, 2.55, 0.015), []);
   return (
     <mesh geometry={geo} castShadow>
       <Surface id={id} roughness={0.78} offset />
@@ -153,18 +153,18 @@ function BalconyBody({ id }: { id: string }) {
     () =>
       Array.from({ length: 16 }, (_, i) => {
         const a = (i / 16) * Math.PI * 2;
-        return [Math.cos(a) * 0.39, Math.sin(a) * 0.39] as const;
+        return [Math.cos(a) * 0.34, Math.sin(a) * 0.34] as const;
       }),
     [],
   );
   return (
     <group>
       <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[0.42, 0.4, 0.09, 40]} />
+        <cylinderGeometry args={[0.36, 0.34, 0.08, 40]} />
         <Surface id={id} roughness={0.84} />
       </mesh>
-      <mesh position={[0, 0.07, 0]}>
-        <torusGeometry args={[0.39, 0.016, 8, 48]} />
+      <mesh position={[0, 0.06, 0]}>
+        <torusGeometry args={[0.34, 0.014, 8, 48]} />
         <Surface id={id} roughness={0.62} metalness={0.12} />
       </mesh>
       {posts.map(([x, z], i) => (
@@ -282,7 +282,7 @@ function PodiumMass({ id, size }: { id: string; size: [number, number, number] }
   return (
     <group>
       {courses.map((h, index) => {
-        const inset = index * 0.02;
+        const inset = index * 0.045;
         const mid = y + h / 2;
         y += h;
         return (

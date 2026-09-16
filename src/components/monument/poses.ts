@@ -86,10 +86,10 @@ function buildPoses(): Record<string, PartPose> {
       { rotation: [0, d.rot, 0] },
     );
     p[`wall-${side.id}`] = pose(
-      [d.x * 1.9, 2.78, d.z * 1.9],
+      [d.x * 1.68, 2.78, d.z * 1.68],
       [d.x * 5.4, 2.6, d.z * 5.4],
       "box",
-      { size: [3.72, COL_HEIGHT, 0.13], rotation: [0, d.rot, 0] },
+      { size: [3.55, COL_HEIGHT - 0.12, 0.12], rotation: [0, d.rot, 0] },
     );
     p[`entablature-${side.id}`] = pose(
       [d.x * 2.08, 4.28, d.z * 2.08],
@@ -98,8 +98,8 @@ function buildPoses(): Record<string, PartPose> {
       { size: [4.22, 0.2, 0.32], rotation: [0, d.rot, 0] },
     );
     p[`rail-${side.id}`] = pose(
-      [d.x * 0.4, 10.78, d.z * 0.4],
-      [d.x * 2.5, 12.2, d.z * 2.5],
+      [d.x * 0.38, 11.42, d.z * 0.38],
+      [d.x * 2.5, 12.8, d.z * 2.5],
       "rail",
       { rotation: [0, d.rot, 0] },
     );
@@ -173,16 +173,16 @@ function buildPoses(): Record<string, PartPose> {
   p["colonnade-terrace"] = pose([0, 4.42, 0], [0, 5.0, 0], "box", { size: [4.28, 0.1, 4.28] });
   p["attic-body"] = pose([0, 5.22, 0], [0, 5.85, 0], "attic", { size: [2.52, 1.32, 2.52] });
 
-  p["shaft-lower"] = pose([0, 6.64, 0], [0, 7.2, 0], "cylinder", { size: [0.27, 1.48, 0.27] });
-  p["shaft-mid"] = pose([0, 8.12, 0], [0.14, 9.0, 0], "cylinder", { size: [0.262, 1.48, 0.255] });
-  p["shaft-upper"] = pose([0, 9.6, 0], [-0.1, 10.7, 0], "cylinder", { size: [0.255, 1.48, 0.248] });
-  p["shaft-spiral"] = pose([0, 8.12, 0], [2.3, 8.2, 1.5], "helix", { size: [0.285, 4.44, 0.016] });
-  p["shaft-capital"] = pose([0, 10.42, 0], [0, 11.8, 0], "cylinder", { size: [0.36, 0.14, 0.36] });
-  p["elevator-shaft"] = pose([0, 7.7, 0], [3.0, 7.7, 2.1], "box", { size: [0.16, 4.2, 0.16] });
+  p["shaft-lower"] = pose([0, 6.78, 0], [0, 7.4, 0], "cylinder", { size: [0.255, 1.7, 0.255] });
+  p["shaft-mid"] = pose([0, 8.48, 0], [0.14, 9.4, 0], "cylinder", { size: [0.248, 1.7, 0.242] });
+  p["shaft-upper"] = pose([0, 10.18, 0], [-0.1, 11.3, 0], "cylinder", { size: [0.242, 1.7, 0.236] });
+  p["shaft-spiral"] = pose([0, 8.48, 0], [2.3, 8.5, 1.5], "helix", { size: [0.27, 5.1, 0.015] });
+  p["shaft-capital"] = pose([0, 11.1, 0], [0, 12.5, 0], "cylinder", { size: [0.34, 0.13, 0.34] });
+  p["elevator-shaft"] = pose([0, 8.0, 0], [3.0, 8.0, 2.1], "box", { size: [0.15, 4.6, 0.15] });
 
-  p["observation-deck"] = pose([0, 10.64, 0], [0, 12.4, 0], "balcony");
-  p["crown-cap"] = pose([0, 10.98, 0], [0, 13.0, 0], "cylinder", { size: [0.24, 0.26, 0.22] });
-  p["angel-peace"] = pose([0, 11.48, 0], [0, 14.1, 0], "angel", { scale: [1.7, 1.7, 1.7] });
+  p["observation-deck"] = pose([0, 11.3, 0], [0, 13.1, 0], "balcony");
+  p["crown-cap"] = pose([0, 11.62, 0], [0, 13.7, 0], "cylinder", { size: [0.22, 0.24, 0.2] });
+  p["angel-peace"] = pose([0, 12.1, 0], [0, 14.8, 0], "angel", { scale: [1.78, 1.78, 1.78] });
 
   return p;
 }
