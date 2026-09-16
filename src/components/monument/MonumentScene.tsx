@@ -44,7 +44,7 @@ function assertWebGLRenderer(state: RootState) {
     throw new Error("Monumento's Anatomy requires THREE.WebGLRenderer (WebGL), not CSS3D/SVG/Canvas2D.");
   }
   const canvas = state.gl.domElement;
-  canvas.dataset.renderer = state.gl.constructor.name;
+  canvas.dataset.renderer = "WebGLRenderer";
   canvas.dataset.webgl = state.gl.capabilities.isWebGL2 ? "WebGL2" : "WebGL";
 }
 
@@ -55,9 +55,9 @@ function WebGLReporter() {
   useEffect(() => {
     if (!(gl instanceof THREE.WebGLRenderer)) return;
     const version = gl.capabilities.isWebGL2 ? "WebGL2" : "WebGL";
-    gl.domElement.dataset.renderer = gl.constructor.name;
+    gl.domElement.dataset.renderer = "WebGLRenderer";
     gl.domElement.dataset.webgl = version;
-    setWebglStatus(`${gl.constructor.name} · ${version}`);
+    setWebglStatus(`WebGLRenderer · ${version}`);
   }, [gl, setWebglStatus]);
 
   return null;
