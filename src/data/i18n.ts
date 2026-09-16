@@ -2,7 +2,7 @@ import type { Locale } from "@/data/parts";
 
 export const COPY = {
   es: {
-    appName: "Anatomía Dominicana",
+    appName: "El Anatomy",
     tagline: "Explorador botánico de Nicotiana",
     subtitle: "Planta del Caribe, vista por partes",
     searchPlaceholder: "Buscar hoja, raíz, flor…",
@@ -21,7 +21,7 @@ export const COPY = {
     culturalNote: "Nota dominicana / caribeña",
     orbitHint: "Arrastra para orbitar · pellizca o rueda para zoom",
     footer:
-      "Anatomía Dominicana — explorador botánico educativo. No es consejo médico ni agronómico, ni publicidad de tabaco.",
+      "El Anatomy — explorador botánico educativo. No es consejo médico ni agronómico, ni publicidad de tabaco.",
     language: "Idioma",
     languageEs: "Español",
     languageEn: "English",
@@ -36,10 +36,10 @@ export const COPY = {
     intro:
       "Modelo simplificado de la planta de tabaco como se conoce en el Caribe. Gira, oculta capas y separa las piezas para inventariarlas.",
     tainoNote:
-      "Los taínos de las Antillas Mayores conocían esta planta mucho antes de la colonia. Anatomía Dominicana estudia la botánica y el paisaje cultural, no el consumo.",
+      "Los taínos de las Antillas Mayores conocían esta planta mucho antes de la colonia. El Anatomy estudia la botánica y el paisaje cultural, no el consumo.",
   },
   en: {
-    appName: "Dominican Anatomy",
+    appName: "El Anatomy",
     tagline: "Botanical explorer of Nicotiana",
     subtitle: "A Caribbean plant, seen in parts",
     searchPlaceholder: "Search leaf, root, flower…",
@@ -58,7 +58,7 @@ export const COPY = {
     culturalNote: "Dominican / Caribbean note",
     orbitHint: "Drag to orbit · pinch or scroll to zoom",
     footer:
-      "Dominican Anatomy — educational botanical explorer. Not medical or agricultural advice, and not tobacco advertising.",
+      "El Anatomy — educational botanical explorer. Not medical or agricultural advice, and not tobacco advertising.",
     language: "Language",
     languageEs: "Español",
     languageEn: "English",
@@ -73,7 +73,7 @@ export const COPY = {
     intro:
       "A simplified model of the tobacco plant as known in the Caribbean. Orbit, hide layers, and space the pieces to inventory them.",
     tainoNote:
-      "Taíno communities of the Greater Antilles knew this plant long before colonization. Dominican Anatomy studies botany and cultural landscape, not consumption.",
+      "Taíno communities of the Greater Antilles knew this plant long before colonization. El Anatomy studies botany and cultural landscape, not consumption.",
   },
 } as const;
 

@@ -1,4 +1,4 @@
-# Anatomía Dominicana / Dominican Anatomy
+# El Anatomy
 
 Explorador botánico 3D de *Nicotiana tabacum* (tabaco), pensado para un público dominicano y caribeño. Orbita la planta, selecciona raíces, tallo, hojas y flor, oculta capas y separa las piezas en una vista explosionada.
 
@@ -13,7 +13,7 @@ El producto sigue el patrón de un atlas humano exploratorio (órbita, capas, b�
 - Busca por nombre común (ES/EN) o científico.
 - Separa las piezas visibles para inventariarlas.
 - Lee la ficha: nombre, descripción llana y nota cultural dominicana/caribeña cuando aplica.
-- Interfaz en español primero (**Anatomía Dominicana**), con conmutador a English (**Dominican Anatomy**).
+- Interfaz en español primero, con conmutador ES/EN. El nombre del producto es **El Anatomy** en ambos idiomas.
 
 ## Requisitos
 
