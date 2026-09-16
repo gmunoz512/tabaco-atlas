@@ -275,26 +275,49 @@ export function createAsphaltTexture() {
   return tex;
 }
 
-export function createFacadeTexture() {
-  const s = 64;
+function paintFacade(emissiveOnly: boolean) {
+  const s = 256;
   const canvas = document.createElement("canvas");
   canvas.width = s;
   canvas.height = s;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = emissiveOnly ? "#000000" : "#f2ebe0";
   ctx.fillRect(0, 0, s, s);
-  ctx.fillStyle = "#1c1820";
-  for (let y = 6; y < 58; y += 14) {
-    for (let x = 7; x < 58; x += 13) {
-      ctx.fillRect(x, y, 5, 7);
+  let n = 0x9e3779b9;
+  const rnd = () => {
+    n = Math.imul(n ^ (n >>> 15), 0x7feb352d);
+    return ((n ^ (n >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let y = 10; y < 240; y += 42) {
+    for (let x = 12; x < 244; x += 36) {
+      const lit = rnd() > 0.62;
+      if (!emissiveOnly) {
+        ctx.fillStyle = "#4a3c34";
+        ctx.fillRect(x, y, 18, 26);
+      }
+      if (lit) {
+        ctx.fillStyle = emissiveOnly ? "#ffc46e" : "rgb(255, 196, 110)";
+        ctx.fillRect(x + 2, y + 2, 14, 22);
+      } else if (!emissiveOnly) {
+        ctx.fillStyle = "rgb(28, 32, 42)";
+        ctx.fillRect(x + 2, y + 2, 14, 22);
+      }
     }
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 4;
+  tex.anisotropy = 8;
   return tex;
+}
+
+export function createFacadeTexture() {
+  return paintFacade(false);
+}
+
+export function createFacadeEmissive() {
+  return paintFacade(true);
 }
 
 let stoneMaps: { albedo: THREE.CanvasTexture; bump: THREE.CanvasTexture } | null = null;

@@ -1,5 +1,6 @@
 import { RoundedBox } from "@react-three/drei";
 import { useMemo } from "react";
+import * as THREE from "three";
 import { PARTS, PART_BY_ID } from "@/data/parts";
 import { useAtlas } from "@/state/atlas-store";
 import {
@@ -7,16 +8,16 @@ import {
   createHelixGeometry,
   createShieldGeometry,
   createWingGeometry,
-  getStoneMaps,
 } from "@/components/monument/geometries";
 import { ATTIC_W, COL_HEIGHT, COL_HW, COL_Y, PART_POSES, SHAFT } from "@/components/monument/poses";
+import { useSceneTextures } from "@/components/monument/pbr";
 import { SelectablePart } from "@/components/monument/SelectablePart";
 
 function Surface({
   id,
-  roughness = 0.88,
+  roughness = 0.62,
   metalness = 0.04,
-  envMapIntensity = 0.48,
+  envMapIntensity = 0.95,
   stone = true,
   offset = false,
 }: {
@@ -29,19 +30,37 @@ function Surface({
 }) {
   const { selectedId } = useAtlas();
   const selected = selectedId === id;
-  const maps = useMemo(() => (stone ? getStoneMaps() : null), [stone]);
+  const maps = useSceneTextures();
   const base = PART_BY_ID[id].color;
   const color = selected ? "#c4a56a" : base;
 
+  if (!stone) {
+    return (
+      <meshPhysicalMaterial
+        color={color}
+        roughness={selected ? 0.28 : roughness}
+        metalness={selected ? 0.45 : metalness}
+        envMapIntensity={envMapIntensity}
+        emissive={selected ? "#5c4520" : "#000000"}
+        emissiveIntensity={selected ? 0.14 : 0}
+        polygonOffset={offset}
+        polygonOffsetFactor={offset ? -1 : 0}
+      />
+    );
+  }
+
   return (
-    <meshStandardMaterial
+    <meshPhysicalMaterial
       color={color}
-      map={maps?.albedo}
-      bumpMap={maps?.bump}
-      bumpScale={stone && !selected ? 0.038 : 0.012}
-      roughness={selected ? 0.52 : roughness}
-      metalness={selected ? 0.14 : metalness}
+      map={maps.stoneMap}
+      normalMap={maps.stoneNor}
+      normalScale={new THREE.Vector2(0.42, 0.42)}
+      roughnessMap={maps.stoneRough}
+      roughness={selected ? 0.42 : roughness}
+      metalness={selected ? 0.12 : metalness}
       envMapIntensity={envMapIntensity}
+      clearcoat={0.1}
+      clearcoatRoughness={0.48}
       emissive={selected ? "#5c4520" : "#000000"}
       emissiveIntensity={selected ? 0.14 : 0}
       polygonOffset={offset}
@@ -82,7 +101,7 @@ function ColumnBody({ id }: { id: string }) {
         <Surface id={id} roughness={0.8} />
       </mesh>
       <mesh position={[0, 0.02, 0]} castShadow>
-        <cylinderGeometry args={[0.038, 0.048, shaftH, 28]} />
+        <cylinderGeometry args={[0.038, 0.048, shaftH, 48]} />
         <Surface id={id} roughness={0.7} metalness={0.05} envMapIntensity={0.7} />
       </mesh>
       <mesh position={[0, COL_HEIGHT / 2 - 0.12, 0]} castShadow>
@@ -240,11 +259,11 @@ function AngelBody({ id }: { id: string }) {
     <group>
       <mesh position={[0, 0.1, 0]} castShadow>
         <cylinderGeometry args={[0.012, 0.11, 0.28, 16]} />
-        <Surface id={id} roughness={0.28} metalness={0.72} envMapIntensity={1} stone={false} />
+        <Surface id={id} roughness={0.22} metalness={1} envMapIntensity={1.45} stone={false} />
       </mesh>
       <mesh position={[0, 0.3, 0]} castShadow>
         <cylinderGeometry args={[0.055, 0.07, 0.22, 16]} />
-        <Surface id={id} roughness={0.28} metalness={0.72} envMapIntensity={1} stone={false} />
+        <Surface id={id} roughness={0.22} metalness={1} envMapIntensity={1.45} stone={false} />
       </mesh>
       <mesh position={[0, 0.44, 0]} castShadow>
         <sphereGeometry args={[0.048, 14, 12]} />
@@ -252,30 +271,30 @@ function AngelBody({ id }: { id: string }) {
       </mesh>
       <mesh position={[0, 0.52, 0]} castShadow>
         <cylinderGeometry args={[0.016, 0.02, 0.05, 10]} />
-        <Surface id={id} roughness={0.3} metalness={0.65} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.95} envMapIntensity={1.35} stone={false} />
       </mesh>
       <mesh position={[0, 0.58, 0]} castShadow>
         <sphereGeometry args={[0.038, 12, 10]} />
-        <Surface id={id} roughness={0.3} metalness={0.65} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.95} envMapIntensity={1.35} stone={false} />
       </mesh>
       <mesh position={[-0.055, 0.62, 0.04]} rotation={[0.12, 0, 0.42]} castShadow>
         <cylinderGeometry args={[0.012, 0.018, 0.46, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.96} envMapIntensity={1.4} stone={false} />
       </mesh>
       <mesh position={[0.055, 0.62, 0.04]} rotation={[0.12, 0, -0.42]} castShadow>
         <cylinderGeometry args={[0.012, 0.018, 0.46, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.96} envMapIntensity={1.4} stone={false} />
       </mesh>
       <mesh position={[-0.14, 0.82, 0.12]} castShadow>
         <sphereGeometry args={[0.02, 8, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.96} envMapIntensity={1.4} stone={false} />
       </mesh>
       <mesh position={[0.14, 0.82, 0.12]} castShadow>
         <sphereGeometry args={[0.02, 8, 8]} />
-        <Surface id={id} roughness={0.3} metalness={0.7} stone={false} />
+        <Surface id={id} roughness={0.24} metalness={0.96} envMapIntensity={1.4} stone={false} />
       </mesh>
       <mesh geometry={wing} position={[-0.04, 0.28, -0.05]} rotation={[0.35, -0.55, 0.55]} scale={[1.15, 1.2, 1]} castShadow>
-        <Surface id={id} roughness={0.32} metalness={0.66} envMapIntensity={0.95} stone={false} />
+        <Surface id={id} roughness={0.26} metalness={0.92} envMapIntensity={1.35} stone={false} />
       </mesh>
       <mesh
         geometry={wing}
@@ -284,7 +303,7 @@ function AngelBody({ id }: { id: string }) {
         scale={[1.15, 1.2, 1]}
         castShadow
       >
-        <Surface id={id} roughness={0.32} metalness={0.66} envMapIntensity={0.95} stone={false} />
+        <Surface id={id} roughness={0.26} metalness={0.92} envMapIntensity={1.35} stone={false} />
       </mesh>
     </group>
   );
@@ -364,7 +383,7 @@ function WallBody({ id, size }: { id: string; size: [number, number, number] }) 
 function CylinderBody({ id, size }: { id: string; size: [number, number, number] }) {
   return (
     <mesh castShadow receiveShadow>
-      <cylinderGeometry args={[size[0], size[2] ?? size[0], size[1], 64]} />
+      <cylinderGeometry args={[size[0], size[2] ?? size[0], size[1], 96]} />
       <Surface id={id} roughness={0.78} envMapIntensity={0.58} />
     </mesh>
   );

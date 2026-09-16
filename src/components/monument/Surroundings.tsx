@@ -1,11 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import {
-  createAsphaltTexture,
-  createDuskSkyTexture,
-  createFacadeTexture,
-  createGrassTexture,
-} from "@/components/monument/geometries";
+import { createFacadeEmissive, createFacadeTexture } from "@/components/monument/geometries";
+import { useSceneTextures } from "@/components/monument/pbr";
 
 function mulberry(seed: number) {
   let t = seed + 0x6d2b79f5;
@@ -26,25 +22,19 @@ export function terrainHeight(x: number, z: number) {
 }
 
 function createTerrain() {
-  const geo = new THREE.CircleGeometry(62, 140);
+  const geo = new THREE.CircleGeometry(64, 180);
   const pos = geo.attributes.position;
   const colors = new Float32Array(pos.count * 3);
-  const lawn = new THREE.Color("#8fb85a");
-  const mid = new THREE.Color("#6d9248");
-  const far = new THREE.Color("#4e6c36");
-  const dirt = new THREE.Color("#6a6840");
+  const lawn = new THREE.Color("#c5d4a0");
+  const mid = new THREE.Color("#9aaa70");
+  const far = new THREE.Color("#7a8a58");
   for (let i = 0; i < pos.count; i += 1) {
     const x = pos.getX(i);
     const y = pos.getY(i);
     const r = Math.hypot(x, y);
     pos.setZ(i, terrainHeight(x, y));
-    let mix = far;
-    if (r < 6.4) mix = lawn;
-    else if (r < 11) mix = lawn.clone().lerp(mid, 0.35);
-    else if (r < 20) mix = mid;
-    else if (r < 36) mix = far;
-    else mix = dirt.clone().lerp(far, 0.55);
-    const jitter = 0.88 + mulberry(i * 17) * 0.22;
+    const mix = r < 8 ? lawn : r < 22 ? mid : far;
+    const jitter = 0.9 + mulberry(i * 17) * 0.18;
     colors[i * 3] = mix.r * jitter;
     colors[i * 3 + 1] = mix.g * jitter;
     colors[i * 3 + 2] = mix.b * jitter;
@@ -54,35 +44,18 @@ function createTerrain() {
   return geo;
 }
 
-function DuskDome() {
-  const tex = useMemo(() => (typeof document === "undefined" ? null : createDuskSkyTexture()), []);
-  return (
-    <mesh>
-      <sphereGeometry args={[160, 64, 40]} />
-      <meshBasicMaterial
-        map={tex ?? undefined}
-        color={tex ? "#ffffff" : "#5a7394"}
-        side={THREE.BackSide}
-        fog={false}
-        depthWrite={false}
-        toneMapped={false}
-      />
-    </mesh>
-  );
-}
-
 function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
   const y = terrainHeight(x, z);
   return (
     <group position={[x, y, z]} scale={scale}>
-      <mesh position={[0, 1.15, 0]} castShadow>
-        <cylinderGeometry args={[0.045, 0.09, 2.3, 8]} />
-        <meshStandardMaterial color="#6a4e32" roughness={0.96} />
+      <mesh position={[0, 1.25, 0]} castShadow>
+        <cylinderGeometry args={[0.05, 0.1, 2.5, 12]} />
+        <meshStandardMaterial color="#6e5238" roughness={0.92} />
       </mesh>
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <mesh key={i} position={[0, 2.28, 0]} rotation={[1.12, (i / 8) * Math.PI * 2, 0.08]}>
-          <boxGeometry args={[0.08, 0.02, 1.15]} />
-          <meshStandardMaterial color="#3d6a38" roughness={1} />
+      {Array.from({ length: 12 }, (_, i) => (
+        <mesh key={i} position={[0, 2.48, 0]} rotation={[1.18, (i / 12) * Math.PI * 2, 0.12]} castShadow>
+          <boxGeometry args={[0.07, 0.018, 1.35]} />
+          <meshStandardMaterial color="#3f6a36" roughness={0.78} />
         </mesh>
       ))}
     </group>
@@ -90,6 +63,7 @@ function Palm({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
 }
 
 function HedgeBeds() {
+  const tex = useSceneTextures();
   const beds = useMemo(
     () =>
       Array.from({ length: 12 }, (_, i) => {
@@ -101,9 +75,15 @@ function HedgeBeds() {
   return (
     <group>
       {beds.map((h) => (
-        <mesh key={`${h.x}-${h.z}`} position={[h.x, 0.22, h.z]} rotation={[0, h.rot, 0]} receiveShadow>
+        <mesh key={`${h.x}-${h.z}`} position={[h.x, 0.22, h.z]} rotation={[0, h.rot, 0]} receiveShadow castShadow>
           <boxGeometry args={[h.w, 0.42, 0.32]} />
-          <meshStandardMaterial color="#3f6232" roughness={1} />
+          <meshStandardMaterial
+            map={tex.grassMap}
+            normalMap={tex.grassNor}
+            roughnessMap={tex.grassRough}
+            color="#5a7a40"
+            roughness={0.92}
+          />
         </mesh>
       ))}
     </group>
@@ -111,7 +91,7 @@ function HedgeBeds() {
 }
 
 function RoadSystem() {
-  const asphalt = useMemo(() => (typeof document === "undefined" ? null : createAsphaltTexture()), []);
+  const tex = useSceneTextures();
   const curve = useMemo(() => {
     const raw: [number, number][] = [
       [-20, 16],
@@ -129,7 +109,7 @@ function RoadSystem() {
     const pts = raw.map(([x, z]) => new THREE.Vector3(x, terrainHeight(x, z) + 0.08, z));
     return new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.35);
   }, []);
-  const ribbon = useMemo(() => new THREE.TubeGeometry(curve, 180, 1.35, 6, false), [curve]);
+  const ribbon = useMemo(() => new THREE.TubeGeometry(curve, 180, 1.35, 8, false), [curve]);
   const edge = useMemo(
     () =>
       Array.from({ length: 36 }, (_, i) => {
@@ -142,31 +122,44 @@ function RoadSystem() {
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0.4]} scale={[1.22, 1, 0.92]} receiveShadow>
-        <ringGeometry args={[7.05, 9.45, 96]} />
-        <meshStandardMaterial map={asphalt ?? undefined} color="#3c3b3a" roughness={0.92} />
+        <ringGeometry args={[7.05, 9.45, 128]} />
+        <meshStandardMaterial
+          map={tex.asphaltMap}
+          normalMap={tex.asphaltNor}
+          roughnessMap={tex.asphaltRough}
+          color="#5a5856"
+          roughness={0.78}
+          envMapIntensity={0.35}
+        />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0.4]} scale={[1.22, 1, 0.92]}>
-        <ringGeometry args={[7.12, 7.24, 96]} />
-        <meshStandardMaterial color="#d8d2c6" roughness={0.74} />
+        <ringGeometry args={[7.12, 7.24, 128]} />
+        <meshStandardMaterial color="#e4ddd0" roughness={0.55} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0.4]} scale={[1.22, 1, 0.92]}>
-        <ringGeometry args={[9.28, 9.4, 96]} />
-        <meshStandardMaterial color="#d8d2c6" roughness={0.74} />
+        <ringGeometry args={[9.28, 9.4, 128]} />
+        <meshStandardMaterial color="#e4ddd0" roughness={0.55} />
       </mesh>
       {edge.map((d, i) =>
         i % 3 === 0 ? null : (
           <mesh key={`${d.x}-${d.z}`} position={[d.x * 1.22, 0.034, d.z * 0.92 + 0.4]} rotation={[0, d.rot, 0]}>
             <boxGeometry args={[0.42, 0.008, 0.055]} />
-            <meshStandardMaterial color="#cfc8ba" roughness={0.7} />
+            <meshStandardMaterial color="#ddd6c8" roughness={0.6} />
           </mesh>
         ),
       )}
       <mesh geometry={ribbon} scale={[1, 0.06, 1]} receiveShadow>
-        <meshStandardMaterial map={asphalt ?? undefined} color="#3a3938" roughness={0.9} />
+        <meshStandardMaterial
+          map={tex.asphaltMap}
+          normalMap={tex.asphaltNor}
+          roughnessMap={tex.asphaltRough}
+          color="#555350"
+          roughness={0.8}
+        />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.018, 0.4]} scale={[1.22, 1, 0.92]} receiveShadow>
         <ringGeometry args={[9.45, 10.5, 96]} />
-        <meshStandardMaterial color="#73944c" roughness={1} />
+        <meshStandardMaterial map={tex.grassMap} color="#8aa85a" roughness={0.95} />
       </mesh>
     </group>
   );
@@ -202,27 +195,27 @@ function buildCity(): BuildingSpec[] {
   ].map((hex) => new THREE.Color(hex));
   const roofs = ["#8a4a32", "#6e5340", "#9a6a48", "#5c5854", "#a07050", "#c45c38"].map((hex) => new THREE.Color(hex));
   const out: BuildingSpec[] = [];
-  for (let i = 0; i < 980; i += 1) {
+  for (let i = 0; i < 1400; i += 1) {
     const a = mulberry(i * 3) * Math.PI * 2;
-    const r = 13.4 + mulberry(i * 7) * 34;
+    const r = 13.2 + mulberry(i * 7) * 36;
     const jx = Math.cos(a) * r + (mulberry(i * 13) - 0.5) * 0.45;
     const jz = Math.sin(a) * r + (mulberry(i * 19) - 0.5) * 0.45;
     const street = Math.abs((jx + 80) % 8.2) < 1.15 || Math.abs((jz + 80) % 8.2) < 1.15;
     if (street && mulberry(i * 23) < 0.7) continue;
     const rr = Math.hypot(jx, jz);
-    if (rr < 13.2 || rr > 50) continue;
-    const tall = rr > 28 && mulberry(i * 9) > 0.92;
+    if (rr < 13.1 || rr > 52) continue;
+    const tall = rr > 28 && mulberry(i * 9) > 0.91;
     const h = tall
-      ? 1.5 + mulberry(i * 17) * 2.2
-      : 0.32 + mulberry(i * 11) * 0.7 + (rr > 32 ? mulberry(i) * 0.35 : 0);
+      ? 1.6 + mulberry(i * 17) * 2.6
+      : 0.34 + mulberry(i * 11) * 0.72 + (rr > 32 ? mulberry(i) * 0.38 : 0);
     const yBase = terrainHeight(jx, jz);
     out.push({
       x: jx,
       z: jz,
       y: yBase + h / 2,
-      sx: tall ? 0.8 + mulberry(i) * 0.65 : 0.52 + mulberry(i * 23) * 0.7,
+      sx: tall ? 0.82 + mulberry(i) * 0.7 : 0.52 + mulberry(i * 23) * 0.72,
       h,
-      sz: tall ? 0.68 + mulberry(i + 4) * 0.6 : 0.48 + mulberry(i * 29) * 0.62,
+      sz: tall ? 0.7 + mulberry(i + 4) * 0.62 : 0.48 + mulberry(i * 29) * 0.64,
       rot: (mulberry(i * 31) - 0.5) * 0.25,
       color: palette[Math.floor(mulberry(i * 41) * palette.length)],
       roof: roofs[Math.floor(mulberry(i * 43) * roofs.length)],
@@ -241,6 +234,7 @@ function CityField() {
   const towerMesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const facade = useMemo(() => (typeof document === "undefined" ? null : createFacadeTexture()), []);
+  const emit = useMemo(() => (typeof document === "undefined" ? null : createFacadeEmissive()), []);
 
   useLayoutEffect(() => {
     const body = houseMesh.current;
@@ -282,17 +276,31 @@ function CityField() {
 
   return (
     <group>
-      <instancedMesh ref={houseMesh} args={[undefined, undefined, Math.max(houses.length, 1)]} frustumCulled={false}>
+      <instancedMesh ref={houseMesh} args={[undefined, undefined, Math.max(houses.length, 1)]} frustumCulled={false} castShadow>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial map={facade ?? undefined} roughness={0.88} metalness={0.03} />
+        <meshStandardMaterial
+          map={facade ?? undefined}
+          emissiveMap={emit ?? undefined}
+          emissive="#ffc070"
+          emissiveIntensity={0.55}
+          roughness={0.78}
+          metalness={0.04}
+        />
       </instancedMesh>
       <instancedMesh ref={roofMesh} args={[undefined, undefined, Math.max(houses.length, 1)]} frustumCulled={false}>
         <coneGeometry args={[0.85, 0.55, 4]} />
-        <meshStandardMaterial roughness={0.9} />
+        <meshStandardMaterial roughness={0.82} />
       </instancedMesh>
-      <instancedMesh ref={towerMesh} args={[undefined, undefined, Math.max(towers.length, 1)]} frustumCulled={false}>
+      <instancedMesh ref={towerMesh} args={[undefined, undefined, Math.max(towers.length, 1)]} frustumCulled={false} castShadow>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial map={facade ?? undefined} roughness={0.82} metalness={0.08} />
+        <meshStandardMaterial
+          map={facade ?? undefined}
+          emissiveMap={emit ?? undefined}
+          emissive="#ffc070"
+          emissiveIntensity={0.45}
+          roughness={0.72}
+          metalness={0.08}
+        />
       </instancedMesh>
     </group>
   );
@@ -302,7 +310,7 @@ function TreeField() {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const trunks = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 70;
+  const count = 90;
   const spots = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
@@ -320,13 +328,13 @@ function TreeField() {
     const trunk = trunks.current;
     if (!canopy || !trunk) return;
     spots.forEach((s, i) => {
-      dummy.position.set(s.x, s.y + 0.35 * s.s, s.z);
-      dummy.scale.set(0.07 * s.s, 0.7 * s.s, 0.07 * s.s);
+      dummy.position.set(s.x, s.y + 0.38 * s.s, s.z);
+      dummy.scale.set(0.07 * s.s, 0.75 * s.s, 0.07 * s.s);
       dummy.rotation.set(0, 0, 0);
       dummy.updateMatrix();
       trunk.setMatrixAt(i, dummy.matrix);
-      dummy.position.set(s.x, s.y + 0.95 * s.s, s.z);
-      dummy.scale.set(0.55 * s.s, 0.7 * s.s, 0.55 * s.s);
+      dummy.position.set(s.x, s.y + 1.05 * s.s, s.z);
+      dummy.scale.set(0.58 * s.s, 0.72 * s.s, 0.58 * s.s);
       dummy.updateMatrix();
       canopy.setMatrixAt(i, dummy.matrix);
     });
@@ -337,18 +345,19 @@ function TreeField() {
   return (
     <group>
       <instancedMesh ref={trunks} args={[undefined, undefined, spots.length]} frustumCulled={false}>
-        <cylinderGeometry args={[1, 1.4, 1, 5]} />
-        <meshStandardMaterial color="#5a4030" roughness={1} />
+        <cylinderGeometry args={[1, 1.35, 1, 8]} />
+        <meshStandardMaterial color="#5c4030" roughness={0.95} />
       </instancedMesh>
       <instancedMesh ref={mesh} args={[undefined, undefined, spots.length]} frustumCulled={false} castShadow>
-        <sphereGeometry args={[1, 8, 6]} />
-        <meshStandardMaterial color="#3d5e32" roughness={1} />
+        <sphereGeometry args={[1, 12, 10]} />
+        <meshStandardMaterial color="#3a5c32" roughness={0.82} envMapIntensity={0.28} />
       </instancedMesh>
     </group>
   );
 }
 
 function DistantHills() {
+  const tex = useSceneTextures();
   const hills = useMemo(
     () =>
       Array.from({ length: 14 }, (_, i) => {
@@ -367,8 +376,8 @@ function DistantHills() {
     <group>
       {hills.map((hill, i) => (
         <mesh key={i} position={[hill.x, hill.h * 0.12 - 2.4, hill.z]} scale={[hill.w, hill.h, hill.w * 0.65]}>
-          <sphereGeometry args={[1, 16, 10]} />
-          <meshStandardMaterial color={i % 2 ? "#4f6148" : "#44563f"} roughness={1} />
+          <sphereGeometry args={[1, 20, 12]} />
+          <meshStandardMaterial map={tex.grassMap} color={i % 2 ? "#5a6e48" : "#4a5c3e"} roughness={0.95} />
         </mesh>
       ))}
     </group>
@@ -386,12 +395,16 @@ function Flagpoles() {
       {poles.map(([x, z], i) => (
         <group key={i} position={[x, terrainHeight(x, z), z]}>
           <mesh position={[0, 1.15, 0]}>
-            <cylinderGeometry args={[0.025, 0.03, 2.3, 8]} />
-            <meshStandardMaterial color="#cfc8bc" metalness={0.35} roughness={0.4} />
+            <cylinderGeometry args={[0.025, 0.03, 2.3, 10]} />
+            <meshPhysicalMaterial color="#d8d0c4" metalness={0.55} roughness={0.28} />
           </mesh>
           <mesh position={[0.22, 1.95, 0]}>
             <planeGeometry args={[0.42, 0.26]} />
-            <meshStandardMaterial color={i === 1 ? "#ffffff" : i === 0 ? "#0c2d8a" : "#c8102e"} side={THREE.DoubleSide} />
+            <meshStandardMaterial
+              color={i === 1 ? "#ffffff" : i === 0 ? "#0c2d8a" : "#c8102e"}
+              side={THREE.DoubleSide}
+              roughness={0.55}
+            />
           </mesh>
         </group>
       ))}
@@ -401,7 +414,7 @@ function Flagpoles() {
 
 export function Surroundings() {
   const terrain = useMemo(() => createTerrain(), []);
-  const grass = useMemo(() => (typeof document === "undefined" ? null : createGrassTexture()), []);
+  const tex = useSceneTextures();
   const palms = useMemo(
     () => [
       { x: 9.4, z: 7.2, s: 1.25 },
@@ -421,17 +434,23 @@ export function Surroundings() {
 
   return (
     <group>
-      <DuskDome />
       <mesh geometry={terrain} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <meshStandardMaterial map={grass ?? undefined} vertexColors roughness={0.98} />
+        <meshStandardMaterial
+          map={tex.grassMap}
+          normalMap={tex.grassNor}
+          roughnessMap={tex.grassRough}
+          vertexColors
+          roughness={0.92}
+          envMapIntensity={0.22}
+        />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.055, 0]} receiveShadow>
-        <circleGeometry args={[5.9, 72]} />
-        <meshStandardMaterial color="#8fba5e" roughness={1} />
+        <circleGeometry args={[5.9, 80]} />
+        <meshStandardMaterial map={tex.grassMap} color="#b7c882" roughness={0.9} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.048, 0]} receiveShadow>
-        <ringGeometry args={[5.9, 7.05, 72]} />
-        <meshStandardMaterial color="#7fa34f" roughness={1} />
+        <ringGeometry args={[5.9, 7.05, 80]} />
+        <meshStandardMaterial map={tex.grassMap} color="#9ab060" roughness={0.92} />
       </mesh>
       <HedgeBeds />
       <RoadSystem />
