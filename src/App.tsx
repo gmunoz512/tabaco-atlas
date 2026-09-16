@@ -15,7 +15,6 @@ function initialDockOpen() {
 function Shell() {
   const [dockOpen, setDockOpen] = useState(initialDockOpen);
   const { locale, selectedId } = useAtlas();
-  const copy = t(locale);
 
   useEffect(() => {
     const next = t(locale);
@@ -40,7 +39,8 @@ function Shell() {
         <button
           type="button"
           className="pointer-events-auto absolute inset-0 z-10 bg-ink/30 md:hidden"
-          aria-label={copy.close}
+          aria-hidden="true"
+          tabIndex={-1}
           onClick={() => setDockOpen(false)}
         />
       ) : null}
