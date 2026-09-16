@@ -1,6 +1,6 @@
-# Tabaco Atlas
+# Anatomía Dominicana / Dominican Anatomy
 
-Explorador botánico 3D de *Nicotiana tabacum*, pensado para un público dominicano y caribeño. Orbita la planta, selecciona raíces, tallo, hojas y flor, oculta capas y separa las piezas en una vista explosionada.
+Explorador botánico 3D de *Nicotiana tabacum* (tabaco), pensado para un público dominicano y caribeño. Orbita la planta, selecciona raíces, tallo, hojas y flor, oculta capas y separa las piezas en una vista explosionada.
 
 El producto sigue el patrón de un atlas humano exploratorio (órbita, capas, búsqueda, ficha y inventario separado). No es un clon: la geometría es procedural y el tema es la planta de tabaco, no la anatomía humana.
 
@@ -13,7 +13,7 @@ El producto sigue el patrón de un atlas humano exploratorio (órbita, capas, b�
 - Busca por nombre común (ES/EN) o científico.
 - Separa las piezas visibles para inventariarlas.
 - Lee la ficha: nombre, descripción llana y nota cultural dominicana/caribeña cuando aplica.
-- Interfaz en español primero, con conmutador ES/EN.
+- Interfaz en español primero (**Anatomía Dominicana**), con conmutador a English (**Dominican Anatomy**).
 
 ## Requisitos
 

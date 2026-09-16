@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ControlDock } from "@/components/ControlDock";
 import { DetailPanel } from "@/components/DetailPanel";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PlantScene } from "@/components/plant/PlantScene";
+import { t } from "@/data/i18n";
 import { AtlasProvider, useAtlas } from "@/state/atlas-store";
 
 function Shell() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { selectedId } = useAtlas();
+  const { locale, selectedId } = useAtlas();
+
+  useEffect(() => {
+    const copy = t(locale);
+    document.title =
+      locale === "es"
+        ? `${copy.appName} — explorador botánico 3D`
+        : `${copy.appName} — 3D botanical explorer`;
+  }, [locale]);
 
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-ink">

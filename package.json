@@ -1,7 +1,8 @@
 {
-  "name": "tabaco-atlas",
+  "name": "dominican-anatomy",
   "private": true,
   "version": "1.0.0",
+  "description": "Dominican Anatomy / Anatomía Dominicana — 3D botanical explorer of Nicotiana tabacum",
   "type": "module",
   "license": "MIT",
   "engines": {
