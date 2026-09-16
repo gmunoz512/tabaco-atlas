@@ -16,7 +16,7 @@ function Shell() {
       <Header />
       <ControlDock mobileOpen={mobileOpen} onToggleMobile={() => setMobileOpen((open) => !open)} />
       <div
-        className={`pointer-events-auto absolute right-3 bottom-16 z-20 w-[min(100%-1.5rem,24rem)] md:top-24 md:right-4 md:bottom-auto ${
+        className={`pointer-events-auto absolute right-3 bottom-16 left-3 z-20 md:top-24 md:right-4 md:bottom-auto md:left-auto md:w-[24rem] ${
           selectedId ? "block" : "hidden md:block"
         }`}
       >

@@ -8,12 +8,7 @@ export function Header() {
   const copy = t(locale);
 
   return (
-    <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 md:p-4">
-      <div className="pointer-events-auto panel-surface max-w-[min(100%,28rem)] rounded-3xl px-4 py-3 md:px-5">
-        <p className="font-display text-xl leading-none text-gold md:text-2xl">{copy.appName}</p>
-        <p className="mt-1 text-xs text-muted md:text-sm">{copy.tagline}</p>
-        <p className="mt-2 hidden text-[11px] leading-relaxed text-cream/70 sm:block">{copy.intro}</p>
-      </div>
+    <header className="pointer-events-none absolute top-0 right-0 z-30 flex items-start justify-end gap-2 p-3 md:p-4">
       <div className="pointer-events-auto flex items-center gap-2">
         <Button
           variant="outline"

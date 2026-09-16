@@ -17,7 +17,10 @@ export function ControlDock({ mobileOpen, onToggleMobile }: ControlDockProps) {
 
   return (
     <>
-      <div className="pointer-events-auto absolute bottom-16 left-3 z-20 flex gap-2 md:hidden">
+      <div className="pointer-events-auto absolute top-3 left-3 z-30 flex max-w-[70%] flex-wrap items-center gap-2 md:hidden">
+        <span className="panel-surface rounded-full px-3 py-2 font-display text-sm text-gold">
+          {copy.appName}
+        </span>
         <Button variant="outline" size="sm" onClick={onToggleMobile}>
           <Layers className="size-3.5" />
           {copy.layers}
@@ -33,10 +36,14 @@ export function ControlDock({ mobileOpen, onToggleMobile }: ControlDockProps) {
       </div>
 
       <aside
-        className={`panel-surface absolute top-24 right-3 left-3 z-20 flex max-h-[58vh] flex-col gap-4 overflow-hidden rounded-3xl p-4 md:top-4 md:right-auto md:bottom-16 md:left-4 md:max-h-[min(78vh,46rem)] md:w-[22.5rem] ${
+        className={`panel-surface absolute top-16 right-3 left-3 z-20 flex max-h-[58vh] flex-col gap-4 overflow-hidden rounded-3xl p-4 md:top-4 md:right-auto md:bottom-16 md:left-4 md:max-h-[min(78vh,46rem)] md:w-[22.5rem] ${
           mobileOpen ? "flex" : "hidden md:flex"
         }`}
       >
+        <div className="min-w-0">
+          <p className="font-display text-xl leading-none text-gold">{copy.appName}</p>
+          <p className="mt-1 text-xs text-muted">{copy.tagline}</p>
+        </div>
         <SearchPanel />
         <LayerToggles />
         <div className="hidden md:block">

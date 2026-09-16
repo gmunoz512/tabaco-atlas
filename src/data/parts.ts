@@ -238,7 +238,7 @@ export const PARTS: PlantPart[] = [
     culturalEn:
       "On the island the flowers open toward evening; moths and hummingbirds visit the tube. This is the plant’s reproduction, not product decoration.",
     aliases: ["flor", "corola", "flos", "flower", "tubular", "rosa"],
-    color: "#f0c6cc",
+    color: "#f0b7c0",
   },
 ];
 

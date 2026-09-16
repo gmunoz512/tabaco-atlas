@@ -1,8 +1,7 @@
-import { Html, Outlines } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
-import { PART_BY_ID, partLabel } from "@/data/parts";
+import { PART_BY_ID } from "@/data/parts";
 import { useAtlas } from "@/state/atlas-store";
 import { PART_POSES } from "@/components/plant/geometries";
 
@@ -11,13 +10,10 @@ interface SelectablePartProps {
   children: ReactNode;
 }
 
-const GOLD = new THREE.Color("#f0d48a");
-
 export function SelectablePart({ id, children }: SelectablePartProps) {
   const group = useRef<THREE.Group>(null);
-  const { selectedId, setSelectedId, exploded, isPartVisible, locale } = useAtlas();
+  const { selectedId, setSelectedId, exploded, isPartVisible } = useAtlas();
   const pose = PART_POSES[id];
-  const part = PART_BY_ID[id];
   const selected = selectedId === id;
   const visible = isPartVisible(id);
 
@@ -38,6 +34,7 @@ export function SelectablePart({ id, children }: SelectablePartProps) {
       ref={group}
       position={pose.rest}
       rotation={pose.rotation}
+      rotation-order={pose.rotationOrder ?? "XYZ"}
       scale={pose.scale}
       onPointerDown={(event) => {
         event.stopPropagation();
@@ -62,25 +59,10 @@ export function SelectablePart({ id, children }: SelectablePartProps) {
       }}
     >
       {children}
-      {selected ? (
-        <Html position={[0, 0.22, 0]} center distanceFactor={8} occlude={false}>
-          <div className="pointer-events-none rounded-full border border-gold/40 bg-ink/80 px-2.5 py-1 text-[11px] whitespace-nowrap text-cream shadow-lg">
-            {partLabel(part, locale)}
-          </div>
-        </Html>
-      ) : null}
     </group>
   );
 }
 
-export function SelectionGlow({ active, color }: { active: boolean; color: string }) {
-  return (
-    <Outlines
-      thickness={active ? 3.2 : 0}
-      color={active ? GOLD : color}
-      screenspace
-      opacity={active ? 1 : 0}
-      transparent
-    />
-  );
+export function plantColor(id: string, selected: boolean) {
+  return selected ? "#d7c07a" : PART_BY_ID[id].color;
 }
