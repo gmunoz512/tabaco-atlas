@@ -60,18 +60,18 @@ export const SHAFT = {
   r1: 0.4,
   r2: 0.385,
   seg: 3.05,
-  helixR: 0.472,
+  helixR: 0.51,
   helixH: 9.15,
-  turns: 8.2,
+  turns: 10.4,
 };
 
 export const CLUSTER: Record<LayerId, Vector3Tuple> = {
-  plaza: [-18.5, 1.4, 6],
-  podium: [-10.5, 2.4, 5],
-  colonnade: [-1.2, 3.6, 4],
-  attic: [8.4, 5.2, 4.5],
-  shaft: [15.2, 7.8, 3.5],
-  lookout: [21.2, 11.2, 3],
+  plaza: [-10.4, 1.5, 5],
+  podium: [-5.6, 2.4, 4.4],
+  colonnade: [-0.4, 3.5, 4],
+  attic: [4.8, 4.8, 3.8],
+  shaft: [9.2, 7.0, 3.2],
+  lookout: [13.4, 9.8, 3],
 };
 
 function pose(
@@ -204,17 +204,25 @@ function buildPoses(): Record<string, PartPose> {
 
 function applyCategoryLayout(p: Record<string, PartPose>) {
   const spacing: Record<LayerId, number> = {
-    plaza: 2.05,
-    podium: 1.85,
-    colonnade: 1.15,
-    attic: 1.45,
-    shaft: 2.1,
-    lookout: 1.8,
+    plaza: 1.42,
+    podium: 1.28,
+    colonnade: 0.82,
+    attic: 1.08,
+    shaft: 1.55,
+    lookout: 1.32,
+  };
+  const colsFor: Record<LayerId, number> = {
+    plaza: 4,
+    podium: 3,
+    colonnade: 5,
+    attic: 4,
+    shaft: 3,
+    lookout: 3,
   };
 
   for (const layer of LAYER_IDS) {
     const ids = PARTS.filter((part) => part.layer === layer).map((part) => part.id);
-    const cols = Math.max(3, Math.ceil(Math.sqrt(ids.length)));
+    const cols = colsFor[layer];
     const gap = spacing[layer];
     const origin = CLUSTER[layer];
     ids.forEach((id, index) => {
@@ -224,7 +232,7 @@ function applyCategoryLayout(p: Record<string, PartPose>) {
       const r = Math.floor(index / cols);
       poseNode.explode = [
         origin[0] + (c - (cols - 1) / 2) * gap,
-        origin[1] + r * gap * 0.72,
+        origin[1] + r * gap * 0.7,
         origin[2],
       ];
     });

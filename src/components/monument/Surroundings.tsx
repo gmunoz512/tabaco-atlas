@@ -37,16 +37,16 @@ export function Surroundings() {
       <SoftCloud position={[12, 38, -88]} scale={[22, 3.8, 9]} />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.62, 0]} receiveShadow>
-        <circleGeometry args={[64, 80]} />
-        <meshStandardMaterial color="#9bb56e" roughness={0.92} metalness={0.02} envMapIntensity={0.18} />
+        <circleGeometry args={[32, 72]} />
+        <meshStandardMaterial color="#7d9560" roughness={0.92} metalness={0.02} envMapIntensity={0.18} />
       </mesh>
       <mesh position={[0, -0.34, 0]} receiveShadow>
-        <cylinderGeometry args={[16.8, 20.4, 0.72, 80]} />
-        <meshStandardMaterial color="#8eaa62" roughness={0.9} metalness={0.02} envMapIntensity={0.16} />
+        <cylinderGeometry args={[14.2, 17.6, 0.72, 80]} />
+        <meshStandardMaterial color="#708854" roughness={0.9} metalness={0.02} envMapIntensity={0.16} />
       </mesh>
       <mesh position={[0, -0.02, 0]} receiveShadow>
-        <cylinderGeometry args={[11.6, 12.4, 0.08, 80]} />
-        <meshStandardMaterial color="#7f9a58" roughness={0.88} metalness={0.03} envMapIntensity={0.2} />
+        <cylinderGeometry args={[10.4, 11.2, 0.08, 80]} />
+        <meshStandardMaterial color="#667d4e" roughness={0.88} metalness={0.03} envMapIntensity={0.2} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.018, 0]} receiveShadow>

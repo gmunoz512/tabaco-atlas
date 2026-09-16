@@ -9,12 +9,12 @@ import { useAtlas } from "@/state/atlas-store";
 import { Monument } from "@/components/monument/Monument";
 import { Surroundings } from "@/components/monument/Surroundings";
 
-const CAMERA_POS: [number, number, number] = [34, 16.8, 48];
-const CAMERA_POS_NARROW: [number, number, number] = [30, 22, 54];
-const TARGET: [number, number, number] = [0, 6.2, 0];
-const EXPLODE_CAM: [number, number, number] = [4, 20, 64];
-const EXPLODE_CAM_NARROW: [number, number, number] = [2, 26, 72];
-const EXPLODE_TARGET: [number, number, number] = [1.2, 6.4, 4];
+const CAMERA_POS: [number, number, number] = [25.5, 12.8, 36.5];
+const CAMERA_POS_NARROW: [number, number, number] = [22, 15.5, 38];
+const TARGET: [number, number, number] = [0, 6.4, 0];
+const EXPLODE_CAM: [number, number, number] = [1.6, 15, 44];
+const EXPLODE_CAM_NARROW: [number, number, number] = [1.4, 18, 58];
+const EXPLODE_TARGET: [number, number, number] = [1.4, 5.2, 3.4];
 
 function StudioEnvironment() {
   const { gl, scene } = useThree();
@@ -42,6 +42,22 @@ function explodedPos(narrow: boolean): [number, number, number] {
   return narrow ? EXPLODE_CAM_NARROW : EXPLODE_CAM;
 }
 
+function applyFrame(
+  camera: THREE.Camera,
+  controls: OrbitControlsImpl | null,
+  narrow: boolean,
+  exploded: boolean,
+) {
+  const cam = camera as THREE.PerspectiveCamera;
+  cam.fov = exploded ? (narrow ? 66 : 42) : narrow ? 44 : 38;
+  cam.updateProjectionMatrix();
+  const pos = exploded ? explodedPos(narrow) : assembledPos(narrow);
+  const target = exploded ? EXPLODE_TARGET : TARGET;
+  camera.position.set(...pos);
+  controls?.target.set(...target);
+  controls?.update();
+}
+
 function CameraRig() {
   const controls = useRef<OrbitControlsImpl>(null);
   const { resetViewToken, explode } = useAtlas();
@@ -50,34 +66,22 @@ function CameraRig() {
   const framed = useRef<"assembled" | "exploded">("assembled");
 
   useEffect(() => {
-    const cam = camera as THREE.PerspectiveCamera;
-    cam.fov = narrow ? 46 : 40;
-    cam.updateProjectionMatrix();
-    const exploded = framed.current === "exploded";
-    const pos = exploded ? explodedPos(narrow) : assembledPos(narrow);
-    const target = exploded ? EXPLODE_TARGET : TARGET;
-    camera.position.set(...pos);
-    controls.current?.target.set(...target);
-    controls.current?.update();
+    applyFrame(camera, controls.current, narrow, framed.current === "exploded");
   }, [camera, resetViewToken, narrow]);
 
   useEffect(() => {
     const node = controls.current;
     if (!node) return;
     const exploded = explode > 0.28;
-    node.minDistance = exploded ? 28 : 22;
-    node.maxDistance = exploded ? 120 : 90;
+    node.minDistance = exploded ? 18 : 14;
+    node.maxDistance = exploded ? 130 : 78;
   }, [explode]);
 
   useEffect(() => {
     const next = explode > 0.38 ? "exploded" : explode < 0.14 ? "assembled" : framed.current;
     if (next === framed.current) return;
     framed.current = next;
-    const pos = next === "exploded" ? explodedPos(narrow) : assembledPos(narrow);
-    const target = next === "exploded" ? EXPLODE_TARGET : TARGET;
-    camera.position.set(...pos);
-    controls.current?.target.set(...target);
-    controls.current?.update();
+    applyFrame(camera, controls.current, narrow, next === "exploded");
   }, [explode, camera, narrow]);
 
   return (
@@ -88,8 +92,8 @@ function CameraRig() {
       dampingFactor={0.065}
       minPolarAngle={0.12}
       maxPolarAngle={Math.PI * 0.495}
-      minDistance={22}
-      maxDistance={90}
+      minDistance={14}
+      maxDistance={78}
       target={TARGET}
     />
   );
@@ -101,7 +105,7 @@ function SceneContents() {
   return (
     <>
       <color attach="background" args={["#8eb8dc"]} />
-      <fog attach="fog" args={["#c5d8ea", 78, 165]} />
+      <fog attach="fog" args={["#c5d8ea", 62, 130]} />
       <hemisphereLight args={["#e7f1fb", "#8a9a70", 0.92]} />
       <ambientLight intensity={0.46} color="#f4f1ea" />
       <directionalLight
@@ -147,7 +151,7 @@ export function MonumentScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: CAMERA_POS, fov: 40, near: 0.1, far: 280 }}
+      camera={{ position: CAMERA_POS, fov: 38, near: 0.1, far: 280 }}
       dpr={[1, 2]}
       gl={{
         antialias: false,

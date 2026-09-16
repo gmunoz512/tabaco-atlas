@@ -473,7 +473,7 @@ const CORE: AtlasPart[] = [
     culturalEs: "Henry Gazón Bona usó esa cinta para que el fuste no fuera un tubo liso a distancia.",
     culturalEn: "Henry Gazón Bona used that ribbon so the shaft would not read as a plain tube at a distance.",
     aliases: ["spiral", "helix", "fluting", "espiral", "banda"],
-    color: CREAM_DEEP,
+    color: "#cfc6b8",
   },
   {
     id: "shaft-capital",

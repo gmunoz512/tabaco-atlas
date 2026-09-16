@@ -96,7 +96,7 @@ function ArchBody({ id }: { id: string }) {
 }
 
 function HelixBody({ id }: { id: string }) {
-  const geo = useMemo(() => createHelixGeometry(SHAFT.helixR, SHAFT.helixH, SHAFT.turns, 0.056), []);
+  const geo = useMemo(() => createHelixGeometry(SHAFT.helixR, SHAFT.helixH, SHAFT.turns, 0.078), []);
   const vents = useMemo(() => helixVentPositions(SHAFT.helixR, SHAFT.helixH, SHAFT.turns, 18), []);
   return (
     <group>
@@ -105,7 +105,7 @@ function HelixBody({ id }: { id: string }) {
       </mesh>
       {vents.map((pt, i) => (
         <mesh key={i} position={[pt.x, pt.y, pt.z]} castShadow>
-          <sphereGeometry args={[0.032, 12, 10]} />
+          <cylinderGeometry args={[0.034, 0.034, 0.04, 16]} />
           <ExhibitMaterial id={id} finish="void" />
         </mesh>
       ))}
@@ -325,11 +325,11 @@ function PostBody({ id }: { id: string }) {
   return (
     <group>
       <mesh castShadow receiveShadow>
-        <boxGeometry args={[0.16, 0.52, 0.16]} />
+        <boxGeometry args={[0.2, 0.58, 0.2]} />
         <ExhibitMaterial id={id} roughness={0.4} />
       </mesh>
-      <mesh position={[0, 0.3, 0]} castShadow>
-        <boxGeometry args={[0.2, 0.06, 0.2]} />
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <boxGeometry args={[0.24, 0.07, 0.24]} />
         <ExhibitMaterial id={id} finish="accent" roughness={0.32} />
       </mesh>
     </group>
@@ -447,7 +447,7 @@ function LayerLabels() {
         return (
           <Html
             key={id}
-            position={[origin[0], origin[1] + 3.2, origin[2]]}
+            position={[origin[0], origin[1] + 6.6, origin[2]]}
             center
             distanceFactor={22}
             style={{ pointerEvents: "none" }}
